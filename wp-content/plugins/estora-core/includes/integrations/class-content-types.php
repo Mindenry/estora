@@ -186,8 +186,14 @@ final class Content_Types {
 					'show_in_rest'      => false,
 					'single'            => true,
 					'type'              => in_array( $type, array( 'float', 'int' ), true ) ? 'number' : ( 'bool' === $type ? 'boolean' : ( 'array' === $type ? 'array' : 'string' ) ),
-					'sanitize_callback' => static function ( $value ) {
-						return is_array( $value ) ? array_map( 'absint', $value ) : sanitize_text_field( (string) $value );
+					'sanitize_callback' => static function ( $value ) use ( $key ) {
+						if ( 'gallery' === $key ) {
+							return is_array( $value ) ? array_map( 'absint', $value ) : array();
+						}
+						if ( 'amenities' === $key ) {
+							return array_values( array_filter( array_map( 'sanitize_text_field', (array) $value ), static fn( $item ) => '' !== trim( (string) $item ) ) );
+						}
+						return is_array( $value ) ? array_map( 'sanitize_text_field', $value ) : sanitize_text_field( (string) $value );
 					},
 					'auth_callback'     => static function () {
 						return current_user_can( Capabilities::EDIT_PROPERTIES );

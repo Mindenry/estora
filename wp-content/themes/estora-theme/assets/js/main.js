@@ -124,7 +124,7 @@
     $$('[data-favorite]').forEach((btn) => {
       const active = ids.includes(Number(btn.dataset.favorite));
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-      btn.setAttribute('aria-label', active ? 'Remove from favourites' : 'Save property');
+      btn.setAttribute('aria-label', active ? (strings.removeAria || 'Remove from favourites') : (strings.saveAria || 'Save property'));
     });
     setFavCount(ids.length);
   }
@@ -173,7 +173,7 @@
     $$('[data-compare]').forEach((btn) => {
       const active = ids.includes(Number(btn.dataset.compare));
       btn.setAttribute('aria-pressed', active ? 'true' : 'false');
-      btn.textContent = active ? 'Added' : 'Compare';
+      btn.textContent = active ? (strings.compareAdded || 'Added') : (strings.compareAdd || 'Compare');
     });
     const counter = $('[data-compare-count]');
     if (counter) counter.textContent = String(ids.length);
@@ -194,7 +194,7 @@
       }
       storage.set('estora_compare', ids);
       syncCompareButtons();
-      toast(ids.includes(id) ? 'Added to comparison' : 'Removed from comparison');
+      toast(ids.includes(id) ? (strings.compareAddedToast || 'Added to comparison') : (strings.compareRemovedToast || 'Removed from comparison'));
     });
   });
   syncCompareButtons();
@@ -204,7 +204,7 @@
   if (compareRoot) {
     const ids = compareIds();
     if (!ids.length) {
-      compareRoot.innerHTML = '<div class="estora-empty"><h2>No properties selected</h2><p>Add up to three properties from any listing to compare price, size and specification.</p><a class="estora-btn" href="' + (config.propertyArchive || '/properties/') + '">Browse properties</a></div>';
+      compareRoot.innerHTML = '<div class="estora-empty"><h2>' + (strings.compareEmptyTitle || 'No properties selected') + '</h2><p>' + (strings.compareEmptyBody || 'Add up to three properties from any listing to compare price, size and specification.') + '</p><a class="estora-btn" href="' + (config.propertyArchive || '/properties/') + '">' + (strings.browseProperties || 'Browse properties') + '</a></div>';
     } else {
       Promise.all(ids.map((id) => request(`/properties/${id}`).then((p) => p.data).catch(() => null)))
         .then((items) => {
@@ -213,7 +213,7 @@
           renderCompare(compareRoot, properties);
         })
         .catch(() => {
-          compareRoot.innerHTML = '<div class="estora-empty"><h2>Comparison unavailable</h2><p>Please try again.</p></div>';
+          compareRoot.innerHTML = '<div class="estora-empty"><h2>' + (strings.compareUnavailable || 'Comparison unavailable') + '</h2><p>' + (strings.compareTryAgain || 'Please try again.') + '</p></div>';
         });
     }
   }
@@ -223,21 +223,21 @@
 
   function renderCompare(root, properties) {
     const rows = [
-      ['Price', (p) => `<strong>${money(p.price)}</strong>${p.purpose === 'rent' ? ' / month' : ''}`],
-      ['Purpose', (p) => p.purpose_label || ''],
-      ['Type', (p) => p.type_label || ''],
-      ['Location', (p) => `${escapeHtml(p.location.district || '')}${p.location.district && p.location.province ? ', ' : ''}${escapeHtml(p.location.province || '')}`],
-      ['Land area', (p) => (p.land_area ? `${Number(p.land_area).toLocaleString()} m²` : '—')],
-      ['Usable area', (p) => (p.usable_area ? `${Number(p.usable_area).toLocaleString()} m²` : '—')],
-      ['Bedrooms', (p) => (p.bedrooms || '—')],
-      ['Bathrooms', (p) => (p.bathrooms || '—')],
-      ['Parking', (p) => (p.parking || '—')],
-      ['Availability', (p) => escapeHtml(p.availability_label || '')],
-      ['Amenities', (p) => (p.amenities && p.amenities.length ? escapeHtml(p.amenities.join(', ')) : '—')]
+      [strings.price || 'Price', (p) => `<strong>${money(p.price)}</strong>${p.purpose === 'rent' ? (strings.perMonth || ' / month') : ''}`],
+      [strings.purpose || 'Purpose', (p) => p.purpose_label || ''],
+      [strings.type || 'Type', (p) => p.type_label || ''],
+      [strings.location || 'Location', (p) => `${escapeHtml(p.location.district || '')}${p.location.district && p.location.province ? ', ' : ''}${escapeHtml(p.location.province || '')}`],
+      [strings.landArea || 'Land area', (p) => (p.land_area ? `${Number(p.land_area).toLocaleString()} m²` : '—')],
+      [strings.usableArea || 'Usable area', (p) => (p.usable_area ? `${Number(p.usable_area).toLocaleString()} m²` : '—')],
+      [strings.bedrooms || 'Bedrooms', (p) => (p.bedrooms || '—')],
+      [strings.bathrooms || 'Bathrooms', (p) => (p.bathrooms || '—')],
+      [strings.parking || 'Parking', (p) => (p.parking || '—')],
+      [strings.availability || 'Availability', (p) => escapeHtml(p.availability_label || '')],
+      [strings.amenities || 'Amenities', (p) => (p.amenities && p.amenities.length ? escapeHtml(p.amenities.join(', ')) : '—')]
     ];
-    let html = '<div class="estora-compare-wrap"><table class="estora-compare"><thead><tr><th scope="col">Attribute</th>';
+    let html = '<div class="estora-compare-wrap"><table class="estora-compare"><thead><tr><th scope="col">' + (strings.attribute || 'Attribute') + '</th>';
     properties.forEach((p) => {
-      html += `<th scope="col"><a href="${escapeHtml(p.url)}">${escapeHtml(p.title)}</a><br><button class="estora-compare__remove" data-compare-remove="${p.id}">Remove</button></th>`;
+      html += `<th scope="col"><a href="${escapeHtml(p.url)}">${escapeHtml(p.title)}</a><br><button class="estora-compare__remove" data-compare-remove="${p.id}">${escapeHtml(strings.remove || 'Remove')}</button></th>`;
     });
     html += '</tr></thead><tbody>';
     rows.forEach(([label, render]) => {
@@ -260,7 +260,7 @@
   if (favoritesRoot) {
     loadFavorites().then((data) => {
       if (!data.properties || !data.properties.length) {
-        favoritesRoot.innerHTML = `<div class="estora-empty"><h2>${escapeHtml(strings.favoritesEmpty || 'No saved properties yet.')}</h2><p>Use the heart on any listing to keep it here.</p><a class="estora-btn" href="${escapeHtml(config.propertyArchive || '/properties/')}">Browse properties</a></div>`;
+        favoritesRoot.innerHTML = `<div class="estora-empty"><h2>${escapeHtml(strings.favoritesEmpty || 'No saved properties yet.')}</h2><p>${escapeHtml(strings.favoritesEmptyBody || 'Use the heart on any listing to keep it here.')}</p><a class="estora-btn" href="${escapeHtml(config.propertyArchive || '/properties/')}">${escapeHtml(strings.browseProperties || 'Browse properties')}</a></div>`;
         return;
       }
       favoritesRoot.innerHTML = `<div class="estora-grid estora-grid--3">${data.properties.map(cardHtml).join('')}</div>`;
@@ -341,7 +341,7 @@
 
     const loadSlots = async () => {
       if (!dateInput || !dateInput.value) return;
-      slotsRoot.innerHTML = '<p class="estora-muted">Loading available times…</p>';
+      slotsRoot.innerHTML = '<p class="estora-muted">' + (strings.loadingTimes || 'Loading available times…') + '</p>';
       try {
         const params = new URLSearchParams({ date: dateInput.value, property_id: form.dataset.propertyId || '0' });
         const payload = await request(`/appointments/availability?${params.toString()}`);
@@ -376,7 +376,7 @@
       if (!timeInput.value) {
         if (errorEl) {
           errorEl.hidden = false;
-          errorEl.textContent = 'Choose an available time.';
+          errorEl.textContent = strings.chooseTime || 'Choose an available time.';
         }
         return;
       }
@@ -393,9 +393,9 @@
         slotsRoot.innerHTML = '';
         if (successEl) {
           successEl.hidden = false;
-          successEl.textContent = `${payload.message} Your reference is ${payload.data.public_ref}.`;
+          successEl.textContent = `${payload.message} ${strings.yourReference || 'Your reference is'} ${payload.data.public_ref}.`;
         }
-        toast('Viewing requested');
+        toast(strings.viewingRequested || 'Viewing requested');
       } catch (error) {
         if (errorEl) {
           errorEl.hidden = false;
@@ -435,7 +435,7 @@
   function openLightbox(src, alt) {
     const backdrop = document.createElement('div');
     backdrop.className = 'estora-dialog-backdrop';
-    backdrop.innerHTML = `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}"><button type="button" aria-label="Close">×</button>`;
+    backdrop.innerHTML = `<img src="${escapeHtml(src)}" alt="${escapeHtml(alt)}"><button type="button" aria-label="${escapeHtml(strings.close || 'Close')}">×</button>`;
     const close = () => backdrop.remove();
     backdrop.addEventListener('click', (event) => {
       if (event.target === backdrop || event.target.tagName === 'BUTTON') close();
@@ -456,7 +456,7 @@
         await navigator.clipboard.writeText(btn.dataset.copyLink);
         toast(strings.copied || 'Link copied');
       } catch (error) {
-        toast('Copy failed', 'error');
+        toast(strings.copyFailed || 'Copy failed', 'error');
       }
     });
   });

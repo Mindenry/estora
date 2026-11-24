@@ -3,6 +3,42 @@
 All notable changes to ESTORA. Format follows Keep a Changelog; versions follow Semantic
 Versioning.
 
+## [1.2.0] — 2026-11-24
+
+### Added
+
+- Full public-site redesign around real photography, local Fraunces / IBM Plex Sans Thai / Noto
+  Serif Thai fonts and an editorial forest/paper/brass design system.
+- English / Thai switcher in the header, mobile menu and footer, with cookie and browser-language
+  detection.
+- Bilingual UI strings, page/property/article metadata, destination and district names, staff
+  titles, amenities and company details.
+- 21 demo listings across Bangkok, Chiang Mai, Phuket, Hua Hin, Pattaya and Khon Kaen, with Thai
+  titles, descriptions, addresses, SEO metadata and 14 neighbourhood terms.
+- Real listing photography imported into the media library with featured images and multi-image
+  galleries; Unsplash credited in the footer.
+- New home sections: photo hero, search panel, collection, destination grid, market pulse, working
+  method, latest listings, testimonials, journal and photo CTA.
+- `docs/PUBLIC_SITE.md` design, bilingual and data record.
+
+### Changed
+
+- Public cards, archive, property detail, about, contact, news, favourites and compare pages now
+  share the new type, spacing, colour and responsive system.
+- Amenity meta now stores text; the registered meta sanitiser previously converted every amenity
+  to integer zero.
+- Language-aware REST property payloads, search options, filter chips and the JavaScript compare /
+  favourite states.
+- Version bumped to 1.2.0; screenshot set expanded to 39 images including Thai pages.
+
+### Fixed
+
+- Footer and filter headings inheriting the oversized body heading scale.
+- Search / hero collisions on short desktop viewports.
+- Comparison table overflow on mobile; compare remove-button text rendering.
+- Mixed English strings in Thai compare, favourite and empty states.
+- Contact page duplicated introduction and about-page character corruption.
+
 ## [1.1.1] — 2026-11-24
 
 ### Changed

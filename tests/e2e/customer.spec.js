@@ -6,10 +6,10 @@ const QA_EMAIL = `qa-e2e-${Date.now()}@estora-qa.test`;
 test.describe('Visitor journeys', () => {
   test('homepage → search → property detail', async ({ page }) => {
     await page.goto('/');
-    await expect(page.locator('h1')).toContainText('property file');
+    await expect(page.locator('h1')).toContainText('A home you can trust');
     await expect(page.locator('.estora-search').first()).toBeVisible();
     await expect(page.locator('.estora-searchcard')).toBeVisible();
-    await expect(page.locator('.estora-hero__place')).toBeVisible();
+    await expect(page.locator('.estora-hero__proof')).toBeVisible();
     await expect(page.locator('.estora-card').first()).toBeVisible();
 
     await page.goto('/properties/?purpose=rent');
@@ -80,6 +80,20 @@ test.describe('Visitor journeys', () => {
     await page.check('[data-appointment-form] [name="consent"]');
     await page.click('[data-appointment-form] button[type="submit"]');
     await expect(page.locator('[data-appointment-form] [data-form-success]')).toContainText('AP-');
+  });
+
+  test('Thai and English switch persists across navigation', async ({ page }) => {
+    await page.goto('/?lang=th');
+    await expect(page.locator('html')).toHaveAttribute('lang', 'th');
+    await expect(page.locator('h1')).toContainText('บ้านที่คุณไว้ใจได้');
+    await page.goto('/properties/');
+    await expect(page.locator('h1').first()).toContainText('ทรัพย์สิน');
+    await expect(page.locator('.estora-card__title').first()).toContainText('บ้าน');
+    await page.getByRole('link', { name: 'EN', exact: true }).first().click();
+    await expect(page).toHaveURL(/lang=en/);
+    await expect(page.locator('h1').first()).toContainText('Properties');
+    await page.goto('/');
+    await expect(page.locator('h1')).toContainText('A home you can trust');
   });
 
   test('public pages render without errors', async ({ page }) => {

@@ -39,8 +39,8 @@ verification remains (stated).
 | AC-24 | Theme change keeps business data/API | switched to Twenty Twenty-Four: leads 200, properties 200, tables true; switched back | PASS |
 | AC-25 | Stack starts from clean volumes with documented commands | fresh compose volumes + bootstrap | PASS |
 | AC-26 | CI executes real checks | workflow committed; **not run on GitHub from this machine** | PARTIAL |
-| AC-27 | PHP syntax/PHPCS no errors | 99 files; PHPCS 0 errors | PASS |
-| AC-28 | Unit + integration + HTTP + E2E pass | 37 / 12 / 24 / 16 | PASS |
+| AC-27 | PHP syntax/PHPCS no errors | 101 files; PHPCS 0 errors | PASS |
+| AC-28 | Unit + integration + HTTP + E2E pass | 37 / 12 / 24 / 17 | PASS |
 
 ## C. Security
 
@@ -67,8 +67,8 @@ verification remains (stated).
 | AC-42 | README install reproducible | bootstrap path executed; commands documented for bash and PowerShell | PASS |
 | AC-43 | Documentation matches routes/schema | review against implementation | PASS |
 | AC-44 | No placeholder handler presented as complete | manual review; only labeled art fallbacks | PASS |
-| AC-45 | Screenshots current | 34 files in `docs/screenshots` from the final seed | PASS |
-| AC-46 | Release notes + v1.1.0 tag | `docs/RELEASE_NOTES.md`, local tag | PASS |
+| AC-45 | Screenshots current | 39 files in `docs/screenshots` from the final seed | PASS |
+| AC-46 | Release notes + v1.2.0 tag | `docs/RELEASE_NOTES.md`, local tag | PASS |
 
 ## E. Back-office experience (v1.1.0)
 
@@ -82,7 +82,10 @@ verification remains (stated).
 | AC-52 | Quick actions, staff booking, search, notifications, logout function | E2E period + add-lead, staff booking, search, drawer/logout; HTTP notifications | PASS |
 | AC-53 | WordPress CMS remains available where authorized; technical admin to Super Admin | marketing posts/pages 200, agent posts blocked; Super Admin WP link and `/wp-admin/` | PASS |
 | AC-54 | Responsive app shell and mobile navigation | mobile E2E + `app-mobile-dashboard.png`/`app-mobile-nav.png`; no horizontal overflow | PASS |
-| AC-55 | Updated screenshots inspected and defects fixed | 34 captures; chart fills, button labels, skip link and version label corrected | PASS |
+| AC-55 | Updated screenshots inspected and defects fixed | 39 captures; chart fills, button labels, skip link and version label corrected | PASS |
+| AC-56 | English / Thai switch persists and localises UI + content | Cookie, query and browser detection; Thai screenshots for home, archive and detail | PASS |
+| AC-57 | 21 listings across six Thai destinations with real photography | Seed output 21 properties; destination counts 7/6/3/2/2/1; media library galleries | PASS |
+| AC-58 | Public site responsive from 320 to 1440 | Browser checks at 320/360/390/420/768/1024/1280/1366/1440; no horizontal overflow | PASS |
 
 ## Out of scope for acceptance
 

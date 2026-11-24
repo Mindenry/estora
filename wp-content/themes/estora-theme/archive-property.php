@@ -102,8 +102,18 @@ get_header();
 	<?php if ( ! empty( $estora_active ) ) : ?>
 		<div class="estora-activefilters" aria-label="<?php esc_attr_e( 'Active filters', 'estora-theme' ); ?>">
 			<?php foreach ( $estora_active as $estora_key => $estora_value ) : ?>
+				<?php
+				$estora_display = (string) $estora_value;
+				if ( 'purpose' === $estora_key ) {
+					$estora_display = estora_purpose_name( $estora_display );
+				} elseif ( 'type' === $estora_key ) {
+					$estora_display = estora_type_name( $estora_display, $estora_display );
+				} elseif ( in_array( $estora_key, array( 'location', 'province', 'district' ), true ) ) {
+					$estora_display = estora_place_name( $estora_display );
+				}
+				?>
 				<a href="<?php echo esc_url( remove_query_arg( $estora_key ) ); ?>">
-					<?php echo esc_html( $estora_labels[ $estora_key ] ); ?>: <?php echo esc_html( (string) $estora_value ); ?>
+					<?php echo esc_html( $estora_labels[ $estora_key ] ); ?>: <?php echo esc_html( $estora_display ); ?>
 					<span aria-hidden="true">×</span>
 				</a>
 			<?php endforeach; ?>

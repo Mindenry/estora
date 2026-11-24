@@ -17,6 +17,9 @@ test.describe('Responsive and accessibility checks', () => {
     await page.click('[data-nav-toggle]');
     await expect(page.locator('[data-nav]')).toBeVisible();
     await expect(page.locator('[data-nav] a').first()).toBeVisible();
+    await page.setViewportSize({ width: 320, height: 800 });
+    await page.goto('/');
+    await noHorizontalScroll(page);
   });
 
   test('mobile admin dashboard stays manageable', async ({ page }) => {

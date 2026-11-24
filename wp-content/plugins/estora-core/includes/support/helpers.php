@@ -12,6 +12,250 @@ use Estora\Core\Services\Settings;
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Current public language: "en" or "th".
+ *
+ * Priority: ?lang= → estora_lang cookie → browser Accept-Language → English.
+ */
+function estora_language(): string {
+	static $language = null;
+	if ( null !== $language ) {
+		return $language;
+	}
+
+	$candidate = isset( $_GET['lang'] ) ? sanitize_key( wp_unslash( $_GET['lang'] ) ) : '';
+	if ( ! in_array( $candidate, array( 'en', 'th' ), true ) ) {
+		$candidate = isset( $_COOKIE['estora_lang'] ) ? sanitize_key( wp_unslash( $_COOKIE['estora_lang'] ) ) : '';
+	}
+	if ( ! in_array( $candidate, array( 'en', 'th' ), true ) ) {
+		$accept   = strtolower( sanitize_text_field( wp_unslash( $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? '' ) ) );
+		$candidate = str_starts_with( $accept, 'th' ) ? 'th' : 'en';
+	}
+
+	$language = $candidate;
+	return $language;
+}
+
+/**
+ * Whether the public site is currently Thai.
+ */
+function estora_is_thai(): bool {
+	return 'th' === estora_language();
+}
+
+/**
+ * Inline bilingual string.
+ *
+ * @param string $en English.
+ * @param string $th Thai.
+ */
+function estora_text( string $en, string $th ): string {
+	return estora_is_thai() ? $th : $en;
+}
+
+/**
+ * Localised value from post meta, falling back to an English value.
+ *
+ * @param int    $post_id Post ID.
+ * @param string $key     Meta key without prefix, e.g. "title_th".
+ * @param string $fallback Fallback.
+ */
+function estora_localized_meta( int $post_id, string $key, string $fallback = '' ): string {
+	if ( estora_is_thai() ) {
+		$value = (string) get_post_meta( $post_id, '_estora_' . $key, true );
+		if ( '' !== $value ) {
+			return $value;
+		}
+	}
+	return $fallback;
+}
+
+/**
+ * Thai display names for places used across the public site.
+ *
+ * @param string $name English name.
+ */
+function estora_place_name( string $name ): string {
+	if ( ! estora_is_thai() ) {
+		return $name;
+	}
+	$map = array(
+		'Bangkok'              => 'กรุงเทพมหานคร',
+		'Chiang Mai'           => 'เชียงใหม่',
+		'Phuket'               => 'ภูเก็ต',
+		'Hua Hin'              => 'หัวหิน',
+		'Pattaya'              => 'พัทยา',
+		'Khon Kaen'            => 'ขอนแก่น',
+		'Prachuap Khiri Khan'  => 'ประจวบคีรีขันธ์',
+		'Chonburi'             => 'ชลบุรี',
+		'Suthep'               => 'สุเทพ',
+		'Chang Phueak'         => 'ช้างเผือก',
+		'Hai Ya'               => 'หายยา',
+		'Watthana'             => 'วัฒนา',
+		'Khlong Toei'          => 'คลองเตย',
+		'Huai Khwang'          => 'ห้วยขวาง',
+		'Sathon'               => 'สาทร',
+		'Kathu'                => 'กะทู้',
+		'Mueang Phuket'        => 'เมืองภูเก็ต',
+		'Nong Kae'             => 'หนองแก',
+		'Bang Lamung'          => 'บางละมุง',
+		'Nong Prue'            => 'หนองปรือ',
+		'Mueang Khon Kaen'     => 'เมืองขอนแก่น',
+		'Khlong Tan Nuea'      => 'คลองตันเหนือ',
+		'Khlong Tan'           => 'คลองตัน',
+		'Kamala'               => 'กมลา',
+		'Thung Wat Don'        => 'ทุ่งวัดดอน',
+		'Na Kluea'             => 'นาเกลือ',
+		'Nai Mueang'           => 'ในเมือง',
+		'Rawai'                => 'ราไวย์',
+	);
+	return $map[ $name ] ?? $name;
+}
+
+/**
+ * Thai property type label.
+ *
+ * @param string $slug     Type slug.
+ * @param string $fallback Fallback label.
+ */
+function estora_type_name( string $slug, string $fallback = '' ): string {
+	if ( ! estora_is_thai() ) {
+		return $fallback ?: ucfirst( $slug );
+	}
+	$map = array(
+		'house'      => 'บ้านเดี่ยว',
+		'condo'      => 'คอนโดมิเนียม',
+		'townhouse'  => 'ทาวน์เฮาส์',
+		'land'       => 'ที่ดิน',
+		'commercial' => 'อาคารพาณิชย์',
+	);
+	return $map[ $slug ] ?? ( $fallback ?: $slug );
+}
+
+/**
+ * Thai purpose label.
+ *
+ * @param string $purpose sale|rent.
+ */
+function estora_purpose_name( string $purpose ): string {
+	if ( ! estora_is_thai() ) {
+		return 'rent' === $purpose ? 'For rent' : 'For sale';
+	}
+	return 'rent' === $purpose ? 'ให้เช่า' : 'ขาย';
+}
+
+/**
+ * Thai availability label.
+ *
+ * @param string $status Status slug.
+ */
+function estora_availability_name( string $status ): string {
+	if ( ! estora_is_thai() ) {
+		$map = array(
+			'available'   => 'Available',
+			'reserved'    => 'Reserved',
+			'sold'        => 'Sold',
+			'rented'      => 'Rented',
+			'unavailable' => 'Unavailable',
+		);
+		return $map[ $status ] ?? ucfirst( $status );
+	}
+	$map = array(
+		'available'   => 'พร้อมขาย/ให้เช่า',
+		'reserved'    => 'จองแล้ว',
+		'sold'        => 'ขายแล้ว',
+		'rented'      => 'ให้เช่าแล้ว',
+		'unavailable' => 'ไม่พร้อม',
+	);
+	return $map[ $status ] ?? $status;
+}
+
+/**
+ * Thai amenity label for the known demo vocabulary.
+ *
+ * @param string $name English amenity.
+ */
+function estora_amenity_name( string $name ): string {
+	if ( ! estora_is_thai() ) {
+		return $name;
+	}
+	$map = array(
+		'Courtyard'          => 'คอร์ตยาร์ด',
+		'Private pool'       => 'สระว่ายน้ำส่วนตัว',
+		'Covered parking'    => 'ที่จอดรถมีหลังคา',
+		'Security'           => 'ระบบรักษาความปลอดภัย',
+		'Concierge'          => 'คอนเซียร์จ',
+		'Pool'               => 'สระว่ายน้ำ',
+		'Gym'                => 'ฟิตเนส',
+		'Sky lounge'         => 'สกายเลานจ์',
+		'Garden'             => 'สวน',
+		'Carport'            => 'ที่จอดรถ',
+		'Air conditioning'   => 'เครื่องปรับอากาศ',
+		'Pets considered'    => 'พิจารณาสัตว์เลี้ยง',
+		'Infinity pool'      => 'สระอินฟินิตี้',
+		'Sea view'           => 'วิวทะเล',
+		'Staff room'         => 'ห้องแม่บ้าน',
+		'Generator'          => 'เครื่องปั่นไฟสำรอง',
+		'Gated'              => 'รั้วรอบขอบชิด',
+		'Loading bay'        => 'พื้นที่โหลดสินค้า',
+		'Three-phase power'  => 'ไฟสามเฟส',
+		'Office mezzanine'   => 'ออฟฟิศชั้นลอย',
+		'24h access'         => 'เข้าได้ 24 ชั่วโมง',
+		'High ceilings'      => 'เพดานสูง',
+		'Balcony'            => 'ระเบียง',
+		'Fibre internet'     => 'อินเทอร์เน็ตไฟเบอร์',
+		'Furnished'          => 'พร้อมเฟอร์นิเจอร์',
+		'Chanote title'      => 'โฉนดที่ดิน',
+		'Road access'        => 'ติดถนน',
+		'Mountain view'      => 'วิวภูเขา',
+		'Private lift'       => 'ลิฟต์ส่วนตัว',
+		'Roof terrace'       => 'ดาดฟ้า',
+		'Smart entry'        => 'ระบบเข้าออกอัจฉริยะ',
+		'Beach access'       => 'ติดชายหาด',
+		'Co-working room'    => 'ห้องโคเวิร์กกิ้ง',
+	);
+	return $map[ $name ] ?? $name;
+}
+
+/**
+ * Localised company setting for the public site.
+ *
+ * @param string $key     Setting key.
+ * @param string $default Default.
+ */
+function estora_company_text( string $key, string $default = '' ): string {
+	$value = function_exists( 'estora_company' ) ? estora_company( $key, $default ) : $default;
+	if ( ! estora_is_thai() ) {
+		return $value;
+	}
+	$map = array(
+		'company_tagline'   => 'อสังหาริมทรัพย์ที่ดูแลอย่างมืออาชีพ',
+		'company_address'   => '14 ถนนนิมมานเหมินท์ ตำบลสุเทพ อำเภอเมือง จังหวัดเชียงใหม่ 50200',
+		'company_hours_text' => 'วันจันทร์–วันเสาร์ 09:00–18:00 น.',
+	);
+	return $map[ $key ] ?? $value;
+}
+
+/**
+ * Thai label for seeded staff titles.
+ *
+ * @param string $title English title.
+ */
+function estora_role_title( string $title ): string {
+	if ( ! estora_is_thai() ) {
+		return $title;
+	}
+	$map = array(
+		'Senior sales agent'     => 'ตัวแทนขายอาวุโส',
+		'Sales agent'            => 'ตัวแทนขาย',
+		'Sales manager'          => 'ผู้จัดการฝ่ายขาย',
+		'Property manager'       => 'ผู้จัดการทรัพย์สิน',
+		'Marketing'              => 'การตลาด',
+		'Operations administrator' => 'ผู้ดูแลปฏิบัติการ',
+	);
+	return $map[ $title ] ?? $title;
+}
+
+/**
  * Custom table name.
  *
  * @param string $name Table suffix, e.g. "leads".

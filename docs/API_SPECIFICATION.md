@@ -29,6 +29,11 @@ Interactive reference: `/wp-json/estora/v1` (route index) and `docs/API_SPECIFIC
 **Pagination** `page` (default 1), `per_page` (default 20, max 100). Response `meta.pagination`
 `{page, per_page, total, total_pages}` and headers `X-WP-Total`, `X-WP-TotalPages`.
 
+**Language** Public reads honour `?lang=th` / `?lang=en` and the `estora_lang` cookie. Property
+titles, descriptions, addresses, location names, amenities and purpose/type/availability labels
+are returned in the selected language. Admin, login and `/estora-admin/` requests use the site
+locale. External integrations should pass `?lang=en` for stable English machine-readable output.
+
 **Dates** `YYYY-MM-DD`; times `HH:MM` (24h, site timezone); timestamps ISO-8601 UTC.
 
 ---

@@ -19,7 +19,7 @@ the notification and the report.
 
 | # | Objective | Evidence of completion |
 | --- | --- | --- |
-| O1 | Public website with real search | `archive-property.php` builds `WP_Query` from sanitised GET params; empty state renders when no rows |
+| O1 | Public website with real search and bilingual content | `archive-property.php` builds `WP_Query` from sanitised GET params; photo-led home; English/Thai switch; empty state renders when no rows |
 | O2 | Inventory management | CPT + meta + status machine + media; admin screens and REST |
 | O3 | CRM | `wp_estora_leads` lifecycle, assignment history, notes, dedupe, scoped reads |
 | O4 | Scheduling | `wp_estora_appointments`, server-side conflict detection, calendar views |

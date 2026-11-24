@@ -1,5 +1,30 @@
 # ESTORA — Release Notes
 
+## v1.2.0 — Public site, real photography and Thai/English
+
+Release date: 2026-11-24
+
+The public site is rebuilt around real property photography, a new editorial design system and a
+site-wide bilingual layer. Back-office routes and behaviour are unchanged.
+
+- **New design system.** Forest/paper/brass palette, Fraunces display, Noto Serif Thai, IBM Plex
+  Sans Thai, hairline rules and restrained 2–3px radii.
+- **Photo-led home.** Full-bleed hero, labelled search panel, featured collection, six destination
+  cards, live market pulse, working-method split, latest listings, testimonials, journal and a
+  photo-backed closing CTA.
+- **English / Thai switch.** Header, mobile navigation and footer. Choice persists for 30 days;
+  browser Thai is detected automatically. UI, pages, properties, articles, testimonials,
+  destinations, districts, amenities and staff titles are localised.
+- **21 demo listings** across Bangkok, Chiang Mai, Phuket, Hua Hin, Pattaya and Khon Kaen, with
+  Thai titles, descriptions, addresses and SEO metadata, plus real featured images and galleries.
+- **Responsive rebuild.** Hero/search, destination grid, property grids, detail sidebar, forms,
+  footer and compare table were checked from 1440 down to 320px.
+- **Fixes.** Amenities no longer save as zero; footer/filter headings no longer inherit the huge
+  body heading scale; comparison table scrolls inside its wrapper; mixed-language compare and
+  favourite states are translated; contact duplicate copy and about-page character corruption
+  removed.
+- **Screenshot set:** 39 images, including Thai home, Thai archive and Thai detail.
+
 ## v1.1.1 — Homepage art direction
 
 Release date: 2026-11-24

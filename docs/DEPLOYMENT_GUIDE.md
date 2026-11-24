@@ -25,6 +25,11 @@ If you deploy over an existing install, load any page once (or run
 `docker compose run --rm cli wp rewrite flush`) so the `/estora-admin/` rules are written. Business
 staff are redirected away from `/wp-admin/` automatically; Super Admins are not.
 
+The public site is bilingual. Thai browsers are detected automatically; `?lang=th` / `?lang=en`
+switches immediately and stores the choice for 30 days. Demo photographs are imported into the
+media library by `wp estora seed --force` and credited in the footer; production installs should
+replace them with the client's own photography through the normal media editor.
+
 Idempotent re-run: `bash scripts/bootstrap.sh` (Windows: `scripts\bootstrap.ps1`) — it skips existing installs, re-runs pending
 migrations, and does not duplicate seeds.
 

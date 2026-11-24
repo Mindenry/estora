@@ -93,6 +93,20 @@ Single source of truth. `DONE` means implemented and verified with executed evid
   notification block, logout target, bar fills, app skip link, agent role scoping.
 - Evidence: 24 HTTP tests, 16 E2E journeys, 33 screenshots, `docs/ADMIN_EXPERIENCE.md`.
 
+## Phase 13 — Public site, photography and bilingual (v1.2.0) — DONE
+
+- Public site rebuilt around a photo-led editorial system with local Fraunces / Noto Serif Thai /
+  IBM Plex Sans Thai fonts.
+- English/Thai switcher in header, mobile menu and footer with cookie/browser detection; UI,
+  content, location, amenity and staff labels localised.
+- Demo catalogue expanded to 21 properties across Bangkok, Chiang Mai, Phuket, Hua Hin, Pattaya
+  and Khon Kaen, each with a featured image, gallery, Thai metadata and real co-ordinates.
+- New market pulse, destination grid and photo CTA; public cards, archive, detail, about, contact,
+  news, favourites and compare restyled.
+- Fixed amenity meta being sanitised to zero, footer/filter heading scale, short-viewport hero
+  collisions, compare overflow and mixed-language JS states.
+- Evidence: 38 screenshots, 16 E2E journeys, HTTP/integration suites green, `docs/PUBLIC_SITE.md`.
+
 ## Post-1.0 backlog
 
 - Denormalised search index for 100k+ listings; Redis object cache; SMS channel; saved searches
@@ -111,3 +125,4 @@ Single source of truth. `DONE` means implemented and verified with executed evid
 | 2026-11-24 | Theme-switch data check | leads 200, properties 200, tables true |
 | 2026-11-24 | v1.1.0 back-office app, roles, dashboard and modules | `/estora-admin/`, 24 HTTP tests, 16 E2E, 33 screenshots |
 | 2026-11-24 | v1.1.0 lint, unit, integration, app and browser gates | 99 files / 37 unit / 12 integration / 24 HTTP / 16 E2E |
+| 2026-11-24 | v1.2.0 public redesign, photography and Thai/English | 21 listings / 6 destinations, 38 screenshots, 101 PHP files |

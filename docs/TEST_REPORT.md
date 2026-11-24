@@ -10,13 +10,13 @@ seeded demo database. Nothing here is asserted from generated code alone.
 
 | Gate | Command | Result |
 | --- | --- | --- |
-| PHP syntax | `bash scripts/lint.sh` (inner script in cli container) | **99 files, 0 syntax errors** |
+| PHP syntax | `bash scripts/lint.sh` (inner script in cli container) | **101 files, 0 syntax errors** |
 | Coding standards | PHPCS WordPress standard (`--warning-severity=0`) | **0 errors** |
 | Unit | `phpunit -c phpunit.xml` | **37 tests, 142 assertions, 0 failures** |
 | WordPress integration | `wp eval-file tests/wp/integration.php` | **12 check groups passed** |
 | HTTP / REST | `node --test --test-concurrency=1 tests/http/` | **24 tests passed** (15 API + 9 app) |
-| Browser E2E | `npx playwright test -c tests/e2e/playwright.config.js` | **16 journeys passed** |
-| Screenshots | `node scripts/screenshots.mjs` | **34 captures**, app routes with 0 console errors |
+| Browser E2E | `npx playwright test -c tests/e2e/playwright.config.js` | **17 journeys passed** |
+| Screenshots | `node scripts/screenshots.mjs` | **39 captures**, app routes with 0 console errors |
 | Theme independence | activate Twenty Twenty-Four → API check → reactivate | leads 200, properties 200, all tables present |
 
 ## Unit suite (PHPUnit)
@@ -98,53 +98,54 @@ Against `http://localhost:8080` with cookie sessions, REST nonces and real MySQL
 
 ## Browser journeys (Playwright, Chromium, 1 worker)
 
-Public (4):
+Public (5):
 
 1. Homepage → purpose filter → price sort → property detail (specs, gallery).
 2. Favorite a property, see it on the favorites page; compare two; remove one from the table.
 3. Submit an inquiry (`LD-` reference) and a viewing request (`AP-` reference).
-4. About, contact, news, privacy, terms, 404 return < 500 with a visible `h1`; no page errors.
+4. Thai and English switch persists across navigation; Thai archive and cards render Thai data.
+5. About, contact, news, privacy, terms, 404 return < 500 with a visible `h1`; no page errors.
 
 Back office (4):
 
-5. Admin dashboard KPIs, charts, notifications.
-6. Lead table → drawer → add note → close → kanban.
-7. Appointment month/week/day calendar + list.
-8. Inventory, reports (export URL), settings, audit screens.
+6. Admin dashboard KPIs, charts, notifications.
+7. Lead table → drawer → add note → close → kanban.
+8. Appointment month/week/day calendar + list.
+9. Inventory, reports (export URL), settings, audit screens.
 
 Application (5):
 
-9. Six role accounts each land on their own dashboard with the right role label and navigation.
-10. Sidebar navigation to leads, global search with `q`, pipeline board, unknown route 404.
-11. Staff viewing dialog: load properties, pick a slot, submit, dialog closes.
-12. Dashboard period filter redraws data; "Add lead" quick action opens the lead dialog.
-13. 390px viewport: no horizontal overflow, drawer opens/closes, profile menu logout returns to login.
+10. Six role accounts each land on their own dashboard with the right role label and navigation.
+11. Sidebar navigation to leads, global search with `q`, pipeline board, unknown route 404.
+12. Staff viewing dialog: load properties, pick a slot, submit, dialog closes.
+13. Dashboard period filter redraws data; "Add lead" quick action opens the lead dialog.
+14. 390px viewport: no horizontal overflow, drawer opens/closes, profile menu logout returns to login.
 
 Responsive/accessibility (3):
 
-14. Mobile public pages and navigation without horizontal scroll.
-15. Mobile admin dashboard without horizontal scroll.
-16. Images have `alt`; visible form controls have labels; keyboard focus reaches an element.
+15. Mobile public pages and navigation without horizontal scroll, including a 320px pass.
+16. Mobile admin dashboard without horizontal scroll.
+17. Images have `alt`; visible form controls have labels; keyboard focus reaches an element.
 
 ```
-16 passed (14.5s)
+17 passed (16.8s)
 ```
 
 ## Screenshot pass
 
-`node scripts/screenshots.mjs` after a forced demo seed captured 34 images: public home (desktop,
-full, mobile), properties, detail (desktop/full), favorites, compare, about, login, six role
-dashboards, overview via modules (properties, leads, kanban, appointments, agents, locations,
-campaigns, content, reports, settings, users, activity, notifications), lead detail, native property
-editor, mobile dashboard and mobile navigation.
+`node scripts/screenshots.mjs` after a forced demo seed captured 39 images: public home (English
+desktop/full/mobile and Thai desktop/full), properties (English/Thai), detail (English/full/Thai),
+favorites, compare, about, login, six role dashboards, overview via modules (properties, leads,
+kanban, appointments, agents, locations, campaigns, content, reports, settings, users, activity,
+notifications), lead detail, native property editor, mobile dashboard and mobile navigation.
 
-Inspection findings fixed during this pass: empty chart fills, invisible button labels, visible
-public-theme skip link in the app, duplicate hidden notification markup, and a stale version label.
-The public homepage was then art-directed in a separate pass: blank bands under card and location
-artwork, dark-surface text contrast in the province band and closing CTA, and hero/search collisions
-at 720–900px viewport heights were fixed; the homepage was checked at 1440, 1280, 1024, 768 and
-390px. App routes produced no console errors; the only browser console output is WordPress core's
-`Permissions-Policy: unload` warning inside the native post editor.
+Inspection findings fixed during these passes: empty chart fills, invisible button labels, a leaked
+public skip link, duplicate notification markup, stale version labels, blank bands under listing
+photography, dark-surface heading contrast, short-viewport hero collisions, and comparison-table
+overflow. The v1.2.0 public pass added real photography, 21 listings across six Thai destinations,
+a market pulse and an English/Thai language layer. Layouts were checked at 1440, 1366, 1280, 1024,
+768, 420, 390, 360 and 320px. App routes produced no console errors; the only browser console output
+is WordPress core's `Permissions-Policy: unload` warning inside the native post editor.
 
 ## Security checks executed
 

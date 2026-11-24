@@ -17,7 +17,8 @@ report.
 
 | Area | Delivered |
 | --- | --- |
-| Public site | Home, property archive with server-side filters/sort/pagination, property detail with gallery, inquiry and viewing forms, favorites, 3-way comparison, about, contact, news, privacy, terms, 404, campaign-ready landing template |
+| Public site | Photo-led editorial home with 21 demo listings across 6 Thai destinations, hero search, destination discovery, market pulse, property archive with server-side filters/sort/pagination, detail gallery, inquiry and viewing forms, favorites, 3-way comparison, about, contact, news, privacy, terms, 404 |
+| Bilingual | English / Thai switcher in header, mobile menu and footer; cookie + browser detection; runtime UI strings, localised property/page/article metadata, Thai names, titles and amenities |
 | Inventory | `property` CPT, 3 taxonomies, 25+ validated fields, gallery, publication and availability state machines, duplicate, publish guard, admin inventory table, REST CRUD |
 | CRM | Lead capture from inquiries, appointments, manual entry and API; dedupe; assignment history; notes; pipeline with enforced transitions; follow-ups; agent scoping; kanban; analytics from SQL |
 | Scheduling | 45-minute slot grid in business hours, lunch exclusion, past-date guard, agent and property conflict checks, reschedule, unique active-slot index, month/week/day calendar |
@@ -28,17 +29,17 @@ report.
 | SEO | Unique meta/OG, canonical, `RealEstateListing` JSON-LD, core sitemap integration, campaign UTM attribution |
 | Ops | Docker Compose (WordPress, MySQL 8, WP-CLI, phpMyAdmin), migrations, idempotent seed, backup/restore, CI, screenshots |
 
-Screens: [home](docs/screenshots/home.png) · [properties](docs/screenshots/properties.png) ·
-[detail](docs/screenshots/property-detail.png) · [compare](docs/screenshots/compare.png) ·
-[login](docs/screenshots/login.png) · [dashboard](docs/screenshots/app-overview.png) ·
-[kanban](docs/screenshots/app-kanban.png) · [calendar](docs/screenshots/app-appointments.png) ·
-[reports](docs/screenshots/app-reports.png) · [mobile](docs/screenshots/app-mobile-dashboard.png) ·
-[all screenshots](docs/screenshots)
+Screens: [home](docs/screenshots/home.png) · [Thai home](docs/screenshots/home-th.png) ·
+[properties](docs/screenshots/properties.png) · [detail](docs/screenshots/property-detail.png) ·
+[compare](docs/screenshots/compare.png) · [login](docs/screenshots/login.png) ·
+[dashboard](docs/screenshots/app-overview.png) · [kanban](docs/screenshots/app-kanban.png) ·
+[calendar](docs/screenshots/app-appointments.png) · [reports](docs/screenshots/app-reports.png) ·
+[mobile](docs/screenshots/app-mobile-dashboard.png) · [all screenshots](docs/screenshots)
 
 ## Stack
 
 **Backend:** PHP 8.3 · WordPress 6.7 · MySQL 8.0 · Composer  
-**Frontend:** HTML5 · CSS3 (custom design system + Bootstrap 5) · vanilla ES2020 · Fetch API  
+**Frontend:** HTML5 · CSS3 (custom design system + Bootstrap 5) · vanilla ES2020 · Fetch API · local Fraunces / IBM Plex Sans Thai / Noto Serif Thai
 **Testing:** PHPUnit 10 · WordPress-bootstrapped integration · Node test runner (HTTP) · Playwright  
 **Ops:** Docker Compose · WP-CLI · GitHub Actions
 
@@ -135,7 +136,7 @@ npx playwright test -c tests/e2e/playwright.config.js
 ```
 
 Current results are recorded in [docs/TEST_REPORT.md](docs/TEST_REPORT.md): 37 unit tests,
-12 WordPress integration groups, 24 HTTP tests and 16 browser journeys pass. HTTP suites run with
+12 WordPress integration groups, 24 HTTP tests and 17 browser journeys pass. HTTP suites run with
 `--test-concurrency=1` because they share the seeded accounts and nonce state.
 
 ## API
@@ -162,6 +163,7 @@ and [docs/TEST_REPORT.md](docs/TEST_REPORT.md).
 ## Documentation
 
 - [Project overview](docs/PROJECT_OVERVIEW.md)
+- [Public site & bilingual design](docs/PUBLIC_SITE.md)
 - [Back-office experience (v1.1.0)](docs/ADMIN_EXPERIENCE.md)
 - [Requirements](docs/REQUIREMENTS.md)
 - [System architecture](docs/SYSTEM_ARCHITECTURE.md)
@@ -176,9 +178,10 @@ and [docs/TEST_REPORT.md](docs/TEST_REPORT.md).
 
 ## Limitations (honest)
 
-- Photography is intentionally local: six architectural artboards, rasterised to PNG, are used for
-  seeded listings and as fallbacks. Real listings should upload their own media; the upload path is
-  implemented and tested.
+- Demo photography is sourced from Unsplash and credited in the footer. It is stand-in imagery for a
+  portfolio demo, not the client's own property photography. Real listings can upload their own media;
+  the upload path is implemented and tested. Six architectural art plates remain as fallbacks when a
+  property has no featured image.
 - Email uses `wp_mail`; no SMTP provider is bundled. Failures are written to
   `wp-content/uploads/estora-mail.log` and surfaced, never hidden.
 - One office, one currency (THB), no payments, SMS, MLS syndication or native apps.

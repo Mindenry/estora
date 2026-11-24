@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ESTORA_THEME_VERSION', '1.1.1' );
+define( 'ESTORA_THEME_VERSION', '1.2.0' );
 
 /**
  * Asset URL with a filemtime cache break.
@@ -90,6 +90,38 @@ function estora_theme_assets(): void {
 			'noSlots'      => __( 'No slots available on this day. Choose another date.', 'estora-theme' ),
 			'closed'       => __( 'The office is closed on this day.', 'estora-theme' ),
 			'favoritesEmpty' => __( 'No saved properties yet.', 'estora-theme' ),
+			'compareAdd'   => estora_text( 'Compare', 'เปรียบเทียบ' ),
+			'compareAdded' => estora_text( 'Added', 'เพิ่มแล้ว' ),
+			'compareAddedToast' => estora_text( 'Added to comparison', 'เพิ่มในรายการเปรียบเทียบแล้ว' ),
+			'compareRemovedToast' => estora_text( 'Removed from comparison', 'นำออกจากรายการเปรียบเทียบแล้ว' ),
+			'compareEmptyTitle' => estora_text( 'No properties selected', 'ยังไม่ได้เลือกทรัพย์' ),
+			'compareEmptyBody' => estora_text( 'Add up to three properties from any listing to compare price, size and specification.', 'เลือกทรัพย์ได้สูงสุดสามรายการจากหน้าใดก็ได้ เพื่อเปรียบเทียบราคา ขนาด และข้อมูลจำเพาะ' ),
+			'compareUnavailable' => estora_text( 'Comparison unavailable', 'เปรียบเทียบไม่ได้ในขณะนี้' ),
+			'compareTryAgain' => estora_text( 'Please try again.', 'โปรดลองอีกครั้ง' ),
+			'browseProperties' => estora_text( 'Browse properties', 'ดูทรัพย์ทั้งหมด' ),
+			'attribute'     => estora_text( 'Attribute', 'รายละเอียด' ),
+			'price'         => estora_text( 'Price', 'ราคา' ),
+			'purpose'       => estora_text( 'Purpose', 'วัตถุประสงค์' ),
+			'type'          => estora_text( 'Type', 'ประเภท' ),
+			'location'      => estora_text( 'Location', 'ทำเล' ),
+			'landArea'      => estora_text( 'Land area', 'พื้นที่ดิน' ),
+			'usableArea'    => estora_text( 'Usable area', 'พื้นที่ใช้สอย' ),
+			'bedrooms'      => estora_text( 'Bedrooms', 'ห้องนอน' ),
+			'bathrooms'     => estora_text( 'Bathrooms', 'ห้องน้ำ' ),
+			'parking'       => estora_text( 'Parking', 'ที่จอดรถ' ),
+			'availability'  => estora_text( 'Availability', 'สถานะ' ),
+			'amenities'     => estora_text( 'Amenities', 'สิ่งอำนวยความสะดวก' ),
+			'remove'        => estora_text( 'Remove', 'นำออก' ),
+			'perMonth'      => estora_text( ' / month', ' / เดือน' ),
+			'favoritesEmptyBody' => estora_text( 'Use the heart on any listing to keep it here.', 'กดรูปหัวใจบนประกาศใดก็ได้เพื่อเก็บไว้ที่นี่' ),
+			'loadingTimes'  => estora_text( 'Loading available times.', 'กำลังโหลดเวลาว่าง' ),
+			'chooseTime'    => estora_text( 'Choose an available time.', 'เลือกเวลาที่ว่าง' ),
+			'viewingRequested' => estora_text( 'Viewing requested', 'ส่งคำขอนัดชมแล้ว' ),
+			'yourReference' => estora_text( 'Your reference is', 'รหัสอ้างอิงของคุณคือ' ),
+			'close'         => estora_text( 'Close', 'ปิด' ),
+			'copyFailed'    => estora_text( 'Copy failed', 'คัดลอกไม่สำเร็จ' ),
+			'saveAria'      => estora_text( 'Save property', 'บันทึกทรัพย์' ),
+			'removeAria'    => estora_text( 'Remove from favourites', 'นำออกจากรายการโปรด' ),
 		),
 	);
 	wp_localize_script( 'estora-main', 'estoraData', $settings );
@@ -152,6 +184,7 @@ function estora_company( string $key, string $default = '' ): string {
 	return function_exists( 'estora_setting' ) ? (string) estora_setting( $key, $default ) : $default;
 }
 
+require get_template_directory() . '/inc/i18n.php';
 require get_template_directory() . '/inc/template-tags.php';
 
 /**

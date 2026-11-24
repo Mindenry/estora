@@ -71,6 +71,23 @@ await shot(publicPage, 'about');
 await publicPage.setViewportSize({ width: 390, height: 844 });
 await publicPage.goto(BASE + '/', { waitUntil: 'networkidle' });
 await shot(publicPage, 'home-mobile');
+await publicPage.click('[data-nav-toggle]');
+await shot(publicPage, 'home-mobile-nav');
+await publicPage.click('[data-nav-toggle]');
+
+/* Thai edition (separate context so the language cookie is isolated) */
+const thaiContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+const thaiPage = watch(await thaiContext.newPage());
+await thaiPage.goto(BASE + '/?lang=th', { waitUntil: 'networkidle' });
+await shot(thaiPage, 'home-th');
+await loadLazy(thaiPage);
+await shot(thaiPage, 'home-th-full', true);
+await thaiPage.goto(BASE + '/properties/?lang=th', { waitUntil: 'networkidle' });
+await shot(thaiPage, 'properties-th');
+await thaiPage.locator('.estora-card__title a').first().click();
+await thaiPage.waitForLoadState('networkidle');
+await shot(thaiPage, 'property-detail-th');
+await thaiContext.close();
 
 /* Login screen (fresh context) */
 const loginContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });

@@ -4,9 +4,11 @@ Design system source of truth: `/DESIGN.md`. This document covers application ru
 
 ## 1. Layout
 
-**Public.** Container 1240px, gutter `clamp(20px,4vw,48px)`. Vertical rhythm in multiples of 8;
-section padding `clamp(56px,8vw,112px)`. Header: 72px, hairline bottom, transparent over hero,
-solid on scroll (`.is-stuck`). Footer: charcoal, 4 columns, 1px dividers.
+**Public.** Container 1280px, gutter `clamp(20px,4.4vw,56px)`. Vertical rhythm in multiples of 8;
+section padding `clamp(64px,8vw,112px)`. Header: 76px, paper with blur, hairline bottom. Hero:
+full-bleed photograph with forest overlay and a white search panel. Footer: deep forest, four
+columns, 1px dividers. Type: Fraunces + Noto Serif Thai display, IBM Plex Sans Thai UI; body 16px /
+1.65, display line-height 1.08.
 
 **Admin.** Fixed 248px rail + fluid content, max 1560px. Sticky page header with title and actions.
 Content padding 28px. Tables full-width inside a bordered surface; forms max 760px unless a
@@ -96,13 +98,18 @@ collapse 4 → 2 → 2 and quick actions 4 → 2 → 1. No page-level horizontal
 Sentence case, no exclamation marks, no marketing adjectives in the back office. Errors say what
 happened and what to do ("That time is already booked. Choose another slot."). Empty states name
 the next action. Numbers use thousands separators; currency `฿` with no decimals for whole baht.
+The public site is fully bilingual; every new user-facing string must exist in both English and
+Thai, and Thai copy should read as native copy, not a literal translation.
 
 ## 9. Screenshot set (docs/screenshots)
 
-`login.png`, `home.png`, `properties.png`, `property-detail.png`, `compare.png`,
-`role-admin.png`, `role-operations.png`, `role-manager.png`, `role-agent.png`,
-`role-property.png`, `role-marketing.png`, `app-overview.png`, `app-properties.png`,
-`app-leads.png`, `app-kanban.png`, `app-appointments.png`, `app-agents.png`,
-`app-reports.png`, `app-settings.png`, `app-lead-detail.png`, `app-property-editor.png`,
+`login.png`, `home.png`, `home-th.png`, `home-full.png`, `home-th-full.png`, `home-mobile.png`,
+`home-mobile-nav.png`, `properties.png`, `properties-th.png`, `property-detail.png`,
+`property-detail-th.png`,
+`property-detail-full.png`, `compare.png`, `favorites.png`, `about.png`, `role-admin.png`,
+`role-operations.png`, `role-manager.png`, `role-agent.png`, `role-property.png`,
+`role-marketing.png`, `app-overview.png`, `app-properties.png`, `app-leads.png`,
+`app-kanban.png`, `app-appointments.png`, `app-agents.png`, `app-reports.png`,
+`app-settings.png`, `app-lead-detail.png`, `app-property-editor.png`,
 `app-mobile-dashboard.png`, `app-mobile-nav.png`.
 Captured by `scripts/screenshots.mjs` at 1440×1000 and 390×844 (mobile variants suffixed `-mobile`).

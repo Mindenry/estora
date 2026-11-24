@@ -124,7 +124,7 @@ function estora_search_form( array $args = array() ): void {
 			<select id="estora-type" name="type">
 				<option value=""><?php esc_html_e( 'Any type', 'estora-theme' ); ?></option>
 				<?php foreach ( (array) $options['types'] as $term ) : ?>
-					<option value="<?php echo esc_attr( $term['slug'] ); ?>" <?php selected( $type, $term['slug'] ); ?>><?php echo esc_html( $term['name'] ); ?></option>
+					<option value="<?php echo esc_attr( $term['slug'] ); ?>" <?php selected( $type, $term['slug'] ); ?>><?php echo esc_html( estora_type_name( (string) $term['slug'], (string) $term['name'] ) ); ?></option>
 				<?php endforeach; ?>
 			</select>
 		</div>
@@ -134,7 +134,7 @@ function estora_search_form( array $args = array() ): void {
 			<select id="estora-location" name="location">
 				<option value=""><?php esc_html_e( 'Anywhere', 'estora-theme' ); ?></option>
 				<?php foreach ( (array) $options['locations'] as $term ) : ?>
-					<option value="<?php echo esc_attr( $term['slug'] ); ?>" <?php selected( $location, $term['slug'] ); ?>><?php echo esc_html( $term['name'] ); ?></option>
+					<option value="<?php echo esc_attr( $term['slug'] ); ?>" <?php selected( $location, $term['slug'] ); ?>><?php echo esc_html( ( ! empty( $term['parent'] ) ? '— ' : '' ) . estora_place_name( (string) $term['name'] ) ); ?></option>
 				<?php endforeach; ?>
 			</select>
 		</div>
@@ -196,7 +196,7 @@ function estora_property_card( array $property, string $context = 'grid' ): void
 				height="<?php echo esc_attr( (string) ( $property['image']['height'] ?? 1000 ) ); ?>"
 				alt="<?php echo esc_attr( $property['image']['alt'] ?: ( $property['title'] ?? '' ) ); ?>"
 				loading="lazy" decoding="async">
-			<span class="estora-chip estora-chip--<?php echo esc_attr( $purpose ); ?>"><?php echo esc_html( 'rent' === $purpose ? __( 'For rent', 'estora-theme' ) : __( 'For sale', 'estora-theme' ) ); ?></span>
+			<span class="estora-chip estora-chip--<?php echo esc_attr( $purpose ); ?>"><?php echo esc_html( estora_purpose_name( (string) $purpose ) ); ?></span>
 			<?php if ( $is_sold ) : ?>
 				<span class="estora-chip estora-chip--muted"><?php echo esc_html( $property['availability_label'] ?? '' ); ?></span>
 			<?php endif; ?>
@@ -359,7 +359,7 @@ function estora_agent_card( array $agent ): void {
 		<div>
 			<p class="estora-eyebrow"><?php esc_html_e( 'Your agent', 'estora-theme' ); ?></p>
 			<h3><?php echo esc_html( $agent['name'] ?? '' ); ?></h3>
-			<p class="estora-muted"><?php echo esc_html( $agent['title'] ?? '' ); ?></p>
+			<p class="estora-muted"><?php echo esc_html( estora_role_title( (string) ( $agent['title'] ?? '' ) ) ); ?></p>
 			<?php if ( ! empty( $agent['phone'] ) ) : ?>
 				<a class="estora-textlink" href="<?php echo esc_url( 'tel:' . preg_replace( '/[^0-9+]/', '', $agent['phone'] ) ); ?>"><?php echo estora_icon( 'phone', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?> <?php echo esc_html( $agent['phone'] ); ?></a>
 			<?php endif; ?>

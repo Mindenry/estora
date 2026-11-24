@@ -246,6 +246,9 @@ final class Seeder {
 		$chiangmai = $this->term( 'property_location', 'Chiang Mai', 'chiang-mai' );
 		$bangkok   = $this->term( 'property_location', 'Bangkok', 'bangkok' );
 		$phuket    = $this->term( 'property_location', 'Phuket', 'phuket' );
+		$huahin    = $this->term( 'property_location', 'Hua Hin', 'hua-hin' );
+		$pattaya   = $this->term( 'property_location', 'Pattaya', 'pattaya' );
+		$khonkaen  = $this->term( 'property_location', 'Khon Kaen', 'khon-kaen' );
 
 		$children = array(
 			array( 'Suthep', 'suthep', $chiangmai ),
@@ -253,7 +256,15 @@ final class Seeder {
 			array( 'Hai Ya', 'hai-ya', $chiangmai ),
 			array( 'Watthana', 'watthana', $bangkok ),
 			array( 'Khlong Toei', 'khlong-toei', $bangkok ),
+			array( 'Huai Khwang', 'huai-khwang', $bangkok ),
+			array( 'Sathon', 'sathon', $bangkok ),
 			array( 'Kathu', 'kathu', $phuket ),
+			array( 'Mueang Phuket', 'mueang-phuket', $phuket ),
+			array( 'Hua Hin', 'hua-hin-district', $huahin ),
+			array( 'Nong Kae', 'nong-kae', $huahin ),
+			array( 'Bang Lamung', 'bang-lamung', $pattaya ),
+			array( 'Nong Prue', 'nong-prue', $pattaya ),
+			array( 'Mueang Khon Kaen', 'mueang-khon-kaen', $khonkaen ),
 		);
 		foreach ( $children as $child ) {
 			$this->term( 'property_location', $child[0], $child[1], (int) $child[2] );
@@ -359,6 +370,38 @@ final class Seeder {
 			update_option( 'show_on_front', 'page' );
 			update_option( 'page_on_front', $home );
 			update_option( 'page_for_posts', $news );
+		}
+
+		$thai_pages = array(
+			'home'     => array( 'หน้าแรก', '' ),
+			'news'     => array( 'ข่าวสาร', '' ),
+			'about'    => array(
+				'เกี่ยวกับ ESTORA',
+				'<h2>บริษัทนายหน้าที่สร้างรอบแฟ้มทรัพย์ ไม่ใช่แค่ประกาศขาย</h2><p>ESTORA ดูแลเจ้าของและผู้ซื้อในกรุงเทพฯ เชียงใหม่ ภูเก็ต หัวหิน พัทยา และขอนแก่น เรารวมข้อมูลทรัพย์ ลูกค้า และปฏิทินนัดชมไว้ในระบบเดียว ทีมงานจึงเห็นประวัติทั้งหมดก่อนรับสายคุณ</p><h3>สิ่งที่เราทำ</h3><p>ขายและให้เช่าระยะยาวสำหรับบ้านเดี่ยว ทาวน์เฮาส์ และคอนโดมิเนียมทุกทรัพย์ได้รับการตรวจโดยทีมทรัพย์สินก่อนเผยแพร่ และทุกข้อเสนอถูกบันทึกเป็นลายลักษณ์อักษร</p><h3>วิธีทำงาน</h3><p>ตัวแทนหนึ่งคนดูแลแฟ้มของคุณตั้งแต่ชมหลังแรกจนถึงวันโอน สถานะ ราคา และความพร้อมอัปเดตทันทีที่เปลี่ยนแปลง เว็บไซต์จึงสะท้อนข้อมูลชุดเดียวกับที่สำนักงานใช้</p>',
+			),
+			'contact'  => array(
+				'ติดต่อเรา',
+				'<p>บอกเราว่าคุณกำลังมองหาอะไร เราตอบกลับภายในหนึ่งวันทำการ วันจันทร์ถึงวันเสาร์</p>',
+			),
+			'favorites' => array( 'รายการโปรด', '' ),
+			'compare'   => array( 'เปรียบเทียบ', '' ),
+			'privacy'   => array(
+				'นโยบายความเป็นส่วนตัว',
+				'<h2>ข้อมูลที่เราเก็บ</h2><p>เมื่อคุณส่งคำถามหรือขอนัดชม เราจะเก็บชื่อ ข้อมูลติดต่อ ทรัพย์ที่สนใจ และข้อความของคุณ เพื่อตอบกลับและเก็บประวัติการสนทนา</p><h2>ระยะเวลาเก็บข้อมูล</h2><p>ข้อมูลลีดจะถูกเก็บเท่าที่จำเป็นต่อการให้บริการและหน้าที่ตามกฎหมาย คุณสามารถขอให้ลบหรือไม่ระบุตัวตนได้เมื่อพ้นระยะเวลา</p><h2>สิทธิของคุณ</h2><p>ติดต่อสำนักงานเพื่อขอเข้าถึง แก้ไข หรือลบข้อมูลของคุณ เราไม่ขายข้อมูลส่วนบุคคล</p>',
+			),
+			'terms'     => array(
+				'ข้อกำหนดการใช้งาน',
+				'<h2>ข้อมูลทรัพย์</h2><p>ข้อมูลทรัพย์มาจากเจ้าของและเชื่อว่าถูกต้อง แต่ไม่ใช่การรับประกัน ราคา สถานะ และพื้นที่อาจเปลี่ยนแปลงได้ โปรดยืนยันรายละเอียดกับสำนักงานก่อนตัดสินใจ</p><h2>การนัดชม</h2><p>การขอนัดชมขึ้นอยู่กับการอนุมัติของเจ้าของและตารางของตัวแทน การขอไม่ถือเป็นการยืนยันจนกว่าสำนักงานจะยืนยัน</p><h2>การใช้เว็บไซต์</h2><p>ห้ามพยายามเข้าถึงข้อมูลส่วนตัว รบกวนระบบ หรือส่งข้อมูลเท็จ</p>',
+			),
+		);
+		foreach ( $thai_pages as $slug => $copy ) {
+			$page = get_page_by_path( $slug );
+			if ( $page instanceof \WP_Post ) {
+				update_post_meta( $page->ID, '_estora_title_th', $copy[0] );
+				if ( $copy[1] ) {
+					update_post_meta( $page->ID, '_estora_content_th', $copy[1] );
+				}
+			}
 		}
 	}
 
@@ -609,6 +652,204 @@ final class Seeder {
 				'description' => '<p>A two-bedroom beachfront unit let until next season. Kept in the catalogue for reference and future availability.</p>',
 				'year' => 2017, 'floors' => 12, 'parking' => 1,
 			),
+			array(
+				'title' => 'Ashton Residence, Thonglor',
+				'purpose' => 'sale',
+				'type' => 'condo',
+				'location' => 'watthana',
+				'price' => 18900000,
+				'beds' => 2, 'baths' => 2, 'usable' => 86, 'land' => 0,
+				'address' => '59 Sukhumvit Soi 55',
+				'province' => 'Bangkok', 'district' => 'Watthana', 'subdistrict' => 'Khlong Tan Nuea', 'postal' => '10110',
+				'lat' => 13.7360, 'lng' => 100.5820,
+				'featured' => 1, 'availability' => 'available', 'plate' => 'plate-2',
+				'amenities' => array( 'Concierge', 'Pool', 'Gym', 'Fibre internet' ),
+				'description' => '<p>A high-floor two-bedroom in the middle of Thonglor, with a wide west-facing living room, a separate kitchen and a balcony deep enough to use. The building has a 30-metre pool, fitness room and 24-hour concierge.</p><p>Walk to BTS Thong Lo in six minutes. Sold with one parking space and fitted wardrobes.</p>',
+				'year' => 2022, 'floors' => 28, 'parking' => 1,
+			),
+			array(
+				'title' => 'Sathorn Horizon, Sathon',
+				'purpose' => 'sale',
+				'type' => 'condo',
+				'location' => 'sathon',
+				'price' => 12400000,
+				'beds' => 2, 'baths' => 2, 'usable' => 74, 'land' => 0,
+				'address' => '88 Narathiwat Ratchanakharin Road',
+				'province' => 'Bangkok', 'district' => 'Sathon', 'subdistrict' => 'Thung Wat Don', 'postal' => '10120',
+				'lat' => 13.7200, 'lng' => 100.5260,
+				'featured' => 0, 'availability' => 'available', 'plate' => 'plate-2',
+				'amenities' => array( 'Pool', 'Gym', 'Security', 'Sky lounge' ),
+				'description' => '<p>A corner two-bedroom with river and city views, a compact study and a covered balcony. The building sits two minutes from BTS Chong Nonsi and has a rooftop lounge.</p>',
+				'year' => 2019, 'floors' => 35, 'parking' => 1,
+			),
+			array(
+				'title' => 'Rama IX Sky Home, Huai Khwang',
+				'purpose' => 'rent',
+				'type' => 'condo',
+				'location' => 'huai-khwang',
+				'price' => 42000,
+				'beds' => 2, 'baths' => 2, 'usable' => 68, 'land' => 0,
+				'address' => '9 Rama IX Soi 7',
+				'province' => 'Bangkok', 'district' => 'Huai Khwang', 'subdistrict' => 'Huai Khwang', 'postal' => '10310',
+				'lat' => 13.7580, 'lng' => 100.5740,
+				'featured' => 0, 'availability' => 'available', 'plate' => 'plate-2',
+				'amenities' => array( 'Pool', 'Gym', 'Furnished', 'Security' ),
+				'description' => '<p>A furnished two-bedroom near MRT Phra Ram 9, with a corner living room, full kitchen and a balcony facing north. Available on a twelve-month lease.</p>',
+				'year' => 2018, 'floors' => 24, 'parking' => 1,
+			),
+			array(
+				'title' => 'Baan Talay Courtyard, Hua Hin',
+				'purpose' => 'sale',
+				'type' => 'house',
+				'location' => 'hua-hin-district',
+				'price' => 14500000,
+				'beds' => 3, 'baths' => 3, 'usable' => 220, 'land' => 480,
+				'address' => '12 Soi Hua Hin 88',
+				'province' => 'Prachuap Khiri Khan', 'district' => 'Hua Hin', 'subdistrict' => 'Hua Hin', 'postal' => '77110',
+				'lat' => 12.5680, 'lng' => 99.9570,
+				'featured' => 1, 'availability' => 'available', 'plate' => 'plate-3',
+				'amenities' => array( 'Courtyard', 'Private pool', 'Garden', 'Covered parking' ),
+				'description' => '<p>A single-storey courtyard house four minutes from Hua Hin beach. The living room opens to a shaded terrace and a small pool; the kitchen is separate and the main suite has its own garden door.</p><p>Freehold with a chanote title. Sold partly furnished.</p>',
+				'year' => 2018, 'floors' => 1, 'parking' => 2,
+			),
+			array(
+				'title' => 'Khao Takiab Beach House, Nong Kae',
+				'purpose' => 'rent',
+				'type' => 'house',
+				'location' => 'nong-kae',
+				'price' => 65000,
+				'beds' => 3, 'baths' => 2, 'usable' => 180, 'land' => 320,
+				'address' => '33 Khao Takiab Road',
+				'province' => 'Prachuap Khiri Khan', 'district' => 'Nong Kae', 'subdistrict' => 'Nong Kae', 'postal' => '77110',
+				'lat' => 12.5210, 'lng' => 99.9840,
+				'featured' => 0, 'availability' => 'available', 'plate' => 'plate-3',
+				'amenities' => array( 'Beach access', 'Pool', 'Sea view', 'Furnished' ),
+				'description' => '<p>A relaxed three-bedroom house one row back from Khao Takiab beach, let furnished for twelve months or more. Broad sea-facing terrace, small pool and covered parking for two cars.</p>',
+				'year' => 2015, 'floors' => 2, 'parking' => 2,
+			),
+			array(
+				'title' => 'Wongamat Sea View, Bang Lamung',
+				'purpose' => 'sale',
+				'type' => 'condo',
+				'location' => 'bang-lamung',
+				'price' => 9800000,
+				'beds' => 2, 'baths' => 2, 'usable' => 92, 'land' => 0,
+				'address' => '16 Wongamat Beach Road',
+				'province' => 'Chonburi', 'district' => 'Bang Lamung', 'subdistrict' => 'Na Kluea', 'postal' => '20150',
+				'lat' => 12.9610, 'lng' => 100.8860,
+				'featured' => 0, 'availability' => 'available', 'plate' => 'plate-2',
+				'amenities' => array( 'Sea view', 'Pool', 'Gym', 'Security' ),
+				'description' => '<p>A two-bedroom on a high floor at Wongamat with a full-width balcony facing the bay. The building has direct beach access, a pool terrace and a small gym.</p>',
+				'year' => 2016, 'floors' => 27, 'parking' => 1,
+			),
+			array(
+				'title' => 'Jomtien Pool Villa, Nong Prue',
+				'purpose' => 'rent',
+				'type' => 'house',
+				'location' => 'nong-prue',
+				'price' => 85000,
+				'beds' => 4, 'baths' => 4, 'usable' => 320, 'land' => 600,
+				'address' => '77 Jomtien Second Road',
+				'province' => 'Chonburi', 'district' => 'Nong Prue', 'subdistrict' => 'Nong Prue', 'postal' => '20150',
+				'lat' => 12.8990, 'lng' => 100.8760,
+				'featured' => 1, 'availability' => 'available', 'plate' => 'plate-4',
+				'amenities' => array( 'Private pool', 'Garden', 'Covered parking', 'Security' ),
+				'description' => '<p>A four-bedroom family villa in a quiet gated lane, five minutes from Jomtien beach. Private pool, mature garden, covered parking for two cars and a separate utility room.</p><p>Available on a twelve-month lease, partly furnished.</p>',
+				'year' => 2017, 'floors' => 2, 'parking' => 2,
+			),
+			array(
+				'title' => 'Muang Khon Kaen Family Home',
+				'purpose' => 'sale',
+				'type' => 'house',
+				'location' => 'mueang-khon-kaen',
+				'price' => 6200000,
+				'beds' => 4, 'baths' => 3, 'usable' => 260, 'land' => 480,
+				'address' => '45 Mittraphap Road',
+				'province' => 'Khon Kaen', 'district' => 'Mueang Khon Kaen', 'subdistrict' => 'Nai Mueang', 'postal' => '40000',
+				'lat' => 16.4320, 'lng' => 102.8230,
+				'featured' => 0, 'availability' => 'available', 'plate' => 'plate-3',
+				'amenities' => array( 'Garden', 'Covered parking', 'Storage', 'Security' ),
+				'description' => '<p>A well-kept four-bedroom family house in central Khon Kaen, close to schools and Mittraphap Road. Large covered terrace, mature garden and a separate storage room.</p>',
+				'year' => 2013, 'floors' => 2, 'parking' => 2,
+			),
+			array(
+				'title' => 'Doi Suthep View House, Suthep',
+				'purpose' => 'sale',
+				'type' => 'house',
+				'location' => 'suthep',
+				'price' => 16800000,
+				'beds' => 4, 'baths' => 4, 'usable' => 310, 'land' => 700,
+				'address' => '18 Soi Suthep 9',
+				'province' => 'Chiang Mai', 'district' => 'Suthep', 'subdistrict' => 'Suthep', 'postal' => '50200',
+				'lat' => 18.8040, 'lng' => 98.9460,
+				'featured' => 1, 'availability' => 'available', 'plate' => 'plate-1',
+				'amenities' => array( 'Mountain view', 'Private pool', 'Garden', 'Covered parking' ),
+				'description' => '<p>A four-bedroom house on the lower slope of Doi Suthep with an uninterrupted mountain view from the living room and pool terrace. The layout separates the main suite from three guest bedrooms.</p>',
+				'year' => 2020, 'floors' => 2, 'parking' => 2,
+			),
+			array(
+				'title' => 'Nai Harn Garden Villa, Mueang Phuket',
+				'purpose' => 'sale',
+				'type' => 'house',
+				'location' => 'mueang-phuket',
+				'price' => 19500000,
+				'beds' => 3, 'baths' => 3, 'usable' => 280, 'land' => 560,
+				'address' => '22 Soi Sai Yuan',
+				'province' => 'Phuket', 'district' => 'Mueang Phuket', 'subdistrict' => 'Rawai', 'postal' => '83100',
+				'lat' => 7.7790, 'lng' => 98.3380,
+				'featured' => 1, 'availability' => 'available', 'plate' => 'plate-4',
+				'amenities' => array( 'Private pool', 'Garden', 'Sea view', 'Gated' ),
+				'description' => '<p>A three-bedroom villa between Nai Harn and Rawai, set behind a private gate with a mature garden and a 12-metre pool. The living pavilion opens on two sides; the main suite has an outdoor shower.</p>',
+				'year' => 2019, 'floors' => 1, 'parking' => 2,
+			),
+		);
+
+		$photo_sets = array(
+			array( 'chiangmai-house', array( 'hero-villa', 'interior-living', 'interior-kitchen-2' ) ),
+			array( 'bangkok-condo', array( 'pattaya-condo', 'interior-bedroom-2', 'interior-living' ) ),
+			array( 'hua-hin-house', array( 'interior-living', 'interior-bedroom', 'interior-kitchen-2' ) ),
+			array( 'phuket-villa', array( 'pool-detail', 'interior-bedroom-2', 'interior-living' ) ),
+			array( 'warehouse', array( 'interior-kitchen-2', 'interior-living' ) ),
+			array( 'interior-bedroom', array( 'interior-living', 'interior-bedroom-2' ) ),
+			array( 'land-parcel', array( 'chiangmai-house', 'house-3' ) ),
+			array( 'pool-detail', array( 'interior-living', 'interior-kitchen-2' ) ),
+			array( 'pattaya-condo', array( 'interior-kitchen-2', 'interior-bedroom-2' ) ),
+			array( 'house-4', array( 'interior-living', 'interior-kitchen-2' ) ),
+			array( 'phuket-villa', array( 'bangkok-condo', 'interior-bedroom-2' ) ),
+			array( 'pattaya-condo', array( 'interior-living', 'interior-kitchen-2' ) ),
+			array( 'bangkok-condo', array( 'interior-bedroom-2', 'interior-living' ) ),
+			array( 'interior-bedroom-2', array( 'bangkok-condo', 'interior-kitchen-2' ) ),
+			array( 'hua-hin-house', array( 'interior-living', 'interior-bedroom' ) ),
+			array( 'house-4', array( 'phuket-villa', 'interior-living' ) ),
+			array( 'pattaya-condo', array( 'interior-bedroom-2', 'interior-kitchen-2' ) ),
+			array( 'hero-villa', array( 'pool-detail', 'interior-living' ) ),
+			array( 'chiangmai-house', array( 'house-3', 'interior-bedroom' ) ),
+			array( 'house-3', array( 'hero-villa', 'interior-living' ) ),
+			array( 'pool-detail', array( 'phuket-villa', 'interior-bedroom-2' ) ),
+		);
+
+		$thai_meta = array(
+			array( 'บ้านคอร์ตยาร์ด นิมมาน', 'บ้านเดี่ยวสามห้องนอนรอบคอร์ตยาร์ดเขียว ใกล้ Nimmanhaemin ครัวแยกและระเบียงทิศเหนือ', '14 ซอย 9 ถนนนิมมานเหมินท์ สุเทพ เชียงใหม่ 50200' ),
+			array( 'ริเวอร์ไซด์ คอนโดมิเนียม วัฒนา', 'คอนโดหัวมุมสองห้องนอนชั้น 18 วิวเมืองโล่ง มีสระว่ายน้ำและฟิตเนสในโครงการ', '88 สุขุมวิท 39 วัฒนา กรุงเทพฯ 10110' ),
+			array( 'การ์เดน ทาวน์เฮาส์ ช้างเผือก', 'ทาวน์เฮาส์สามห้องนอนให้เช่าในซอยเล็กที่มีรั้วรอบ สวนหลังบ้านและที่จอดรถมีหลังคา', '22/4 หมู่ 5 ช้างเผือก เชียงใหม่ 50300' ),
+			array( 'ฮิลไซด์ วิลล่า กะทู้', 'วิลล่าสี่ห้องนอนบนเนินฝั่งตะวันตกของกมลา วิวทะเล ระเบียงสระว่ายน้ำยาว 14 เมตร', '9/12 ซอยกมลา กะทู้ ภูเก็ต 83150' ),
+			array( 'คลังสินค้า คลองเตย', 'คลังสินค้า 650 ตร.ม. เพดานสูง 6.5 เมตร มีพื้นที่โหลดสินค้าและออฟฟิศชั้นลอย', '45 พระราม 4 ซอย 24 คลองเตย กรุงเทพฯ 10110' ),
+			array( 'โคโลเนียล อพาร์ตเมนต์ หายยา', 'อพาร์ตเมนต์สองห้องนอนในอาคารยุค 1960 ที่บูรณะใหม่ หน้าต่างสูง พื้นไม้ และระเบียงกว้าง', '101 ถนนวัวลาย หายยา เชียงใหม่ 50100' ),
+			array( 'ที่ดิน สุเทพ', 'ที่ดิน 1,200 ตร.ม. โฉนดที่ดิน ติดถนนลาดยาง โซนที่อยู่อาศัยความหนาแน่นต่ำ', 'ติดถนนคลองชลประทาน สุเทพ เชียงใหม่ 50200' ),
+			array( 'ทาวน์เฮาส์ วัฒนา', 'ทาวน์เฮาส์สามชั้นพร้อมลิฟต์ส่วนตัว ดาดฟ้า และที่จอดรถปลอดภัย ขายแล้วเก็บไว้เป็นข้อมูลอ้างอิง', '7/7 สุขุมวิท 49 วัฒนา กรุงเทพฯ 10110' ),
+			array( 'ลอฟต์ คอนโดมิเนียม นิมมาน', 'คอนโดหนึ่งห้องนอนเพดานสูง 4.2 เมตร ให้เช่าพร้อมเฟอร์นิเจอร์ มีสระว่ายน้ำและโคเวิร์กกิ้ง', '31 นิมมานเหมินท์ ซอย 7 สุเทพ เชียงใหม่ 50200' ),
+			array( 'บ้านครอบครัว ช้างเผือก', 'บ้านเดี่ยวสี่ห้องนอนในหมู่บ้านเงียบทางเหนือของเมือง ครัวใหญ่ ระเบียงหลังคาและสวนร่มรื่น', '55 หมู่ 2 ช้างเผือก เชียงใหม่ 50300' ),
+			array( 'คอนโดติดหาด กะทู้', 'คอนโดสองห้องนอนติดหาดกมลา ให้เช่าถึงฤดูกาลหน้า เก็บไว้ในแคตตาล็อกเพื่ออ้างอิง', '88 ถนนหาดกมลา กะทู้ ภูเก็ต 83150' ),
+			array( 'แอชตัน เรสซิเดนซ์ ทองหล่อ', 'คอนโดสองห้องนอนชั้นสูงใจกลางทองหล่อ วิวตะวันตก ห้องนั่งเล่นกว้างและครัวแยก เดินถึง BTS ทองหล่อ', '59 สุขุมวิท 55 วัฒนา กรุงเทพฯ 10110' ),
+			array( 'ซาทอน ฮอไรซอน สาทร', 'คอนโดหัวมุมสองห้องนอนวิวแม่น้ำและเมือง ใกล้ BTS ช่องนนทรี มีสกายเลานจ์บนดาดฟ้า', '88 ถนนนราธิวาสราชนครินทร์ สาทร กรุงเทพฯ 10120' ),
+			array( 'พระราม 9 สกาย โฮม ห้วยขวาง', 'คอนโดให้เช่าห้องมุมสองห้องนอน ใกล้ MRT พระราม 9 พร้อมเฟอร์นิเจอร์และครัวเต็ม', '9 พระราม 9 ซอย 7 ห้วยขวาง กรุงเทพฯ 10310' ),
+			array( 'บ้านทะเล คอร์ตยาร์ด หัวหิน', 'บ้านเดี่ยวชั้นเดียวรอบคอร์ตยาร์ด ห่างหาดหัวหินสี่นาที มีสระส่วนตัวและ Terrace ร่มรื่น', '12 ซอยหัวหิน 88 หัวหิน ประจวบคีรีขันธ์ 77110' ),
+			array( 'เขาตะเกียบ บีช เฮาส์ หนองแก', 'บ้านสามห้องนอนให้เช่าระยะยาว ใกล้หาดเขาตะเกียบ ระเบียงกว้างมองทะเลและสระเล็ก', '33 ถนนเขาตะเกียบ หนองแก ประจวบคีรีขันธ์ 77110' ),
+			array( 'วงศ์อมาตย์ ซีวิว บางละมุง', 'คอนโดสองห้องนอนชั้นสูงติดทะเลวงศ์อมาตย์ ระเบียงเต็มความกว้างมองอ่าวพัทยา', '16 ถนนหาดวงศ์อมาตย์ บางละมุง ชลบุรี 20150' ),
+			array( 'จอมเทียน พูล วิลล่า หนองปรือ', 'วิลล่าสี่ห้องนอนพร้อมสระส่วนตัวในซอยปิด ใกล้หาดจอมเทียน สวนร่มรื่นและที่จอดรถสองคัน', '77 ถนนจอมเทียนสายสอง หนองปรือ ชลบุรี 20150' ),
+			array( 'บ้านครอบครัว เมืองขอนแก่น', 'บ้านเดี่ยวสี่ห้องนอนใจกลางขอนแก่น ใกล้โรงเรียนและถนนมิตรภาพ ระเบียงหลังคาและสวน', '45 ถนนมิตรภาพ เมือง ขอนแก่น 40000' ),
+			array( 'ดอยสุเทพ วิว เฮาส์ สุเทพ', 'บ้านสี่ห้องนอนวิวดอยสุเทพจากห้องนั่งเล่นและสระว่ายน้ำ แยกห้องหลักออกจากห้องแขก', '18 ซอยสุเทพ 9 เมือง เชียงใหม่ 50200' ),
+			array( 'ในหาน การ์เดน วิลล่า เมืองภูเก็ต', 'วิลล่าสามห้องนอนระหว่างในหานและราไวย์ รั้วส่วนตัว สวนร่มรื่น และสระว่ายน้ำ 12 เมตร', '22 ซอยไสยวน เมือง ภูเก็ต 83100' ),
 		);
 
 		$repo   = new \Estora\Core\Repositories\Property_Repository();
@@ -660,6 +901,41 @@ final class Seeder {
 				),
 				$listing['purpose']
 			);
+
+			$photo_set   = $photo_sets[ $index ] ?? array( 'chiangmai-house', array( 'interior-living', 'interior-kitchen-2' ) );
+			$primary_id  = $this->photo_attachment( (string) $photo_set[0], $listing['title'] );
+			$gallery_ids = array();
+			if ( $primary_id ) {
+				$gallery_ids[] = $primary_id;
+				set_post_thumbnail( (int) $post_id, $primary_id );
+			}
+			foreach ( (array) ( $photo_set[1] ?? array() ) as $photo_file ) {
+				$gallery_id = $this->photo_attachment( (string) $photo_file, $listing['title'] );
+				if ( $gallery_id && ! in_array( $gallery_id, $gallery_ids, true ) ) {
+					$gallery_ids[] = $gallery_id;
+				}
+			}
+			if ( $gallery_ids ) {
+				update_post_meta( (int) $post_id, '_estora_gallery', array_values( $gallery_ids ) );
+			}
+
+			$th = $thai_meta[ $index ] ?? array( $listing['title'], '', $listing['address'] );
+			$th_content = '<p>' . $th[1] . '</p>';
+			$th_content .= '<p>' . $th[0] . ' ตั้งอยู่ที่ ' . $th[2] . ' พื้นที่ใช้สอย ' . number_format_i18n( (float) $listing['usable'] ) . ' ตร.ม. ';
+			if ( $listing['beds'] ) {
+				$th_content .= $listing['beds'] . ' ห้องนอน ' . $listing['baths'] . ' ห้องน้ำ ';
+			}
+			if ( $listing['parking'] ) {
+				$th_content .= 'ที่จอดรถ ' . $listing['parking'] . ' คัน ';
+			}
+			$th_content .= 'สนใจนัดชมหรือสอบถามรายละเอียดเพิ่มเติม ติดต่อทีมงาน ESTORA ได้ทุกวัน</p>';
+
+			update_post_meta( (int) $post_id, '_estora_title_th', $th[0] );
+			update_post_meta( (int) $post_id, '_estora_content_th', $th_content );
+			update_post_meta( (int) $post_id, '_estora_address_th', $th[2] );
+			update_post_meta( (int) $post_id, '_estora_seo_title_th', $th[0] . ' | ESTORA' );
+			update_post_meta( (int) $post_id, '_estora_seo_description_th', wp_trim_words( wp_strip_all_tags( $th_content ), 26 ) );
+
 			wp_set_object_terms( (int) $post_id, array( $listing['purpose'] ), 'property_purpose' );
 			wp_set_object_terms( (int) $post_id, array( $listing['type'] ), 'property_type' );
 			wp_set_object_terms( (int) $post_id, array( $listing['location'] ), 'property_location' );
@@ -673,6 +949,64 @@ final class Seeder {
 	}
 
 	/**
+	 * Import a local theme photograph into the media library once.
+	 *
+	 * @param string $file Base filename without extension.
+	 * @param string $alt  Attachment alt text.
+	 */
+	private function photo_attachment( string $file, string $alt ): int {
+		$file = preg_replace( '/[^a-z0-9\-]/', '', strtolower( $file ) );
+		if ( ! $file ) {
+			return 0;
+		}
+		$existing = get_posts(
+			array(
+				'post_type'      => 'attachment',
+				'post_status'    => 'inherit',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'meta_key'       => '_estora_photo_file', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => $file, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			)
+		);
+		if ( $existing ) {
+			return (int) $existing[0];
+		}
+
+		$source = get_template_directory() . '/assets/img/photos/' . $file . '.jpg';
+		if ( ! file_exists( $source ) ) {
+			return 0;
+		}
+
+		$upload = wp_upload_bits( $file . '.jpg', null, file_get_contents( $source ) ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+		if ( ! empty( $upload['error'] ) ) {
+			return 0;
+		}
+
+		$attachment_id = wp_insert_attachment(
+			array(
+				'post_mime_type' => 'image/jpeg',
+				'post_title'     => $alt,
+				'post_content'   => '',
+				'post_status'    => 'inherit',
+			),
+			$upload['file']
+		);
+		if ( is_wp_error( $attachment_id ) || ! $attachment_id ) {
+			return 0;
+		}
+
+		require_once ABSPATH . 'wp-admin/includes/image.php';
+		$metadata = wp_generate_attachment_metadata( (int) $attachment_id, $upload['file'] );
+		wp_update_attachment_metadata( (int) $attachment_id, $metadata );
+		update_post_meta( (int) $attachment_id, '_wp_attachment_image_alt', $alt );
+		update_post_meta( (int) $attachment_id, '_estora_photo_file', $file );
+		update_post_meta( (int) $attachment_id, '_estora_demo', '1' );
+
+		return (int) $attachment_id;
+	}
+
+	/**
 	 * Testimonials.
 	 */
 	private function seed_testimonials(): void {
@@ -681,8 +1015,13 @@ final class Seeder {
 			array( 'Daniel W.', 'Rented in Nimman', 'The video call viewing was honest about the street noise, which no other agent mentioned. That is why we took it.' ),
 			array( 'Prasert L.', 'Sold in Chang Phueak', 'One person handled the file from valuation to transfer, and the listing was updated the day we accepted an offer.' ),
 		);
+		$thai = array(
+			array( 'ศิริพร ก.', 'ซื้อในสุเทพ', 'ทีมงานรู้ว่าต้องถามเจ้าของเรื่องอะไรบ้างก่อนที่เราจะคิดออก เอกสารโอนเสร็จในสามสัปดาห์เพราะเตรียมไว้ล่วงหน้าแล้ว' ),
+			array( 'แดเนียล ว.', 'เช่าในนิมมาน', 'การชมผ่านวิดีโอซื่อตรงเรื่องเสียงรถบนถนน ซึ่งไม่มีตัวแทนรายไหนบอก เราจึงตัดสินใจเช่าที่นี่' ),
+			array( 'ประเสริฐ ล.', 'ขายในช้างเผือก', 'มีคนเดียวดูแลแฟ้มตั้งแต่ประเมินราคาจนถึงโอน และประกาศถูกอัปเดตในวันที่เราตกลงรับข้อเสนอ' ),
+		);
 
-		foreach ( $items as $item ) {
+		foreach ( $items as $index => $item ) {
 			$post_id = wp_insert_post(
 				array(
 					'post_type'    => 'testimonial',
@@ -693,6 +1032,9 @@ final class Seeder {
 			);
 			if ( ! is_wp_error( $post_id ) ) {
 				update_post_meta( (int) $post_id, '_estora_testimonial_role', $item[1] );
+				update_post_meta( (int) $post_id, '_estora_title_th', $thai[ $index ][0] ?? $item[0] );
+				update_post_meta( (int) $post_id, '_estora_content_th', $thai[ $index ][2] ?? $item[2] );
+				update_post_meta( (int) $post_id, '_estora_testimonial_role_th', $thai[ $index ][1] ?? $item[1] );
 			}
 		}
 	}
@@ -713,21 +1055,30 @@ final class Seeder {
 		$articles = array(
 			array(
 				'title'   => 'What a chanote actually tells you',
+				'th_title' => 'โฉนดที่ดินบอกอะไรคุณได้บ้าง',
 				'date'    => '-3 days',
 				'content' => '<p>Title type is the first thing our property team checks and the last thing a buyer should have to discover at the transfer desk. A chanote (NS.4) is a freehold title with surveyed boundaries; a Nor Sor 3 Gor is a certificate of use that still requires a boundary survey before transfer.</p><p>Neither is automatically a problem. They are different processes with different timelines, and the price should reflect that. We record the title type in the property file before publication so nobody is surprised later.</p><h2>What to ask for</h2><p>Ask for the title number, the owner name on the title, and whether any lease or mortgage is registered against it. A legitimate owner will have those documents ready.</p>',
+				'th_content' => '<p>ประเภทเอกสารสิทธิ์คือสิ่งแรกที่ทีมทรัพย์สินของเราตรวจ และเป็นสิ่งสุดท้ายที่ผู้ซื้อควรค้นพบที่เคาน์เตอร์โอน โฉนดที่ดิน (น.ส.4) คือกรรมสิทธิ์ที่ดินมีขอบเขตชัดเจน ส่วน น.ส.3 ก. เป็นหนังสือรับรองการใช้ประโยชน์ที่ยังต้องรังวัดก่อนโอน</p><p>ทั้งสองแบบไม่ได้เป็นปัญหาโดยอัตโนมัติ แต่เป็นกระบวนการและระยะเวลาที่ต่างกัน ราคาควรสะท้อนความต่างนั้น เราบันทึกประเภทเอกสารไว้ในแฟ้มทรัพย์ก่อนเผยแพร่ เพื่อไม่ให้ใครเซอร์ไพรส์ภายหลัง</p><h2>ควรขออะไร</h2><p>ขอเลขที่โฉนด ชื่อเจ้าของในโฉนด และตรวจว่ามีสัญญาเช่าหรือจำนองจดทะเบียนอยู่หรือไม่ เจ้าของที่ถูกต้องจะเตรียมเอกสารเหล่านี้ได้</p>',
 				'excerpt' => 'Title type changes the transfer process and the price. Here is what to check before you make an offer.',
+				'th_excerpt' => 'ประเภทเอกสารสิทธิ์มีผลต่อขั้นตอนโอนและราคา นี่คือสิ่งที่ควรตรวจก่อนยื่นข้อเสนอ',
 			),
 			array(
 				'title'   => 'Viewing a rental in the rainy season',
+				'th_title' => 'ชมบ้านเช่าในช่วงหน้าฝน',
 				'date'    => '-9 days',
 				'content' => '<p>Water is honest. A house that smells damp in August will be a problem in November, and new paint is easier to spot than new drainage. Look at the base of exterior walls, the ceiling under bathrooms, and the slope of the driveway.</p><p>Ask to see the water bill for the previous three months. A spike can indicate a leak or a pump that runs constantly. Ask where the water tank is and when it was last cleaned.</p><h2>The fifteen-minute check</h2><p>Open every tap, run the shower, and flush every toilet at the same time. Then look at the floor drain. If it backs up, the problem is not cosmetic.</p>',
+				'th_content' => '<p>น้ำเป็นสิ่งที่ซื่อสัตย์ที่สุด บ้านที่อับชื้นในเดือนสิงหาคมจะเป็นปัญหาในเดือนพฤศจิกายน และสีทาใหม่สังเกตง่ายกว่าระบบระบายน้ำใหม่ มองที่โคนผนังภายนอก เพดานใต้ห้องน้ำ และความลาดของทางรถ</p><p>ขอดูบิลค่าน้ำสามเดือนล่าสุด หากสูงผิดปกติอาจมีจุดรั่วหรือปั๊มทำงานตลอดเวลา ถามหาตำแหน่งถังน้ำและครั้งสุดท้ายที่ล้างถัง</p><h2>เช็ก 15 นาที</h2><p>เปิดก๊อกทุกจุด เปิดฝักบัว และกดชักโครกพร้อมกัน แล้วดูท่อระบายพื้น หากน้ำย้อน แสดงว่าไม่ใช่เรื่อง cosmetic</p>',
 				'excerpt' => 'Damp, drainage and water pressure are easier to assess in the wet season. A short checklist for rental viewings.',
+				'th_excerpt' => 'ความชื้น ระบบระบายน้ำ และแรงดันน้ำตรวจได้ง่ายในหน้าฝน เช็กลิสต์สั้น ๆ สำหรับการชมบ้านเช่า',
 			),
 			array(
 				'title'   => 'Why we keep sold listings online',
+				'th_title' => 'ทำไมเรายังเก็บประกาศที่ขายแล้วไว้',
 				'date'    => '-16 days',
 				'content' => '<p>Removing a sold listing makes the market look busier than it is. Keeping it, labelled, gives buyers and owners a reference point: what asked, what sold, and how long it took. We mark availability honestly and stop accepting inquiries when a property is sold or rented.</p><p>The alternative — quietly deleting the evidence — makes every new listing look like a bargain and every agent look clairvoyant.</p><h2>What the label means</h2><p>Sold means the transfer is complete or the deposit is signed and the deal is exclusive. Reserved means an offer is accepted but not yet signed. If you are interested, ask the office; reservations do fall through.</p>',
+				'th_content' => '<p>การลบประกาศที่ขายแล้วทำให้ตลาดดูคึกคักเกินจริง การเก็บไว้พร้อมป้ายสถานะทำให้ผู้ซื้อและเจ้าของมีจุดอ้างอิง ว่าราคาเสนอเท่าไร ขายได้เท่าไร และใช้เวลานานแค่ไหน เราระบุสถานะตามจริงและหยุดรับคำถามเมื่อขายหรือให้เช่าแล้ว</p><p>ทางเลือกอื่นคือการลบหลักฐานอย่างเงียบ ๆ ซึ่งทำให้ทุกประกาศใหม่ดูเป็นของถูกและทำให้ตัวแทนดูรู้ล่วงหน้าไปหมด</p><h2>ป้ายสถานะหมายถึงอะไร</h2><p>ขายแล้วหมายถึงโอนเสร็จหรือเซ็นรับมัดจำและดีล exclusive แล้ว จองแล้วหมายถึงรับข้อเสนอแต่ยังไม่เซ็น หากสนใจให้สอบถามสำนักงาน เพราะการจองสามารถหลุดได้</p>',
 				'excerpt' => 'Sold and rented homes stay visible and labelled. It makes the market more legible, not less.',
+				'th_excerpt' => 'บ้านที่ขายหรือให้เช่าแล้วยังแสดงอยู่พร้อมป้ายสถานะ ทำให้ตลาดอ่านง่ายขึ้น ไม่ใช่ยากขึ้น',
 			),
 		);
 
@@ -757,6 +1108,9 @@ final class Seeder {
 			);
 			if ( ! is_wp_error( $post_id ) ) {
 				update_post_meta( (int) $post_id, '_estora_demo', '1' );
+				update_post_meta( (int) $post_id, '_estora_title_th', $article['th_title'] );
+				update_post_meta( (int) $post_id, '_estora_content_th', $article['th_content'] );
+				update_post_meta( (int) $post_id, '_estora_excerpt_th', $article['th_excerpt'] );
 			}
 		}
 	}

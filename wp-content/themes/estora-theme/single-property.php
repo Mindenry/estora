@@ -31,7 +31,7 @@ while ( have_posts() ) :
 
 	get_header();
 	?>
-	<div class="estora-container">
+	<div class="estora-container estora-property-crumbs">
 		<?php
 		estora_breadcrumbs(
 			array(
@@ -49,13 +49,13 @@ while ( have_posts() ) :
 				<h1><?php the_title(); ?></h1>
 				<p class="estora-property-head__ref">
 					<?php echo esc_html( $estora_data['reference'] ); ?> ·
-					<?php echo esc_html( trim( implode( ', ', array_filter( array( $estora_data['location']['subdistrict'], $estora_data['location']['district'], $estora_data['location']['province'] ) ) ) ) ); ?>
+					<?php echo esc_html( trim( implode( ', ', array_unique( array_filter( array( $estora_data['location']['subdistrict'], $estora_data['location']['district'], $estora_data['location']['province'] ) ) ) ) ) ); ?>
 					· <span class="estora-badge estora-badge--<?php echo esc_attr( $estora_data['availability'] ); ?>"><?php echo esc_html( $estora_data['availability_label'] ); ?></span>
 				</p>
 			</div>
 			<div class="estora-property-head__price">
 				<strong><?php echo esc_html( $estora_data['price_formatted'] ); ?></strong>
-				<span><?php echo 'rent' === $estora_data['purpose'] ? esc_html( 'per ' . ( 'year' === $estora_data['rent_period'] ? __( 'year', 'estora-theme' ) : __( 'month', 'estora-theme' ) ) ) : esc_html__( 'Sale price', 'estora-theme' ); ?></span>
+				<span><?php echo 'rent' === $estora_data['purpose'] ? esc_html( estora_text( 'per month', 'ต่อเดือน' ) ) : esc_html__( 'Sale price', 'estora-theme' ); ?></span>
 				<button type="button" class="estora-fav estora-fav--inline" data-favorite="<?php echo esc_attr( (string) $estora_id ); ?>" aria-label="<?php esc_attr_e( 'Save property', 'estora-theme' ); ?>" aria-pressed="false">
 					<?php echo estora_icon( 'heart', 18 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
 				</button>
@@ -127,7 +127,7 @@ while ( have_posts() ) :
 					<p><?php echo esc_html( $estora_data['address'] ); ?><?php echo $estora_data['location']['postal_code'] ? ', ' . esc_html( $estora_data['location']['postal_code'] ) : ''; ?></p>
 					<div class="estora-map">
 						<div>
-							<strong><?php echo esc_html( trim( implode( ' · ', array_filter( array( $estora_data['location']['district'], $estora_data['location']['province'] ) ) ) ) ); ?></strong>
+							<strong><?php echo esc_html( trim( implode( ' · ', array_unique( array_filter( array( $estora_data['location']['district'], $estora_data['location']['province'] ) ) ) ) ) ); ?></strong>
 							<?php if ( $estora_data['map'] ) : ?>
 								<p class="estora-map__coords"><?php echo esc_html( number_format( (float) $estora_data['map']['lat'], 5 ) . ', ' . number_format( (float) $estora_data['map']['lng'], 5 ) ); ?></p>
 							<?php endif; ?>

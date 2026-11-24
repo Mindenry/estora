@@ -353,32 +353,44 @@ final class Property_Repository {
 		) : null;
 
 		$reference = (string) ( $this->meta( $post_id, 'reference' ) ?: Formatter::reference( $post_id ) );
+		$title     = estora_is_thai() ? estora_localized_meta( $post_id, 'title_th', get_the_title( $post_id ) ) : get_the_title( $post_id );
+		$content   = estora_is_thai() ? estora_localized_meta( $post_id, 'content_th', $post->post_content ) : $post->post_content;
+		$address   = estora_is_thai() ? estora_localized_meta( $post_id, 'address_th', (string) $this->meta( $post_id, 'address' ) ) : (string) $this->meta( $post_id, 'address' );
+		$province  = estora_place_name( (string) $this->meta( $post_id, 'province' ) );
+		$district  = estora_place_name( (string) $this->meta( $post_id, 'district' ) );
+		$subdistrict = estora_place_name( (string) $this->meta( $post_id, 'subdistrict' ) );
+		$amenities = array_map(
+			static function ( $amenity ) {
+				return estora_amenity_name( (string) $amenity );
+			},
+			(array) $this->meta( $post_id, 'amenities', array() )
+		);
 
 		return array(
 			'id'               => $post_id,
-			'title'            => get_the_title( $post_id ),
+			'title'            => $title,
 			'slug'             => $post->post_name,
 			'url'              => get_permalink( $post_id ),
 			'reference'        => $reference,
 			'status'           => $post->post_status,
 			'status_label'     => Property_Status::publication_label( $post->post_status ),
 			'purpose'          => $purpose,
-			'purpose_label'    => 'rent' === $purpose ? 'For rent' : 'For sale',
+			'purpose_label'    => estora_purpose_name( $purpose ),
 			'type'             => $type,
-			'type_label'       => ( ! is_wp_error( $type_terms ) && $type_terms ) ? $type_terms[0]->name : '',
+			'type_label'       => estora_type_name( $type, ( ! is_wp_error( $type_terms ) && $type_terms ) ? $type_terms[0]->name : '' ),
 			'price'            => $price,
 			'price_formatted'  => estora_price( $price ),
 			'rent_period'      => (string) $this->meta( $post_id, 'rent_period', 'month' ),
 			'availability'     => $availability,
-			'availability_label' => Property_Status::availability_label( $availability ),
+			'availability_label' => estora_availability_name( $availability ),
 			'accepts_inquiries' => Property_Status::accepts_inquiries( $availability ),
-			'description'      => $post->post_content,
-			'excerpt'          => has_excerpt( $post_id ) ? get_the_excerpt( $post_id ) : wp_trim_words( wp_strip_all_tags( $post->post_content ), 28 ),
-			'address'          => (string) $this->meta( $post_id, 'address' ),
+			'description'      => $content,
+			'excerpt'          => wp_trim_words( wp_strip_all_tags( $content ), 28 ),
+			'address'          => $address,
 			'location'         => array(
-				'province'    => (string) $this->meta( $post_id, 'province' ),
-				'district'    => (string) $this->meta( $post_id, 'district' ),
-				'subdistrict' => (string) $this->meta( $post_id, 'subdistrict' ),
+				'province'    => $province,
+				'district'    => $district,
+				'subdistrict' => $subdistrict,
 				'postal_code' => (string) $this->meta( $post_id, 'postal_code' ),
 			),
 			'land_area'        => (float) $this->meta( $post_id, 'land_area' ),
@@ -388,7 +400,7 @@ final class Property_Repository {
 			'parking'          => (int) $this->meta( $post_id, 'parking' ),
 			'floors'           => (int) $this->meta( $post_id, 'floors' ),
 			'year_built'       => (int) $this->meta( $post_id, 'year_built' ),
-			'amenities'        => (array) $this->meta( $post_id, 'amenities', array() ),
+			'amenities'        => $amenities,
 			'featured'         => (bool) $this->meta( $post_id, 'featured' ),
 			'image'            => $image,
 			'gallery'          => $gallery,
@@ -396,8 +408,8 @@ final class Property_Repository {
 			'map'              => $map,
 			'video_url'        => (string) $this->meta( $post_id, 'video_url' ),
 			'seo'              => array(
-				'title'       => (string) $this->meta( $post_id, 'seo_title' ) ?: get_the_title( $post_id ),
-				'description' => (string) $this->meta( $post_id, 'seo_description' ) ?: wp_trim_words( wp_strip_all_tags( $post->post_content ), 30 ),
+				'title'       => estora_is_thai() ? estora_localized_meta( $post_id, 'seo_title_th', $title ) : ( (string) $this->meta( $post_id, 'seo_title' ) ?: $title ),
+				'description' => estora_is_thai() ? estora_localized_meta( $post_id, 'seo_description_th', wp_trim_words( wp_strip_all_tags( $content ), 30 ) ) : ( (string) $this->meta( $post_id, 'seo_description' ) ?: wp_trim_words( wp_strip_all_tags( $content ), 30 ) ),
 			),
 			'created_at'       => get_post_time( 'c', true, $post_id ),
 			'updated_at'       => get_post_modified_time( 'c', true, $post_id ),

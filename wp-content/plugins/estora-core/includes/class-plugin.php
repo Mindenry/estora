@@ -12,6 +12,7 @@ use Estora\Core\Admin\Admin_App;
 use Estora\Core\Integrations\Admin_UI;
 use Estora\Core\Integrations\Content_Types;
 use Estora\Core\Integrations\Cron;
+use Estora\Core\Integrations\Language;
 use Estora\Core\Integrations\Lifecycle;
 use Estora\Core\Integrations\Login_Guard;
 use Estora\Core\Integrations\SEO;
@@ -57,6 +58,7 @@ final class Plugin {
 		$this->booted = true;
 
 		( new Content_Types() )->hooks();
+		( new Language() )->hooks();
 		( new Admin_App() )->hooks();
 		( new Admin_UI() )->hooks();
 		( new Rest() )->hooks();

@@ -1,50 +1,57 @@
 # ESTORA — Design System
 
-Two surfaces share one token set: **public site** (Persuade/Read) and **back office** (Operate).
+Two surfaces: **public site** (Persuade/Read) and **back office** (Operate). They share the ESTORA
+brand — warm paper, forest, brass — but use separate token files: the public site now carries the
+editorial palette below, while the back office keeps its compact operational tokens in
+`wp-content/plugins/estora-core/assets/css/tokens.css`.
 
 ## Visual world
 
 Editorial real-estate catalogue: warm paper, charcoal ink, deep pine accent, brass hairlines.
 Photography and architecture carry the page; type and whitespace carry the hierarchy.
-Hairline rules (1px, `--line`) instead of card shadows. Radius is small (2–4px) — printed
+Hairline rules (1px, `--line`) instead of card shadows. Radius is small (2–3px) — printed
 brochure, not SaaS dashboard.
 
-## Tokens (`assets/css/tokens.css` in both theme and plugin)
+## Public tokens (`wp-content/themes/estora-theme/assets/css/tokens.css`)
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--paper` | `#FAF8F3` | page |
-| `--surface` | `#FFFFFF` | cards, forms, admin panels |
-| `--sand` | `#EDE6DA` | image plates, hover rows |
-| `--ink` | `#1B1A18` | headings, primary text |
-| `--ink-2` | `#4A463F` | body |
-| `--muted` | `#847D71` | meta, captions |
-| `--line` | `#E3DCCF` | borders |
-| `--pine` | `#2F5D50` | primary action, links, active state |
-| `--pine-ink` | `#22453B` | hover |
-| `--pine-soft` | `#E4EDE8` | selected chips, soft badges |
-| `--brass` | `#B08D57` | premium detail, rules in section heads |
+| `--paper` | `#F7F3E9` | page |
+| `--surface` | `#FFFDF8` | cards, forms, admin panels |
+| `--sand` | `#EAE2D2` | image plates, hover rows |
+| `--ink` | `#17201B` | headings, primary text |
+| `--ink-2` | `#414A43` | body |
+| `--muted` | `#72796F` | meta, captions |
+| `--line` | `#DDD4C2` | borders |
+| `--pine` | `#1C4A3A` | primary action, links, active state |
+| `--pine-deep` | `#0F3026` | dark bands, footer |
+| `--pine-soft` | `#E4EEE7` | selected chips, soft badges |
+| `--brass` | `#AF8B52` | premium detail, rules in section heads |
+| `--brass-deep` | `#8A6938` | small labels on paper |
 | `--danger` | `#9B3B32` | destructive, lost |
-| `--warning` | `#9A6B1F` | pending |
+| `--warning` | `#8A5A12` | pending |
 | `--ok` | `#2C6B4F` | won/confirmed |
 
-Type: display `"Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif`;
-UI `"Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif`;
-numbers `font-variant-numeric: tabular-nums` in tables and prices.
+Type: display `"Fraunces", "Noto Serif Thai", Georgia, serif`; UI `"IBM Plex Sans Thai", "Segoe UI",
+system-ui, sans-serif`; numbers `font-variant-numeric: tabular-nums` in tables and prices. Fonts are
+local WOFF2 files in `assets/fonts/`.
 
-Scale: 12 / 13 / 14 / 16 / 18 / 22 / 28 / 36 / 52 / 68 px. Line-height 1.55 body, 1.05 display.
-Spacing: 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96. Container `1240px`, gutter `clamp(20px,4vw,48px)`.
-Breakpoints: 576 / 768 / 992 / 1200 / 1440.
+Scale: 10 / 11 / 12 / 13 / 14 / 16 / 18 / 22 / 28 / 36 / 52 / 68 px. Line-height 1.65 body, 1.08
+display. Spacing: 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96 / 128. Container `1280px`, gutter
+`clamp(20px,4.4vw,56px)`.
+Breakpoints: 360 / 420 / 720 / 960 / 1024 / 1180 / 1440.
 
 ## Public site
 
-- Hero: full-bleed architectural line-art plate (local SVG), serif headline max 2 lines, search
-  panel overlapping the plate bottom edge (single white panel, 4 fields + button).
-- Cards: 4:3 image, price in serif, location with pin, specs as a single hairline row, favorite as
-  a top-right circular button. No shadow, 1px border, hover lifts 2px.
-- Section heads: small brass rule + eyebrow (uppercase 11px tracked) + serif h2.
-- Status: `For sale` / `For rent` as a small solid chip on the image; availability as text meta.
-- Footer: charcoal band, 4 columns, hairline dividers.
+- Hero: full-bleed real photograph, forest gradient, serif headline, proof strip and a white
+  search panel inside the first viewport.
+- Sections: photograph-led collection, six destination cards on deep forest, live market pulse,
+  split method block, latest listings, testimonials, journal and photo CTA.
+- Cards: 4:3 photo, purpose chip top-left, favourite top-right, serif price, location, spec row,
+  compare control. Hairline border, 3px radius, 3px hover lift.
+- Section heads: index + brass rule + eyebrow + serif h2.
+- Language: EN / TH in header, mobile menu and footer; persists via cookie.
+- Footer: deep forest band, four columns, office details, credit line.
 
 ## Back office
 
@@ -71,6 +78,8 @@ motion honoured.
 
 ## Assets
 
-Local SVG architectural plates ship with the theme; seeded photography is rasterised from those
-artboards and imported into the media library. No hotlinked imagery. Missing image falls back to
-the plate for the property's purpose.
+Local WOFF2 fonts (Fraunces, IBM Plex Sans Thai, Noto Serif Thai). Fifteen Unsplash photographs
+under `assets/img/photos/` are used as demo stand-ins and credited in the footer; they are imported
+into the media library on seed and are not hotlinked. Six architectural plates remain as a fallback
+when a property has no featured image. Real listings upload their own media through the existing
+WordPress editor.
