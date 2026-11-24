@@ -1,0 +1,35 @@
+# --- local environment ---
+.env
+.env.*
+!.env.example
+wp-config.php
+
+# --- dependencies ---
+vendor/
+node_modules/
+
+# --- tool output ---
+backups/
+tests/e2e/test-results/
+tests/e2e/playwright-report/
+tests/e2e/.cache/
+coverage/
+.phpunit.result.cache
+.phpunit.cache/
+*.log
+docs/screenshots/*.tmp.png
+
+# --- WordPress runtime ---
+wp-content/uploads/
+wp-content/upgrade/
+wp-content/cache/
+wp-content/advanced-cache.php
+wp-content/object-cache.php
+wp-content/debug.log
+
+# --- OS / editors ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  verify:
+    name: Lint, tests and E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare environment
+        run: |
+          cp .env.example .env
+          docker compose version
+
+      - name: Install PHP tooling
+        run: |
+          docker run --rm -v "$PWD":/app -w /app composer:2 install \
+            --no-interaction --no-progress --no-audit
+
+      - name: Start stack and install WordPress
+        run: bash scripts/bootstrap.sh
+
+      - name: PHP syntax and coding standards
+        run: bash scripts/lint.sh
+
+      - name: PHPUnit
+        run: |
+          docker compose run --rm -T cli php /opt/estora/vendor/bin/phpunit \
+            -c /opt/estora/phpunit.xml --colors=never
+
+      - name: WordPress integration
+        run: docker compose run --rm -T cli wp eval-file /opt/estora/tests/wp/integration.php
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: HTTP integration
+        env:
+          ESTORA_BASE_URL: http://localhost:8080
+        run: node --test tests/http/
+
+      - name: Clean QA fixtures
+        run: bash scripts/cleanup.sh
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Playwright journeys
+        env:
+          ESTORA_BASE_URL: http://localhost:8080
+        run: npx playwright test -c tests/e2e/playwright.config.js
+
+      - name: Final cleanup
+        if: always()
+        run: bash scripts/cleanup.sh || true
+
+      - name: Upload failure artefacts
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            tests/e2e/test-results
+            phpcs-report.json
+          if-no-files-found: ignore

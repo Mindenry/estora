@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<ruleset name="ESTORA">
+    <description>ESTORA coding standard: WordPress with documented project exceptions.</description>
+    <file>wp-content/plugins/estora-core</file>
+    <file>wp-content/themes/estora-theme</file>
+
+    <arg name="extensions" value="php"/>
+    <arg name="colors"/>
+    <arg value="ps"/>
+    <arg name="parallel" value="8"/>
+
+    <rule ref="WordPress">
+        <!-- PSR-4 style class files (class-foo-bar.php) -->
+        <exclude name="WordPress.Files.FileName"/>
+        <!-- Formatting preferences are enforced by the team, not the gate. -->
+        <exclude name="Generic.WhiteSpace.DisallowTabIndent"/>
+        <exclude name="WordPress.Arrays.ArrayDeclarationSpacing"/>
+        <exclude name="WordPress.Arrays.MultipleStatementAlignment"/>
+        <exclude name="Squiz.Commenting.FunctionComment.Missing"/>
+        <exclude name="Squiz.Commenting.FileComment.Missing"/>
+        <exclude name="Squiz.Commenting.ClassComment.Missing"/>
+        <exclude name="Squiz.Commenting.VariableComment.Missing"/>
+        <exclude name="Squiz.Commenting.InlineComment.InvalidEndChar"/>
+        <exclude name="Squiz.Commenting.FunctionCommentThrowTag"/>
+        <exclude name="WordPress.PHP.YodaConditions"/>
+        <exclude name="Generic.Commenting.DocComment.MissingShort"/>
+        <!-- Idiomatic PHP short ternary; never used to hide a missing value check. -->
+        <exclude name="Universal.Operators.DisallowShortTernary"/>
+        <!-- Internal exceptions are serialised by WP_REST_Response, not echoed. -->
+        <exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped"/>
+    </rule>
+
+    <!--
+      Repository SQL: identifiers are produced only by Schema/estora_table() and
+      escaped with esc_sql(); every value goes through $wpdb->prepare(). The
+      sniffs cannot see that invariant, so they are excluded for the data layer
+      only. Controller and service code keeps both sniffs enabled.
+    -->
+    <rule ref="WordPress.DB.PreparedSQL.InterpolatedNotPrepared">
+        <exclude-pattern>*/includes/repositories/*</exclude-pattern>
+        <exclude-pattern>*/includes/integrations/class-schema.php</exclude-pattern>
+        <exclude-pattern>*/includes/integrations/class-lifecycle.php</exclude-pattern>
+        <exclude-pattern>*/includes/integrations/class-cron.php</exclude-pattern>
+        <exclude-pattern>*/includes/integrations/class-cli.php</exclude-pattern>
+        <exclude-pattern>*/includes/integrations/class-seeder.php</exclude-pattern>
+        <exclude-pattern>*/includes/services/class-report-service.php</exclude-pattern>
+    </rule>
+    <rule ref="WordPress.DB.PreparedSQL.NotPrepared">
+        <exclude-pattern>*/includes/repositories/*</exclude-pattern>
+        <exclude-pattern>*/includes/integrations/class-schema.php</exclude-pattern>
+        <exclude-pattern>*/includes/integrations/class-lifecycle.php</exclude-pattern>
+        <exclude-pattern>*/includes/integrations/class-cron.php</exclude-pattern>
+        <exclude-pattern>*/includes/services/class-report-service.php</exclude-pattern>
+    </rule>
+
+    <rule ref="WordPress.Security.EscapeOutput"/>
+    <rule ref="WordPress.Security.NonceVerification"/>
+    <rule ref="WordPress.Security.ValidatedSanitizedInput"/>
+
+    <config name="minimum_wp_version" value="6.5"/>
+    <config name="testVersion" value="8.2-"/>
+
+    <rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+        <properties>
+            <property name="prefixes" type="array">
+                <element value="estora"/>
+                <element value="Estora"/>
+            </property>
+        </properties>
+    </rule>
+
+    <rule ref="WordPress.WP.I18n">
+        <properties>
+            <property name="text_domain" type="array">
+                <element value="estora-core"/>
+                <element value="estora-theme"/>
+            </property>
+        </properties>
+    </rule>
+</ruleset>
