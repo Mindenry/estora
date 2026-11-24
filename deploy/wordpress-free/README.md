@@ -132,8 +132,17 @@ Free shared hosts give PHP + MySQL but no SSH. Use this only if a VM is not poss
 
 ### Prepare the files on your machine
 
+The current zips and a seeded database dump are attached to the
+[v1.4.2 release](https://github.com/Mindenry/estora/releases/tag/v1.4.2):
+
+- [estora-theme.zip](https://github.com/Mindenry/estora/releases/download/v1.4.2/estora-theme.zip)
+- [estora-core.zip](https://github.com/Mindenry/estora/releases/download/v1.4.2/estora-core.zip)
+- [estora-demo.sql](https://github.com/Mindenry/estora/releases/download/v1.4.2/estora-demo.sql)
+
+To rebuild them from source instead:
+
 ```bash
-# 1. Theme and plugin zips (also used by the Playground build)
+# 1. Theme and plugin zips
 npm run build:playground
 # → playground/estora-theme.zip, playground/estora-core.zip
 
@@ -144,6 +153,8 @@ npm run export:demo-sql
 # 3. Media library
 docker compose cp wordpress:/var/www/html/wp-content/uploads deploy/wordpress-free/uploads
 ```
+
+The release does not include uploads; copy them from the local stack with the last command.
 
 ### Deploy
 
