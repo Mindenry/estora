@@ -17,7 +17,7 @@ report.
 
 | Area | Delivered |
 | --- | --- |
-| Public site | Photo-led editorial home with 21 demo listings across 6 Thai destinations, hierarchical province/area search, destination discovery, market pulse, property archive with server-side filters/sort/pagination, detail gallery and payment estimator, inquiry and viewing forms, favorites, 3-way comparison, about, contact, editorial news, privacy, terms, 404 |
+| Public site | Photo-led editorial home with 21 demo listings across 6 Thai destinations, hierarchical province/area search, destination discovery, market pulse, property archive with server-side filters/sort/pagination, detail gallery, mortgage and purchase-cost calculator, inquiry and viewing forms, favorites, 3-way comparison, about, contact, editorial news, privacy, terms, 404 |
 | Bilingual | English / Thai switcher in header, mobile menu and footer; cookie + browser detection; runtime UI strings, localised property/page/article metadata, Thai names, titles and amenities |
 | Motion | Reveal-on-scroll, counted figures, hero drift, reading progress, back-to-top and hover micro-interactions, all disabled under `prefers-reduced-motion` |
 | Inventory | `property` CPT, 3 taxonomies, 25+ validated fields, gallery, publication and availability state machines, duplicate, publish guard, admin inventory table, REST CRUD |
@@ -38,11 +38,32 @@ Screens: [home](docs/screenshots/home.png) · [Thai home](docs/screenshots/home-
 [calendar](docs/screenshots/app-appointments.png) · [reports](docs/screenshots/app-reports.png) ·
 [mobile](docs/screenshots/app-mobile-dashboard.png) · [all screenshots](docs/screenshots)
 
+## Portfolio demo (Netlify)
+
+A static build of the public site is deployed for portfolio review:
+
+**https://estora-demo.netlify.app**
+
+The demo keeps the real design, photography, typography and interactions. Search, province/area
+filters, sorting, pagination, favourites, comparison, the mortgage calculator and both languages
+run in the browser against exported data. Inquiry and viewing forms are simulated; WordPress, the
+CRM and `/estora-admin/` are not part of the static demo.
+
+```bash
+npm run export:static     # render 85 EN/TH pages from the running site into dist/
+npm run serve:dist        # preview at http://localhost:8090
+npm run test:static       # Playwright smoke test of the exported demo
+npx netlify-cli deploy --dir=dist --prod
+```
+
+`dist/` is generated, not committed. The export script mirrors the theme CSS/JS/fonts and the
+media library, rewrites language links and adds a small demo layer for the REST endpoints.
+
 ## Stack
 
 **Backend:** PHP 8.3 · WordPress 6.7 · MySQL 8.0 · Composer  
 **Frontend:** HTML5 · CSS3 (custom design system + Bootstrap 5) · vanilla ES2020 · Fetch API · local Fraunces / IBM Plex Sans Thai / Noto Serif Thai
-**Testing:** PHPUnit 10 · WordPress-bootstrapped integration · Node test runner (HTTP) · Playwright  
+**Testing:** PHPUnit 10 · WordPress-bootstrapped integration · Node test runner (HTTP) · Playwright · static demo smoke test  
 **Ops:** Docker Compose · WP-CLI · GitHub Actions
 
 ## Architecture
@@ -138,8 +159,9 @@ npx playwright test -c tests/e2e/playwright.config.js
 ```
 
 Current results are recorded in [docs/TEST_REPORT.md](docs/TEST_REPORT.md): 37 unit tests,
-12 WordPress integration groups, 24 HTTP tests and 19 browser journeys pass. HTTP suites run with
-`--test-concurrency=1` because they share the seeded accounts and nonce state.
+12 WordPress integration groups, 24 HTTP tests, 19 browser journeys and the static demo smoke test
+pass. HTTP suites run with `--test-concurrency=1` because they share the seeded accounts and nonce
+state.
 
 ## API
 

@@ -152,19 +152,44 @@ Breakpoints: 1180, 1024, 960, 720, 420 and 360 px.
 - Seed: seven articles across Market notes, Buying guide, Renting, Ownership and Neighbourhoods,
   each with Thai title, content and excerpt plus a media-library thumbnail.
 
-## 11. Payment estimator (v1.3.0)
+## 11. Mortgage and purchase-cost calculator (v1.4.0)
 
-Sale listings render an amortising-loan estimator: price (prefilled), down-payment percentage,
-annual interest rate and term. It recalculates on input with
+Sale listings render a full financing panel rather than a single figure:
+
+- Inputs: price (prefilled), down-payment percentage, annual interest rate with sample preset
+  buttons, term and a transfer-fee split (50/50, buyer 100%, seller 100%).
+- Outputs: monthly payment, loan amount, total interest, total repayment, transfer fee (2% of the
+  appraised value), stamp duty (0.5%) and cash needed at transfer.
+- A collapsible yearly schedule lists principal, interest and closing balance for every year.
+- The monthly payment uses the standard amortising formula:
 
 ```
 monthly = loan × r / (1 − (1 + r)^−n),  r = annual rate / 12 / 100,  n = years × 12
 ```
 
-and shows the loan amount, term and rate underneath. It is labelled as an estimate and never
-presented as a bank quote.
+- The panel is labelled as an estimate, states that withholding tax depends on the seller and that
+  the Land Office appraisal is usually lower than the asking price, and links to a pre-approval
+  conversation with the office.
 
-## 12. Owner and credits
+## 12. Static portfolio demo (v1.4.0)
+
+`npm run export:static` produces a Netlify-ready `dist/` from the running WordPress site:
+
+- 85 pages: home, archive, 21 property details, news, 7 articles, 5 category archives, about,
+  contact, favourites, compare, privacy, terms and a 404 — each in English and Thai.
+- Every internal link is rewritten; Thai pages live under `/th/` and the switcher points at the
+  matching page, not a query string.
+- Theme CSS, JS, fonts, plugin assets and referenced uploads are mirrored with their directory
+  structure, so relative CSS font paths keep working.
+- `netlify-demo/demo-api.js` intercepts `/wp-json/estora/v1` calls and answers favourites,
+  comparison, availability and form submissions from bundled data and `localStorage`.
+- `netlify-demo/demo-archive.js` applies the same query args as the PHP archive (purpose, type,
+  province, district, destination, keyword, price, bedrooms, availability, sort, page) in the
+  browser and re-renders cards, counts, chips and pagination.
+- A small badge states that forms are simulated and links to the source repository.
+- `scripts/check-static.mjs` verifies the exported site end to end.
+
+## 13. Owner and credits
 
 - Proprietor: **พีรวิชญ์ หล้าคำภา / Peerawit Lakhampa**, stored as the `company_owner` setting and
   rendered in the footer band, About portrait, proprietor panel and article bylines.

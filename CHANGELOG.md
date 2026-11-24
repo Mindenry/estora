@@ -3,6 +3,33 @@
 All notable changes to ESTORA. Format follows Keep a Changelog; versions follow Semantic
 Versioning.
 
+## [1.4.0] — 2026-11-24
+
+### Added
+
+- Full mortgage and purchase-cost estimator on sale listings: price, down payment, interest rate
+  with sample presets, term, transfer-fee split, monthly payment, loan amount, total interest,
+  total repayment, transfer fee, stamp duty, cash needed at transfer and a collapsible yearly
+  amortisation schedule.
+- Static portfolio export for Netlify (`npm run export:static`): 85 rendered pages in English and
+  Thai, mirrored CSS/JS/fonts/uploads, rewritten language paths and a demo layer that keeps
+  search, province/area filters, sorting, pagination, favourites, comparison, the estimator and
+  both forms usable without PHP or MySQL.
+- `scripts/check-static.mjs` smoke test for the exported demo.
+- `locations` (including ancestors) and `location_raw` in the public property payload, so a
+  destination such as Hua Hin also matches its parent and filters compare raw meta values.
+
+### Changed
+
+- Comparison and favourites on the static demo are backed by `localStorage` rather than the REST
+  database; inquiry and viewing requests return a simulated reference.
+- WordPress emoji detection scripts removed from the public theme.
+
+### Fixed
+
+- Archive district/sort controls now update results after the debounce on the static demo.
+- Static export preserves the viewport meta and removes prefetch speculation rules.
+
 ## [1.3.0] — 2026-11-24
 
 ### Added

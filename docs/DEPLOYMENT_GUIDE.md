@@ -145,6 +145,21 @@ node scripts/screenshots.mjs     # writes docs/screenshots (desktop + mobile)
 ## 12. CI
 
 `.github/workflows/ci.yml` installs Composer tooling, boots the same Compose stack, runs lint,
-PHPUnit, the WordPress integration script, the HTTP suite and Playwright. It has not been executed
-on GitHub from the development machine (no remote configured); the commands are identical to the
-locally verified ones.
+PHPUnit, the WordPress integration script, the HTTP suite and Playwright. It runs on pushes to
+`main` and on pull requests.
+
+## 13. Static demo on Netlify
+
+Netlify cannot run WordPress or MySQL, so the demo is a prebuilt static export:
+
+```bash
+npm run export:static          # requires the local WordPress stack on :8080
+npm run serve:dist             # http://localhost:8090
+npm run test:static            # Playwright smoke test of the export
+npx netlify-cli deploy --dir=dist --prod
+```
+
+`netlify.toml` sets `publish = "dist"` and the cache/security headers. `dist/` is generated and
+ignored by git. Re-run the export after any theme, content or data change; the CLI deploy uploads
+the new folder and keeps the same site URL. The static demo simulates forms and stores favourites
+in `localStorage`; it does not expose the CRM or the back office.

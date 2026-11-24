@@ -1,0 +1,43 @@
+/* Static portfolio demo chrome — not part of the WordPress theme. */
+.estora-demo-badge {
+  position: fixed;
+  left: 16px;
+  bottom: 16px;
+  z-index: 1150;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 253, 248, .2);
+  border-radius: 3px;
+  background: rgba(15, 48, 38, .94);
+  color: #D8DFD8;
+  font-family: "IBM Plex Sans Thai", system-ui, sans-serif;
+  font-size: 10px;
+  line-height: 1.5;
+  box-shadow: 0 12px 30px rgba(15, 48, 38, .24);
+}
+.estora-demo-badge::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: #DCC49A;
+}
+.estora-demo-badge a { color: #FFFDF8; text-decoration: underline; text-underline-offset: 2px; }
+.estora-demo-badge a:hover { color: #E8D6AE; }
+@media (max-width: 720px) {
+  .estora-demo-badge {
+    position: static;
+    right: auto;
+    bottom: auto;
+    max-width: none;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 0;
+    background: #101B16;
+    box-shadow: none;
+  }
+}

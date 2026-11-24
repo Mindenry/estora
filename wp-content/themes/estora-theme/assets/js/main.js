@@ -470,16 +470,24 @@
     });
   });
 
-  /* ---------- mortgage estimator ---------- */
+  /* ---------- mortgage + purchase-cost estimator ---------- */
   $$('[data-mortgage]').forEach((root) => {
     const priceInput = $('[data-calc-price]', root);
     const downInput = $('[data-calc-down]', root);
     const rateInput = $('[data-calc-rate]', root);
     const yearsInput = $('[data-calc-years]', root);
+    const splitInput = $('[data-calc-split]', root);
     const out = $('[data-calc-out]', root);
     const summary = $('[data-calc-summary]', root);
     const downLabel = $('[data-calc-down-label]', root);
     const downValue = $('[data-calc-down-value]', root);
+    const loanOut = $('[data-calc-loan]', root);
+    const interestOut = $('[data-calc-interest]', root);
+    const totalOut = $('[data-calc-total]', root);
+    const transferOut = $('[data-calc-transfer]', root);
+    const stampOut = $('[data-calc-stamp]', root);
+    const cashOut = $('[data-calc-cash]', root);
+    const scheduleBody = $('[data-calc-schedule]', root);
     if (!priceInput || !downInput || !rateInput || !yearsInput || !out) return;
 
     const money = new Intl.NumberFormat(document.documentElement.lang === 'th' ? 'th-TH' : 'en-US', {
@@ -488,36 +496,77 @@
 
     const update = () => {
       const price = Math.max(0, Number(priceInput.value) || 0);
-      const downPercent = Math.max(0, Math.min(90, Number(downInput.value) || 0));
-      const rate = Math.max(0, Number(rateInput.value) || 0);
-      const years = Math.max(1, Number(yearsInput.value) || 30);
+      const downPercent = Math.max(0, Math.min(60, Number(downInput.value) || 0));
+      const rate = Math.max(0, Math.min(30, Number(rateInput.value) || 0));
+      const years = Math.max(1, Math.min(40, Number(yearsInput.value) || 30));
+      const feeShare = splitInput ? Math.max(0, Math.min(1, Number(splitInput.value) || 0)) : 0.5;
+
       const down = price * (downPercent / 100);
       const loan = Math.max(0, price - down);
       const monthlyRate = rate / 100 / 12;
       const payments = years * 12;
-      let monthly = 0;
-      if (loan > 0) {
-        monthly = monthlyRate > 0
+      const monthly = loan <= 0
+        ? 0
+        : (monthlyRate > 0
           ? (loan * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -payments))
-          : loan / payments;
-      }
+          : loan / payments);
+      const totalRepayment = monthly * payments;
+      const totalInterest = Math.max(0, totalRepayment - loan);
 
-      if (downLabel) downLabel.textContent = `${downPercent}%`;
+      if (downLabel) downLabel.textContent = downPercent + '%';
       if (downValue) downValue.textContent = money.format(down);
       out.textContent = money.format(monthly);
+      if (loanOut) loanOut.textContent = money.format(loan);
+      if (interestOut) interestOut.textContent = money.format(totalInterest);
+      if (totalOut) totalOut.textContent = money.format(totalRepayment);
+
       if (summary) {
-        const loanLabel = strings.calcLoan || 'Loan';
         const termLabel = strings.calcTerm || 'over';
         const atLabel = strings.calcAt || 'at';
         const yearUnit = strings.calcYears || 'years';
-        summary.textContent = `${loanLabel} ${money.format(loan)} ${termLabel} ${years} ${yearUnit} ${atLabel} ${rate}%`;
+        summary.textContent = money.format(loan) + ' ' + termLabel + ' ' + years + ' ' + yearUnit + ' ' + atLabel + ' ' + rate + '%';
+      }
+
+      const transfer = price * 0.02 * feeShare;
+      const stamp = price * 0.005 * feeShare;
+      if (transferOut) transferOut.textContent = money.format(transfer);
+      if (stampOut) stampOut.textContent = money.format(stamp);
+      if (cashOut) cashOut.textContent = money.format(down + transfer + stamp);
+
+      if (scheduleBody && loan > 0) {
+        let balance = loan;
+        const rows = [];
+        for (let year = 1; year <= years; year += 1) {
+          let principalYear = 0;
+          let interestYear = 0;
+          for (let month = 1; month <= 12; month += 1) {
+            const interest = balance * monthlyRate;
+            const principal = Math.min(balance, monthly - interest);
+            principalYear += principal;
+            interestYear += interest;
+            balance = Math.max(0, balance - principal);
+          }
+          rows.push(
+            '<tr><th scope="row">' + year + '</th><td>' + money.format(principalYear) + '</td><td>' +
+            money.format(interestYear) + '</td><td>' + money.format(balance) + '</td></tr>'
+          );
+        }
+        scheduleBody.innerHTML = rows.join('');
       }
     };
 
-    [priceInput, downInput, rateInput, yearsInput].forEach((input) => {
+    [priceInput, downInput, rateInput, yearsInput, splitInput].filter(Boolean).forEach((input) => {
       input.addEventListener('input', update);
       input.addEventListener('change', update);
     });
+
+    $$('[data-rate]', root).forEach((btn) => {
+      btn.addEventListener('click', () => {
+        rateInput.value = btn.dataset.rate;
+        update();
+      });
+    });
+
     update();
   });
 

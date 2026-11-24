@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ESTORA_THEME_VERSION', '1.3.0' );
+define( 'ESTORA_THEME_VERSION', '1.4.0' );
 
 /**
  * Asset URL with a filemtime cache break.
@@ -56,6 +56,15 @@ function estora_theme_setup(): void {
 	);
 }
 add_action( 'after_setup_theme', 'estora_theme_setup' );
+
+/*
+ * WordPress prints emoji detection scripts and styles on every page. The public
+ * theme does not use them, and they are not needed in the static export.
+ */
+remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
+remove_action( 'wp_print_styles', 'print_emoji_styles' );
+remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
+remove_action( 'admin_print_styles', 'print_emoji_styles' );
 
 /**
  * Front-end assets.

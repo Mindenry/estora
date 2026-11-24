@@ -94,6 +94,10 @@ verification remains (stated).
 | AC-64 | News page is an editorial layout | Featured lead, topic counts, 6-card grid, sidebar; single article with share and prev/next | PASS |
 | AC-65 | Sale listing exposes a working payment estimate | Inputs recalculate output in EN/TH using the amortising formula | PASS |
 | AC-66 | Hero is composed on 34-inch / ultrawide | 880px cap at 3440×1440 and 2560×1080; 674px at 2000×750; search stays inside the hero | PASS |
+| AC-67 | Mortgage calculator matches the amortising formula | 12.5M / 20% / 6.5% / 30y → ฿63,207; costs ฿125,000 + ฿31,250; cash ฿2,656,250 | PASS |
+| AC-68 | Static export reproduces the public site | 85 EN/TH pages, mirrored assets, Thai under `/th/` | PASS |
+| AC-69 | Static demo keeps search/favourites/compare/forms working | `npm run test:static`: province+area filter, sort, favourites, comparison, LD-/AP- references | PASS |
+| AC-70 | Deployed demo is honest about its limits | Badge states forms are simulated and links to source; no CRM or back office in `dist` | PASS |
 
 ## Out of scope for acceptance
 

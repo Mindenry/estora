@@ -1,0 +1,25 @@
+# Netlify serves the prebuilt static portfolio demo in dist/.
+#
+# The public site is WordPress, so the export is produced from the running
+# installation with `npm run export:static`, then deployed with the Netlify CLI.
+# Netlify itself does not run PHP or MySQL.
+[build]
+  publish = "dist"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "SAMEORIGIN"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "geolocation=(), microphone=(), camera=()"
+
+[[headers]]
+  for = "/wp-content/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/demo/*"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"

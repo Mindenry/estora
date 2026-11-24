@@ -1,6 +1,6 @@
 # ESTORA — Test Report
 
-Date: 2026-11-24 · Environment: Docker Desktop on Windows · PHP 8.3.37 · WordPress 6.7.2 ·
+Date: 2026-11-25 · Environment: Docker Desktop on Windows · PHP 8.3.37 · WordPress 6.7.2 ·
 MySQL 8.0.46 · Node 26 · Playwright 1.49 (Chromium).
 
 All results below were produced by the commands shown, against the running Docker stack with the
@@ -17,6 +17,7 @@ seeded demo database. Nothing here is asserted from generated code alone.
 | HTTP / REST | `node --test --test-concurrency=1 tests/http/` | **24 tests passed** (15 API + 9 app) |
 | Browser E2E | `npx playwright test -c tests/e2e/playwright.config.js` | **19 journeys passed** |
 | Screenshots | `node scripts/screenshots.mjs` | **43 captures**, app routes with 0 console errors |
+| Static demo | `npm run export:static && npm run test:static` | **85 pages**, filters/favourites/compare/forms pass, 0 console errors |
 | Theme independence | activate Twenty Twenty-Four → API check → reactivate | leads 200, properties 200, all tables present |
 
 ## Unit suite (PHPUnit)

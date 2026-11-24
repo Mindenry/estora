@@ -323,8 +323,23 @@ final class Property_Repository {
 
 		$purpose_terms = wp_get_post_terms( $post_id, 'property_purpose' );
 		$type_terms    = wp_get_post_terms( $post_id, 'property_type' );
+		$place_terms   = wp_get_post_terms( $post_id, 'property_location' );
 		$purpose       = ( ! is_wp_error( $purpose_terms ) && $purpose_terms ) ? $purpose_terms[0]->slug : '';
 		$type          = ( ! is_wp_error( $type_terms ) && $type_terms ) ? $type_terms[0]->slug : '';
+		$destinations  = array();
+		if ( ! is_wp_error( $place_terms ) && $place_terms ) {
+			foreach ( $place_terms as $place_term ) {
+				$destinations[] = $place_term->slug;
+				$ancestors      = get_ancestors( $place_term->term_id, 'property_location', 'taxonomy' );
+				foreach ( $ancestors as $ancestor_id ) {
+					$ancestor = get_term( $ancestor_id, 'property_location' );
+					if ( $ancestor instanceof \WP_Term ) {
+						$destinations[] = $ancestor->slug;
+					}
+				}
+			}
+			$destinations = array_values( array_unique( $destinations ) );
+		}
 		$price         = (float) $this->meta( $post_id, 'price_display' );
 		$availability  = (string) ( $this->meta( $post_id, 'availability' ) ?: Property_Status::AVAILABLE );
 		$agent_id      = (int) $this->meta( $post_id, 'agent_id' );
@@ -378,6 +393,7 @@ final class Property_Repository {
 			'purpose_label'    => estora_purpose_name( $purpose ),
 			'type'             => $type,
 			'type_label'       => estora_type_name( $type, ( ! is_wp_error( $type_terms ) && $type_terms ) ? $type_terms[0]->name : '' ),
+			'locations'        => $destinations,
 			'price'            => $price,
 			'price_formatted'  => estora_price( $price ),
 			'rent_period'      => (string) $this->meta( $post_id, 'rent_period', 'month' ),
@@ -392,6 +408,11 @@ final class Property_Repository {
 				'district'    => $district,
 				'subdistrict' => $subdistrict,
 				'postal_code' => (string) $this->meta( $post_id, 'postal_code' ),
+			),
+			'location_raw'     => array(
+				'province'    => (string) $this->meta( $post_id, 'province' ),
+				'district'    => (string) $this->meta( $post_id, 'district' ),
+				'subdistrict' => (string) $this->meta( $post_id, 'subdistrict' ),
 			),
 			'land_area'        => (float) $this->meta( $post_id, 'land_area' ),
 			'usable_area'      => (float) $this->meta( $post_id, 'usable_area' ),

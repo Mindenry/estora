@@ -1,5 +1,26 @@
 # ESTORA — Release Notes
 
+## v1.4.0 — Financing calculator and a deployable portfolio demo
+
+Release date: 2026-11-24
+
+The public site becomes a complete portfolio piece: the payment estimate is now a real mortgage
+calculator, and the whole public front end can be exported and deployed as a static demo.
+
+- **Mortgage & purchase costs.** Sale listings open a calculator with price, down payment, sample
+  rates, term and a 50/50 or 100% transfer-fee split. It outputs the monthly payment, loan amount,
+  total interest, total repayment, transfer fee, stamp duty, cash needed at transfer and a yearly
+  amortisation table. Everything recalculates live in English or Thai and is labelled an estimate,
+  not a bank quote.
+- **Static Netlify demo.** `npm run export:static` renders 85 pages (English and Thai), mirrors all
+  assets and rewrites language paths. A small demo layer answers the REST calls so property search,
+  province/area filtering, sorting, pagination, favourites, comparison and both forms still work
+  without PHP or MySQL.
+- **Honest demo chrome.** A discreet badge states that forms are simulated and links to the source.
+- **API additions.** Property payloads now expose destination slugs (including ancestors) and the
+  raw province/district used by the filters.
+- **Performance.** WordPress emoji scripts are no longer printed on public pages.
+
 ## v1.3.0 — Motion, hierarchical search and an editorial journal
 
 Release date: 2026-11-24

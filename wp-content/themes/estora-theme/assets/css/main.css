@@ -954,3 +954,99 @@ body.estora-public .estora-article-page__media img { width: 100%; height: 100%; 
   .estora-header.is-nav-open .estora-lang--header { display: none; }
   .estora-header.is-nav-open .estora-header__actions { gap: 8px; }
 }
+
+/* ---------- mortgage + purchase costs (v1.3.1) ---------- */
+.estora-calc__head { margin-bottom: 20px; }
+.estora-calc__head h2 { margin-bottom: 8px; }
+.estora-calc__lede { max-width: 72ch; margin: 0; font-size: 12px; line-height: 1.7; color: var(--muted); }
+.estora-calc__layout { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: clamp(18px, 2.6vw, 28px); align-items: stretch; }
+.estora-calc__inputs { display: grid; align-content: start; gap: 12px; }
+.estora-calc__field { display: flex; flex-direction: column; gap: 5px; font-size: 11px; }
+.estora-calc__field > span {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  font-size: 9px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--muted);
+}
+.estora-calc__field b { font-weight: 700; letter-spacing: 0; text-transform: none; color: var(--brass-deep); }
+.estora-calc__field input,
+.estora-calc__field select {
+  width: 100%; min-height: 42px; padding: 9px 11px;
+  border: 1px solid var(--line-strong); border-radius: var(--radius-sm);
+  background: #fff; color: var(--ink); font-family: var(--font-ui); font-size: 13px;
+}
+.estora-calc__field input:focus,
+.estora-calc__field select:focus { border-color: var(--pine); box-shadow: var(--focus); outline: none; }
+.estora-calc__field input[type="range"] {
+  min-height: 24px; padding: 0; border: 0; box-shadow: none;
+  accent-color: var(--pine); background: transparent;
+}
+.estora-calc__field output { font-size: 11px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.estora-calc__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.estora-calc__presets { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.estora-calc__presets > span { margin-right: 2px; font-size: 9px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+.estora-calc__presets button {
+  min-height: 28px; padding: 4px 10px; border: 1px solid var(--line-strong); border-radius: 999px;
+  background: var(--surface); color: var(--ink-2); font-family: var(--font-ui); font-size: 11px; cursor: pointer;
+  transition: border-color .16s var(--ease), color .16s var(--ease), background .16s var(--ease);
+}
+.estora-calc__presets button:hover { border-color: var(--pine); color: var(--pine); background: var(--pine-soft); }
+.estora-calc__summary {
+  display: flex; flex-direction: column;
+  padding: clamp(18px, 2.2vw, 24px);
+  background: var(--pine-deep); color: #D8DFD8;
+}
+.estora-calc__summary > span { font-size: 9px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: #A9B3AA; }
+.estora-calc__summary > strong {
+  display: block; margin: 6px 0 2px;
+  font-family: var(--font-display); font-size: clamp(2rem, 3.2vw, 2.7rem); font-weight: 500; line-height: 1;
+  color: #FFFDF8; font-variant-numeric: tabular-nums;
+}
+.estora-calc__summary > p { margin: 0 0 16px; font-size: 11px; color: #A9B3AA; }
+.estora-calc__summary dl { display: grid; gap: 0; margin: auto 0 0; padding-top: 14px; border-top: 1px solid rgba(255, 253, 248, .16); }
+.estora-calc__summary dl > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 6px 0; }
+.estora-calc__summary dt { font-size: 10px; letter-spacing: .06em; text-transform: uppercase; color: #A9B3AA; }
+.estora-calc__summary dd { margin: 0; font-size: 12px; color: #F6F1E7; font-variant-numeric: tabular-nums; }
+
+.estora-calc__costs { margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--line); }
+.estora-calc__costs h3 { margin: 0 0 10px; font-family: var(--font-ui); font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.estora-calc__costrow { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; padding: 7px 0; font-size: 12px; color: var(--ink-2); border-bottom: 1px solid var(--line); }
+.estora-calc__costrow strong { font-family: var(--font-display); font-size: 1.05rem; font-weight: 500; color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.estora-calc__costrow--total { border-bottom: 0; padding-top: 12px; color: var(--ink); font-weight: 600; }
+.estora-calc__costrow--total strong { color: var(--pine); font-size: 1.3rem; }
+.estora-calc__note { margin: 10px 0 0; font-size: 11px; line-height: 1.7; color: var(--muted); }
+
+.estora-calc__schedule { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 14px; }
+.estora-calc__schedule summary {
+  display: inline-flex; align-items: center; gap: 7px; cursor: pointer;
+  font-size: 11px; font-weight: 600; color: var(--pine); list-style: none;
+}
+.estora-calc__schedule summary::-webkit-details-marker { display: none; }
+.estora-calc__schedule summary::after { content: "+"; font-size: 13px; color: var(--brass-deep); }
+.estora-calc__schedule[open] summary::after { content: "−"; }
+.estora-calc__tablewrap { margin-top: 12px; max-height: 340px; overflow: auto; border: 1px solid var(--line); }
+.estora-calc__tablewrap table { width: 100%; border-collapse: collapse; font-size: 11px; font-variant-numeric: tabular-nums; }
+.estora-calc__tablewrap th,
+.estora-calc__tablewrap td { padding: 7px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.estora-calc__tablewrap thead th { position: sticky; top: 0; background: var(--sand); font-weight: 600; color: var(--ink); }
+.estora-calc__tablewrap tbody th { text-align: left; font-weight: 600; color: var(--ink-2); }
+.estora-calc__cta { margin: 14px 0 0; }
+
+@media (max-width: 960px) {
+  .estora-calc__layout { grid-template-columns: 1fr; }
+  .estora-calc__summary dl { margin-top: 14px; }
+}
+@media (max-width: 520px) {
+  .estora-calc__row { grid-template-columns: 1fr; }
+  .estora-calc__costrow { align-items: flex-start; flex-direction: column; gap: 2px; }
+}
+
+/* the page h3 scale must not win over the small cost heading */
+body.estora-public .estora-calc__costs h3 {
+  font-family: var(--font-ui);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 10px;
+}

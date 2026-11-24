@@ -124,38 +124,91 @@ while ( have_posts() ) :
 
 				<?php if ( 'sale' === $estora_data['purpose'] && (float) $estora_data['price'] > 0 ) : ?>
 					<section class="estora-calc" data-mortgage data-price="<?php echo esc_attr( (string) (float) $estora_data['price'] ); ?>">
-						<h2><?php echo esc_html( estora_text( 'Estimate the monthly payment', 'ประมาณการค่างวดต่อเดือน' ) ); ?></h2>
-						<p class="estora-calc__lede"><?php echo esc_html( estora_text( 'An indicative figure based on a standard amortising loan. Bank rates, fees and approval terms vary — the office can introduce you to a lender.', 'ตัวเลขประมาณการจากสินเชื่อผ่อนชำระแบบมาตรฐาน อัตราดอกเบี้ย ค่าธรรมเนียม และเงื่อนไขอนุมัติของแต่ละธนาคารแตกต่างกัน ทีมงานแนะนำแหล่งสินเชื่อได้' ) ); ?></p>
-						<div class="estora-calc__grid">
-							<label class="estora-calc__field">
-								<span><?php echo esc_html( estora_text( 'Property price', 'ราคาทรัพย์' ) ); ?></span>
-								<input type="number" min="0" step="100000" value="<?php echo esc_attr( (string) (int) $estora_data['price'] ); ?>" data-calc-price>
-							</label>
-							<label class="estora-calc__field">
-								<span><?php echo esc_html( estora_text( 'Down payment', 'เงินดาวน์' ) ); ?> <b data-calc-down-label>20%</b></span>
-								<input type="range" min="0" max="60" step="5" value="20" data-calc-down>
-								<output data-calc-down-value></output>
-							</label>
-							<label class="estora-calc__field">
-								<span><?php echo esc_html( estora_text( 'Interest rate (% per year)', 'ดอกเบี้ย (% ต่อปี)' ) ); ?></span>
-								<input type="number" min="0" max="20" step="0.1" value="6.5" data-calc-rate>
-							</label>
-							<label class="estora-calc__field">
-								<span><?php echo esc_html( estora_text( 'Term', 'ระยะเวลาผ่อน' ) ); ?></span>
-								<select data-calc-years>
-									<?php foreach ( array( 10, 15, 20, 25, 30 ) as $estora_years ) : ?>
-										<option value="<?php echo esc_attr( (string) $estora_years ); ?>" <?php selected( 30, $estora_years ); ?>><?php echo esc_html( sprintf( estora_text( '%d years', '%d ปี' ), $estora_years ) ); ?></option>
+						<header class="estora-calc__head">
+							<p class="estora-eyebrow"><span aria-hidden="true"></span><?php echo esc_html( estora_text( 'Financing', 'สินเชื่อ' ) ); ?></p>
+							<h2><?php echo esc_html( estora_text( 'Estimate the monthly payment', 'ประมาณการค่างวดต่อเดือน' ) ); ?></h2>
+							<p class="estora-calc__lede"><?php echo esc_html( estora_text( 'A standard amortising loan, calculated in the browser. Bank rates, fees and approval terms vary — the office can introduce you to a lender.', 'คำนวณจากสินเชื่อผ่อนชำระแบบมาตรฐานในเบราว์เซอร์ อัตราดอกเบี้ย ค่าธรรมเนียม และเงื่อนไขอนุมัติของแต่ละธนาคารแตกต่างกัน ทีมงานแนะนำแหล่งสินเชื่อได้' ) ); ?></p>
+						</header>
+
+						<div class="estora-calc__layout">
+							<div class="estora-calc__inputs">
+								<label class="estora-calc__field">
+									<span><?php echo esc_html( estora_text( 'Property price', 'ราคาทรัพย์' ) ); ?></span>
+									<input type="number" min="0" step="100000" value="<?php echo esc_attr( (string) (int) $estora_data['price'] ); ?>" data-calc-price inputmode="numeric">
+								</label>
+								<label class="estora-calc__field">
+									<span><?php echo esc_html( estora_text( 'Down payment', 'เงินดาวน์' ) ); ?> <b data-calc-down-label>20%</b></span>
+									<input type="range" min="0" max="60" step="5" value="20" data-calc-down>
+									<output data-calc-down-value></output>
+								</label>
+								<div class="estora-calc__row">
+									<label class="estora-calc__field">
+										<span><?php echo esc_html( estora_text( 'Interest rate (% per year)', 'ดอกเบี้ย (% ต่อปี)' ) ); ?></span>
+										<input type="number" min="0" max="20" step="0.05" value="6.5" data-calc-rate inputmode="decimal">
+									</label>
+									<label class="estora-calc__field">
+										<span><?php echo esc_html( estora_text( 'Term', 'ระยะเวลาผ่อน' ) ); ?></span>
+										<select data-calc-years>
+											<?php foreach ( array( 10, 15, 20, 25, 30 ) as $estora_years ) : ?>
+												<option value="<?php echo esc_attr( (string) $estora_years ); ?>" <?php selected( 30, $estora_years ); ?>><?php echo esc_html( sprintf( estora_text( '%d years', '%d ปี' ), $estora_years ) ); ?></option>
+											<?php endforeach; ?>
+										</select>
+									</label>
+								</div>
+								<div class="estora-calc__presets">
+									<span><?php echo esc_html( estora_text( 'Sample rates', 'อัตราตัวอย่าง' ) ); ?></span>
+									<?php foreach ( array( '5.75', '6.25', '6.75' ) as $estora_rate ) : ?>
+										<button type="button" data-rate="<?php echo esc_attr( $estora_rate ); ?>"><?php echo esc_html( $estora_rate . '%' ); ?></button>
 									<?php endforeach; ?>
-								</select>
-							</label>
-						</div>
-						<div class="estora-calc__result">
-							<div>
-								<span><?php echo esc_html( estora_text( 'Estimated monthly payment', 'ค่างวดประมาณต่อเดือน' ) ); ?></span>
-								<strong data-calc-out>—</strong>
+								</div>
+								<label class="estora-calc__field estora-calc__field--split">
+									<span><?php echo esc_html( estora_text( 'Transfer fees', 'ค่าธรรมเนียมโอน' ) ); ?></span>
+									<select data-calc-split>
+										<option value="0.5" selected><?php echo esc_html( estora_text( 'Split 50/50 with the seller', 'แบ่งคนละครึ่งกับผู้ขาย' ) ); ?></option>
+										<option value="1"><?php echo esc_html( estora_text( 'Buyer pays 100%', 'ผู้ซื้อจ่ายทั้งหมด' ) ); ?></option>
+										<option value="0"><?php echo esc_html( estora_text( 'Seller pays 100%', 'ผู้ขายจ่ายทั้งหมด' ) ); ?></option>
+									</select>
+								</label>
 							</div>
-							<p data-calc-summary></p>
+
+							<div class="estora-calc__summary">
+								<span><?php echo esc_html( estora_text( 'Estimated monthly payment', 'ค่างวดประมาณต่อเดือน' ) ); ?></span>
+								<strong data-calc-out aria-live="polite">—</strong>
+								<p data-calc-summary></p>
+								<dl>
+									<div><dt><?php echo esc_html( estora_text( 'Loan amount', 'ยอดกู้' ) ); ?></dt><dd data-calc-loan>—</dd></div>
+									<div><dt><?php echo esc_html( estora_text( 'Total interest', 'ดอกเบี้ยรวม' ) ); ?></dt><dd data-calc-interest>—</dd></div>
+									<div><dt><?php echo esc_html( estora_text( 'Total repayment', 'ยอดชำระรวม' ) ); ?></dt><dd data-calc-total>—</dd></div>
+								</dl>
+							</div>
 						</div>
+
+						<div class="estora-calc__costs">
+							<h3><?php echo esc_html( estora_text( 'Estimated purchase costs', 'ค่าใช้จ่ายวันโอนประมาณ' ) ); ?></h3>
+							<div class="estora-calc__costrow"><span><?php echo esc_html( estora_text( 'Transfer fee (2% of appraised value)', 'ค่าธรรมเนียมโอน (2% ของราคาประเมิน)' ) ); ?></span><strong data-calc-transfer>—</strong></div>
+							<div class="estora-calc__costrow"><span><?php echo esc_html( estora_text( 'Stamp duty (0.5%)', 'อากรแสตมป์ (0.5%)' ) ); ?></span><strong data-calc-stamp>—</strong></div>
+							<div class="estora-calc__costrow estora-calc__costrow--total"><span><?php echo esc_html( estora_text( 'Cash needed at transfer (down payment + fees)', 'เงินสดที่ต้องเตรียมวันโอน (เงินดาวน์ + ค่าธรรมเนียม)' ) ); ?></span><strong data-calc-cash>—</strong></div>
+							<p class="estora-calc__note"><?php echo esc_html( estora_text( 'Withholding tax depends on the seller and holding period. Figures use the asking price as a proxy for the appraised value; the Land Office appraisal is usually lower.', 'ภาษีหัก ณ ที่จ่ายขึ้นกับผู้ขายและระยะเวลาถือครอง ตัวเลขนี้ใช้ราคาประกาศเป็นตัวแทนราคาประเมิน ซึ่งโดยทั่วไปราคาประเมินของสำนักงานที่ดินจะต่ำกว่า' ) ); ?></p>
+						</div>
+
+						<details class="estora-calc__schedule">
+							<summary><?php echo esc_html( estora_text( 'View yearly schedule', 'ดูตารางผ่อนรายปี' ) ); ?></summary>
+							<div class="estora-calc__tablewrap">
+								<table>
+									<thead>
+										<tr>
+											<th scope="col"><?php echo esc_html( estora_text( 'Year', 'ปี' ) ); ?></th>
+											<th scope="col"><?php echo esc_html( estora_text( 'Principal', 'เงินต้น' ) ); ?></th>
+											<th scope="col"><?php echo esc_html( estora_text( 'Interest', 'ดอกเบี้ย' ) ); ?></th>
+											<th scope="col"><?php echo esc_html( estora_text( 'Balance', 'ยอดคงเหลือ' ) ); ?></th>
+										</tr>
+									</thead>
+									<tbody data-calc-schedule></tbody>
+								</table>
+							</div>
+						</details>
+
+						<p class="estora-calc__cta"><a class="estora-textlink" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php echo esc_html( estora_text( 'Ask the office for a pre-approval introduction', 'ขอให้ทีมงานแนะนำสินเชื่อและยื่นขออนุมัติ' ) ); ?> <?php echo estora_icon( 'arrow', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a></p>
 					</section>
 				<?php endif; ?>
 
