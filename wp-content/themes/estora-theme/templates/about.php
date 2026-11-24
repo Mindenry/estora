@@ -35,6 +35,10 @@ while ( have_posts() ) :
 
 	<figure class="estora-about-media">
 		<img src="<?php echo esc_url( estora_theme_asset( 'img/photos/chiangmai-house.jpg' ) ); ?>" alt="" width="1600" height="1200" loading="lazy">
+		<figcaption class="estora-about-media__tag">
+			<span><?php echo esc_html( estora_text( 'Chiang Mai · Since 2019', 'เชียงใหม่ · ตั้งแต่ปี 2562' ) ); ?></span>
+			<strong><?php echo esc_html( estora_owner() ); ?></strong>
+		</figcaption>
 	</figure>
 
 	<article class="estora-container estora-section">
@@ -54,6 +58,13 @@ while ( have_posts() ) :
 						<li><?php echo estora_icon( 'calendar', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?><?php echo esc_html( estora_text( 'Monday–Saturday, 09:00–18:00', 'จันทร์–เสาร์ 09:00–18:00' ) ); ?></li>
 					</ul>
 					<p style="margin-top:16px"><a class="estora-btn" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php esc_html_e( 'Contact the office', 'estora-theme' ); ?></a></p>
+				</div>
+
+				<div class="estora-owner">
+					<p class="estora-eyebrow"><span aria-hidden="true"></span><?php echo esc_html( estora_text( 'Proprietor', 'เจ้าของกิจการ' ) ); ?></p>
+					<p class="estora-owner__name">พีรวิชญ์ หล้าคำภา</p>
+					<p class="estora-owner__en">Peerawit Lakhampa</p>
+					<p class="estora-owner__note"><?php echo esc_html( estora_text( 'Founded ESTORA in Chiang Mai. Still reads every property file before it is published — and still answers the phone when a client calls about a title.', 'ก่อตั้ง ESTORA ที่เชียงใหม่ และยังอ่านแฟ้มทรัพย์ทุกแฟ้มก่อนเผยแพร่ รวมถึงยังรับสายลูกค้าเองเมื่อมีคำถามเรื่องโฉนด' ) ); ?></p>
 				</div>
 			</div>
 		</div>

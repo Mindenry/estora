@@ -70,6 +70,17 @@ Every list has loading (skeleton rows), empty (copy + action), error (message + 
 mutation: disabled button while pending, inline field errors, toast on success, confirmation for
 destructive actions, `aria-live` for async results.
 
+## Motion (public)
+
+- Reveal-on-scroll: opacity + 22px rise, 720ms, 70ms sibling stagger, only when
+  IntersectionObserver is available and reduced motion is off. Scoped to `html.estora-motion` so a
+  failed script never leaves content invisible.
+- Figures count up once with `Intl.NumberFormat` in the active language.
+- Hero photograph drifts 1.03 → 1.09 over 28 seconds inside a clipped frame.
+- 2px reading-progress bar under the header; circular back-to-top after 720px.
+- Hover: card lift 3px, image zoom 1.04, arrows move 3px. Dark surfaces switch to explicit light
+  colours so no link fades into its background.
+
 ## Accessibility
 
 Semantic landmarks, one `h1` per page, visible focus, 4.5:1 text contrast, 44px touch targets,

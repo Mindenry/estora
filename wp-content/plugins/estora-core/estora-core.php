@@ -3,10 +3,10 @@
  * Plugin Name:       ESTORA Core
  * Plugin URI:        https://example.com/estora
  * Description:       Property inventory, CRM, appointments, reporting and the ESTORA REST API.
- * Version:           1.2.0
+ * Version:           1.3.0
  * Requires at least: 6.5
  * Requires PHP:      8.2
- * Author:            ESTORA Engineering
+ * Author:            Peerawit Lakhampa (พีรวิชญ์ หล้าคำภา)
  * License:           GPL-2.0-or-later
  * Text Domain:       estora-core
  * Domain Path:       /languages
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ESTORA_CORE_VERSION', '1.2.0' );
+define( 'ESTORA_CORE_VERSION', '1.3.0' );
 define( 'ESTORA_DB_VERSION', '1.0.0' );
 define( 'ESTORA_CORE_FILE', __FILE__ );
 define( 'ESTORA_CORE_DIR', __DIR__ );

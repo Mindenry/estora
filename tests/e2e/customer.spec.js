@@ -82,6 +82,31 @@ test.describe('Visitor journeys', () => {
     await expect(page.locator('[data-appointment-form] [data-form-success]')).toContainText('AP-');
   });
 
+  test('province filter narrows the area list and results', async ({ page }) => {
+    await page.goto('/properties/');
+    await page.selectOption('#estora-province', 'Bangkok');
+    const areas = page.locator('#estora-district option');
+    await expect(areas).toContainText(['Huai Khwang', 'Khlong Toei', 'Sathon', 'Watthana']);
+    await expect(areas).not.toContainText(['Suthep']);
+    await page.selectOption('#estora-district', 'Watthana');
+    await expect(page).toHaveURL(/province=Bangkok/);
+    await expect(page).toHaveURL(/district=Watthana/);
+    await expect(page.locator('.estora-activefilters')).toContainText('Province: Bangkok');
+    await expect(page.locator('.estora-card').first()).toBeVisible();
+  });
+
+  test('sale listing shows a working monthly payment estimate', async ({ page }) => {
+    await page.goto('/properties/?purpose=sale');
+    await page.locator('.estora-card__title a').first().click();
+    const calc = page.locator('[data-mortgage]');
+    await expect(calc).toBeVisible();
+    await expect(page.locator('[data-calc-out]')).toContainText('฿');
+    const before = await page.locator('[data-calc-out]').innerText();
+    await page.fill('[data-calc-rate]', '4');
+    await page.locator('[data-calc-rate]').dispatchEvent('input');
+    await expect(page.locator('[data-calc-out]')).not.toHaveText(before);
+  });
+
   test('Thai and English switch persists across navigation', async ({ page }) => {
     await page.goto('/?lang=th');
     await expect(page.locator('html')).toHaveAttribute('lang', 'th');

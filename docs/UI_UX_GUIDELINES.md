@@ -106,10 +106,23 @@ Thai, and Thai copy should read as native copy, not a literal translation.
 `login.png`, `home.png`, `home-th.png`, `home-full.png`, `home-th-full.png`, `home-mobile.png`,
 `home-mobile-nav.png`, `properties.png`, `properties-th.png`, `property-detail.png`,
 `property-detail-th.png`,
-`property-detail-full.png`, `compare.png`, `favorites.png`, `about.png`, `role-admin.png`,
+`property-detail-full.png`, `news.png`, `news-th.png`, `news-mobile.png`, `article.png`,
+`compare.png`, `favorites.png`, `about.png`, `role-admin.png`,
 `role-operations.png`, `role-manager.png`, `role-agent.png`, `role-property.png`,
 `role-marketing.png`, `app-overview.png`, `app-properties.png`, `app-leads.png`,
 `app-kanban.png`, `app-appointments.png`, `app-agents.png`, `app-reports.png`,
 `app-settings.png`, `app-lead-detail.png`, `app-property-editor.png`,
 `app-mobile-dashboard.png`, `app-mobile-nav.png`.
 Captured by `scripts/screenshots.mjs` at 1440×1000 and 390×844 (mobile variants suffixed `-mobile`).
+Full-page shots scroll the document first so reveal-on-scroll blocks are captured in their
+visible state.
+
+## 10. Motion and interaction rules
+
+- Animate opacity and transform only; never width, height or top.
+- Entrance motion is 700–760ms with `--ease-out`; hover feedback 160–240ms.
+- Reveal blocks stagger by 70ms, capped at six siblings.
+- Nothing loops except the hero photograph's 28s drift inside its clipped frame.
+- `prefers-reduced-motion: reduce` disables drift, reveal, smooth scrolling and counter animation.
+- Every hover state must keep at least 4.5:1 contrast; dark surfaces switch to an explicit light
+  colour rather than inheriting the global link hover.

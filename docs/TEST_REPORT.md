@@ -15,8 +15,8 @@ seeded demo database. Nothing here is asserted from generated code alone.
 | Unit | `phpunit -c phpunit.xml` | **37 tests, 142 assertions, 0 failures** |
 | WordPress integration | `wp eval-file tests/wp/integration.php` | **12 check groups passed** |
 | HTTP / REST | `node --test --test-concurrency=1 tests/http/` | **24 tests passed** (15 API + 9 app) |
-| Browser E2E | `npx playwright test -c tests/e2e/playwright.config.js` | **17 journeys passed** |
-| Screenshots | `node scripts/screenshots.mjs` | **39 captures**, app routes with 0 console errors |
+| Browser E2E | `npx playwright test -c tests/e2e/playwright.config.js` | **19 journeys passed** |
+| Screenshots | `node scripts/screenshots.mjs` | **43 captures**, app routes with 0 console errors |
 | Theme independence | activate Twenty Twenty-Four → API check → reactivate | leads 200, properties 200, all tables present |
 
 ## Unit suite (PHPUnit)
@@ -98,44 +98,47 @@ Against `http://localhost:8080` with cookie sessions, REST nonces and real MySQL
 
 ## Browser journeys (Playwright, Chromium, 1 worker)
 
-Public (5):
+Public (7):
 
 1. Homepage → purpose filter → price sort → property detail (specs, gallery).
 2. Favorite a property, see it on the favorites page; compare two; remove one from the table.
 3. Submit an inquiry (`LD-` reference) and a viewing request (`AP-` reference).
-4. Thai and English switch persists across navigation; Thai archive and cards render Thai data.
-5. About, contact, news, privacy, terms, 404 return < 500 with a visible `h1`; no page errors.
+4. Select a province, confirm the area list narrows, select a district and verify chips + cards.
+5. Sale listing shows a payment estimate that recalculates when the rate changes.
+6. Thai and English switch persists across navigation; Thai archive and cards render Thai data.
+7. About, contact, news, privacy, terms, 404 return < 500 with a visible `h1`; no page errors.
 
 Back office (4):
 
-6. Admin dashboard KPIs, charts, notifications.
-7. Lead table → drawer → add note → close → kanban.
-8. Appointment month/week/day calendar + list.
-9. Inventory, reports (export URL), settings, audit screens.
+8. Admin dashboard KPIs, charts, notifications.
+9. Lead table → drawer → add note → close → kanban.
+10. Appointment month/week/day calendar + list.
+11. Inventory, reports (export URL), settings, audit screens.
 
 Application (5):
 
-10. Six role accounts each land on their own dashboard with the right role label and navigation.
-11. Sidebar navigation to leads, global search with `q`, pipeline board, unknown route 404.
-12. Staff viewing dialog: load properties, pick a slot, submit, dialog closes.
-13. Dashboard period filter redraws data; "Add lead" quick action opens the lead dialog.
-14. 390px viewport: no horizontal overflow, drawer opens/closes, profile menu logout returns to login.
+12. Six role accounts each land on their own dashboard with the right role label and navigation.
+13. Sidebar navigation to leads, global search with `q`, pipeline board, unknown route 404.
+14. Staff viewing dialog: load properties, pick a slot, submit, dialog closes.
+15. Dashboard period filter redraws data; "Add lead" quick action opens the lead dialog.
+16. 390px viewport: no horizontal overflow, drawer opens/closes, profile menu logout returns to login.
 
 Responsive/accessibility (3):
 
-15. Mobile public pages and navigation without horizontal scroll, including a 320px pass.
-16. Mobile admin dashboard without horizontal scroll.
-17. Images have `alt`; visible form controls have labels; keyboard focus reaches an element.
+17. Mobile public pages and navigation without horizontal scroll, including a 320px pass.
+18. Mobile admin dashboard without horizontal scroll.
+19. Images have `alt`; visible form controls have labels; keyboard focus reaches an element.
 
 ```
-17 passed (16.8s)
+19 passed (22.2s)
 ```
 
 ## Screenshot pass
 
-`node scripts/screenshots.mjs` after a forced demo seed captured 39 images: public home (English
+`node scripts/screenshots.mjs` after a forced demo seed captured 43 images: public home (English
 desktop/full/mobile and Thai desktop/full), properties (English/Thai), detail (English/full/Thai),
-favorites, compare, about, login, six role dashboards, overview via modules (properties, leads,
+news (English/Thai/mobile), a single article, favorites, compare, about, login, six role dashboards,
+overview via modules (properties, leads,
 kanban, appointments, agents, locations, campaigns, content, reports, settings, users, activity,
 notifications), lead detail, native property editor, mobile dashboard and mobile navigation.
 
@@ -143,9 +146,12 @@ Inspection findings fixed during these passes: empty chart fills, invisible butt
 public skip link, duplicate notification markup, stale version labels, blank bands under listing
 photography, dark-surface heading contrast, short-viewport hero collisions, and comparison-table
 overflow. The v1.2.0 public pass added real photography, 21 listings across six Thai destinations,
-a market pulse and an English/Thai language layer. Layouts were checked at 1440, 1366, 1280, 1024,
-768, 420, 390, 360 and 320px. App routes produced no console errors; the only browser console output
-is WordPress core's `Permissions-Policy: unload` warning inside the native post editor.
+a market pulse and an English/Thai language layer. The v1.3.0 pass added hierarchical
+province/area filtering, scroll motion, an editorial News section with seven articles, a payment
+estimator, the proprietor credit and a capped ultrawide hero. Layouts were checked at 1440, 1366,
+1280, 1024, 768, 420, 390, 360, 320, 1920, 2000, 2560 and 3440px. App routes produced no console
+errors; the only browser console output is WordPress core's `Permissions-Policy: unload` warning
+inside the native post editor.
 
 ## Security checks executed
 

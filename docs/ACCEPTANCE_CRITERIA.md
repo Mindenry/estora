@@ -40,7 +40,7 @@ verification remains (stated).
 | AC-25 | Stack starts from clean volumes with documented commands | fresh compose volumes + bootstrap | PASS |
 | AC-26 | CI executes real checks | workflow committed; **not run on GitHub from this machine** | PARTIAL |
 | AC-27 | PHP syntax/PHPCS no errors | 101 files; PHPCS 0 errors | PASS |
-| AC-28 | Unit + integration + HTTP + E2E pass | 37 / 12 / 24 / 17 | PASS |
+| AC-28 | Unit + integration + HTTP + E2E pass | 37 / 12 / 24 / 19 | PASS |
 
 ## C. Security
 
@@ -67,7 +67,7 @@ verification remains (stated).
 | AC-42 | README install reproducible | bootstrap path executed; commands documented for bash and PowerShell | PASS |
 | AC-43 | Documentation matches routes/schema | review against implementation | PASS |
 | AC-44 | No placeholder handler presented as complete | manual review; only labeled art fallbacks | PASS |
-| AC-45 | Screenshots current | 39 files in `docs/screenshots` from the final seed | PASS |
+| AC-45 | Screenshots current | 43 files in `docs/screenshots` from the final seed | PASS |
 | AC-46 | Release notes + v1.2.0 tag | `docs/RELEASE_NOTES.md`, local tag | PASS |
 
 ## E. Back-office experience (v1.1.0)
@@ -82,10 +82,18 @@ verification remains (stated).
 | AC-52 | Quick actions, staff booking, search, notifications, logout function | E2E period + add-lead, staff booking, search, drawer/logout; HTTP notifications | PASS |
 | AC-53 | WordPress CMS remains available where authorized; technical admin to Super Admin | marketing posts/pages 200, agent posts blocked; Super Admin WP link and `/wp-admin/` | PASS |
 | AC-54 | Responsive app shell and mobile navigation | mobile E2E + `app-mobile-dashboard.png`/`app-mobile-nav.png`; no horizontal overflow | PASS |
-| AC-55 | Updated screenshots inspected and defects fixed | 39 captures; chart fills, button labels, skip link and version label corrected | PASS |
+| AC-55 | Updated screenshots inspected and defects fixed | 43 captures; chart fills, button labels, skip link and version label corrected | PASS |
 | AC-56 | English / Thai switch persists and localises UI + content | Cookie, query and browser detection; Thai screenshots for home, archive and detail | PASS |
 | AC-57 | 21 listings across six Thai destinations with real photography | Seed output 21 properties; destination counts 7/6/3/2/2/1; media library galleries | PASS |
 | AC-58 | Public site responsive from 320 to 1440 | Browser checks at 320/360/390/420/768/1024/1280/1366/1440; no horizontal overflow | PASS |
+| AC-59 | Province drives area; both filter results | Playwright: Bangkok narrows area list, Watthana returns Bangkok cards, chips show both | PASS |
+| AC-60 | About photograph fills its band and is centred | Figure spans 100% width at 1440 (measured 1440×490); proprietor tag overlaid | PASS |
+| AC-61 | Owner credit is พีรวิชญ์ หล้าคำภา / Peerawit Lakhampa | Footer band, About portrait and proprietor panel, article byline, theme/plugin headers | PASS |
+| AC-62 | Motion respects reduced-motion | Reveal class only when observer + no reduce; counters jump; no drift/backtop smoothing | PASS |
+| AC-63 | Hover/focus contrast on dark surfaces | Measured base and hover ratios ≥ 9:1 for footer phone, dark-panel link, hero button, search shortcut | PASS |
+| AC-64 | News page is an editorial layout | Featured lead, topic counts, 6-card grid, sidebar; single article with share and prev/next | PASS |
+| AC-65 | Sale listing exposes a working payment estimate | Inputs recalculate output in EN/TH using the amortising formula | PASS |
+| AC-66 | Hero is composed on 34-inch / ultrawide | 880px cap at 3440×1440 and 2560×1080; 674px at 2000×750; search stays inside the hero | PASS |
 
 ## Out of scope for acceptance
 

@@ -112,6 +112,15 @@
     navToggle.addEventListener('click', () => {
       const open = nav.classList.toggle('is-open');
       navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (header) header.classList.toggle('is-nav-open', open);
+    });
+    document.addEventListener('keydown', (event) => {
+      if ('Escape' === event.key && nav.classList.contains('is-open')) {
+        nav.classList.remove('is-open');
+        navToggle.setAttribute('aria-expanded', 'false');
+        if (header) header.classList.remove('is-nav-open');
+        navToggle.focus();
+      }
     });
   }
 
@@ -461,16 +470,199 @@
     });
   });
 
+  /* ---------- mortgage estimator ---------- */
+  $$('[data-mortgage]').forEach((root) => {
+    const priceInput = $('[data-calc-price]', root);
+    const downInput = $('[data-calc-down]', root);
+    const rateInput = $('[data-calc-rate]', root);
+    const yearsInput = $('[data-calc-years]', root);
+    const out = $('[data-calc-out]', root);
+    const summary = $('[data-calc-summary]', root);
+    const downLabel = $('[data-calc-down-label]', root);
+    const downValue = $('[data-calc-down-value]', root);
+    if (!priceInput || !downInput || !rateInput || !yearsInput || !out) return;
+
+    const money = new Intl.NumberFormat(document.documentElement.lang === 'th' ? 'th-TH' : 'en-US', {
+      style: 'currency', currency: 'THB', currencyDisplay: 'narrowSymbol', maximumFractionDigits: 0
+    });
+
+    const update = () => {
+      const price = Math.max(0, Number(priceInput.value) || 0);
+      const downPercent = Math.max(0, Math.min(90, Number(downInput.value) || 0));
+      const rate = Math.max(0, Number(rateInput.value) || 0);
+      const years = Math.max(1, Number(yearsInput.value) || 30);
+      const down = price * (downPercent / 100);
+      const loan = Math.max(0, price - down);
+      const monthlyRate = rate / 100 / 12;
+      const payments = years * 12;
+      let monthly = 0;
+      if (loan > 0) {
+        monthly = monthlyRate > 0
+          ? (loan * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -payments))
+          : loan / payments;
+      }
+
+      if (downLabel) downLabel.textContent = `${downPercent}%`;
+      if (downValue) downValue.textContent = money.format(down);
+      out.textContent = money.format(monthly);
+      if (summary) {
+        const loanLabel = strings.calcLoan || 'Loan';
+        const termLabel = strings.calcTerm || 'over';
+        const atLabel = strings.calcAt || 'at';
+        const yearUnit = strings.calcYears || 'years';
+        summary.textContent = `${loanLabel} ${money.format(loan)} ${termLabel} ${years} ${yearUnit} ${atLabel} ${rate}%`;
+      }
+    };
+
+    [priceInput, downInput, rateInput, yearsInput].forEach((input) => {
+      input.addEventListener('input', update);
+      input.addEventListener('change', update);
+    });
+    update();
+  });
+
+  /* ---------- province → district ---------- */
+  $$('[data-province-select]').forEach((provinceSelect) => {
+    const form = provinceSelect.closest('form');
+    const districtSelect = form ? $('[data-district-select]', form) : null;
+    if (!districtSelect) return;
+
+    const allLabel = districtSelect.dataset.allLabel || 'All areas';
+    const groups = Array.from(districtSelect.querySelectorAll('optgroup')).map((group) => ({
+      label: group.label,
+      province: group.querySelector('option[data-province]')?.dataset.province || '',
+      options: Array.from(group.querySelectorAll('option[data-province]')).map((option) => ({
+        value: option.value,
+        label: option.textContent,
+        province: option.dataset.province
+      }))
+    }));
+    const initial = districtSelect.value;
+
+    const rebuild = (clearSelection) => {
+      const province = provinceSelect.value;
+      const previous = clearSelection ? '' : districtSelect.value;
+      districtSelect.innerHTML = '';
+      const all = document.createElement('option');
+      all.value = '';
+      all.textContent = allLabel;
+      districtSelect.appendChild(all);
+
+      groups.forEach((group) => {
+        if (province && group.province !== province) return;
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = group.label;
+        group.options.forEach((option) => {
+          const el = document.createElement('option');
+          el.value = option.value;
+          el.textContent = option.label;
+          el.dataset.province = option.province;
+          if (option.value === previous) el.selected = true;
+          optgroup.appendChild(el);
+        });
+        districtSelect.appendChild(optgroup);
+      });
+
+      if (province) {
+        const valid = groups.some((group) => group.province === province && group.options.some((option) => option.value === previous));
+        if (!valid) districtSelect.value = '';
+      }
+    };
+
+    districtSelect.value = initial;
+    if (provinceSelect.value) rebuild(false);
+    provinceSelect.addEventListener('change', () => rebuild(true));
+  });
+
   /* ---------- search: auto-apply filters ---------- */
   const filterForm = $('[data-filter-form]');
   if (filterForm) {
-    $$('select, input[type="number"]', filterForm).forEach((input) => {
-      input.addEventListener('change', debounce(() => filterForm.requestSubmit(), 400));
+    $$('select:not([data-province-select]), input[type="number"]', filterForm).forEach((input) => {
+      input.addEventListener('change', debounce(() => filterForm.requestSubmit(), 420));
     });
   }
 
-  /* ---------- subtle reveal ---------- */
-  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window) {
+  /* keep GET URLs clean when optional fields are untouched */
+  $$('[data-search-form]').forEach((form) => {
+    form.addEventListener('submit', () => {
+      $$('input[name], select[name]', form).forEach((input) => {
+        if ('' === input.value.trim()) input.disabled = true;
+      });
+    });
+  });
+
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const progress = $('[data-scroll-progress]');
+  const backtop = $('[data-backtop]');
+
+  const onScroll = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    if (progress) {
+      const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      progress.style.width = `${(ratio * 100).toFixed(2)}%`;
+    }
+    if (backtop) backtop.classList.toggle('is-visible', window.scrollY > 720);
+  };
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+
+  if (backtop) {
+    backtop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: reducedMotion ? 'auto' : 'smooth' });
+    });
+  }
+
+  /* ---------- count-up proof figures ---------- */
+  const formatter = new Intl.NumberFormat(document.documentElement.lang === 'th' ? 'th-TH' : 'en-US');
+  const countUp = (el) => {
+    const target = Number(el.dataset.count || 0);
+    if (!target) return;
+    if (reducedMotion) {
+      el.textContent = formatter.format(target);
+      return;
+    }
+    const duration = 1200;
+    const start = performance.now();
+    const tick = (now) => {
+      const ratio = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - ratio, 3);
+      el.textContent = formatter.format(Math.round(target * eased));
+      if (ratio < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  /* ---------- reveal on scroll ---------- */
+  if (!reducedMotion && 'IntersectionObserver' in window) {
+    document.documentElement.classList.add('estora-motion');
+
+    const revealSelectors = [
+      '.estora-sectionhead',
+      '.estora-card',
+      '.estora-destination',
+      '.estora-standard__media',
+      '.estora-standard__copy',
+      '.estora-quote',
+      '.estora-article-card',
+      '.estora-pulse__metric',
+      '.estora-panel',
+      '.estora-cta__copy',
+      '.estora-pagehead h1',
+      '.estora-journal-aside > *'
+    ];
+    const seen = new Set();
+    revealSelectors.forEach((selector) => {
+      $$(selector).forEach((el) => {
+        if (seen.has(el) || el.closest('.estora-hero')) return;
+        seen.add(el);
+        el.classList.add('estora-reveal');
+        const siblings = el.parentElement ? Array.from(el.parentElement.children).filter((child) => child.classList.contains('estora-reveal')) : [];
+        const index = siblings.indexOf(el);
+        if (index > 0) el.style.setProperty('--reveal-delay', `${Math.min(index, 6) * 70}ms`);
+      });
+    });
+
     const observer = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
@@ -478,7 +670,21 @@
           observer.unobserve(entry.target);
         }
       });
-    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
-    $$('.estora-card, .estora-feature, .estora-quote').forEach((el) => observer.observe(el));
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.06 });
+
+    seen.forEach((el) => observer.observe(el));
+    $$('[data-count]').forEach((el) => {
+      const countObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            countUp(entry.target);
+            countObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.4 });
+      countObserver.observe(el);
+    });
+  } else if (!reducedMotion) {
+    $$('[data-count]').forEach(countUp);
   }
 })();

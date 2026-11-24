@@ -50,6 +50,12 @@ defined( 'ABSPATH' ) || exit;
 			</div>
 		</div>
 
+		<div class="estora-footer__sign">
+			<span class="estora-footer__sign-label"><?php echo esc_html( estora_text( 'Proprietor', 'เจ้าของกิจการ' ) ); ?></span>
+			<span class="estora-footer__sign-name"><?php echo esc_html( estora_owner() ); ?></span>
+			<span class="estora-footer__sign-meta"><?php echo esc_html( estora_text( 'Chiang Mai · Since 2019', 'เชียงใหม่ · ตั้งแต่ปี 2562' ) ); ?></span>
+		</div>
+
 		<div class="estora-footer__bottom">
 			<span>© <?php echo esc_html( date_i18n( 'Y' ) ); ?> <?php echo esc_html( get_bloginfo( 'name' ) ); ?>. <?php esc_html_e( 'All rights reserved.', 'estora-theme' ); ?></span>
 			<span class="estora-footer__legal">
@@ -61,6 +67,11 @@ defined( 'ABSPATH' ) || exit;
 		</div>
 	</div>
 </footer>
+
+<div class="estora-scrollbar" aria-hidden="true"><span data-scroll-progress></span></div>
+<button class="estora-backtop" type="button" data-backtop aria-label="<?php echo esc_attr( estora_text( 'Back to top', 'กลับขึ้นด้านบน' ) ); ?>">
+	<?php echo estora_icon( 'arrow', 16 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+</button>
 
 <div class="estora-toast" data-estora-toast hidden role="status" aria-live="polite"></div>
 <?php wp_footer(); ?>

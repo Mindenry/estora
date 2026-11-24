@@ -107,6 +107,20 @@ Single source of truth. `DONE` means implemented and verified with executed evid
   collisions, compare overflow and mixed-language JS states.
 - Evidence: 38 screenshots, 16 E2E journeys, HTTP/integration suites green, `docs/PUBLIC_SITE.md`.
 
+## Phase 14 - Public polish, motion and editorial news (v1.3.0) - DONE
+
+- Hierarchical province → area filter built from published listing meta, with live narrowing,
+  removable chips and clean GET URLs.
+- Motion system (reveal, counters, hero drift, progress bar, back-to-top, arrow hovers) gated on
+  `prefers-reduced-motion`.
+- News & Notes rebuilt: featured article, topic chips with counts, two-column editorial grid,
+  thumbnails, reading time, sticky sidebar, dedicated article template and seven seeded articles.
+- Working monthly-payment estimator on sale listings (EN/TH).
+- About photograph made full-bleed; proprietor credit added to footer, About, bylines and headers.
+- Ultrawide hero capped at 880px; 1400/1560px containers above 1800/2400px.
+- Hover contrast measured on dark surfaces; muted token darkened.
+- Evidence: 19 E2E journeys, 43 screenshots, lint/unit/integration/HTTP green.
+
 ## Post-1.0 backlog
 
 - Denormalised search index for 100k+ listings; Redis object cache; SMS channel; saved searches
@@ -126,3 +140,4 @@ Single source of truth. `DONE` means implemented and verified with executed evid
 | 2026-11-24 | v1.1.0 back-office app, roles, dashboard and modules | `/estora-admin/`, 24 HTTP tests, 16 E2E, 33 screenshots |
 | 2026-11-24 | v1.1.0 lint, unit, integration, app and browser gates | 99 files / 37 unit / 12 integration / 24 HTTP / 16 E2E |
 | 2026-11-24 | v1.2.0 public redesign, photography and Thai/English | 21 listings / 6 destinations, 38 screenshots, 101 PHP files |
+| 2026-11-24 | v1.3.0 motion, province/area filter, journal, estimator | 7 articles, 43 screenshots, 19 E2E journeys |

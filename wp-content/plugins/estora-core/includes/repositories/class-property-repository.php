@@ -827,6 +827,78 @@ final class Property_Repository {
 	}
 
 	/**
+	 * Real province → district pairs taken from published listings.
+	 *
+	 * The public filter needs the values the query actually matches (post meta),
+	 * not the destination taxonomy, because a destination such as Hua Hin sits
+	 * inside Prachuap Khiri Khan.
+	 *
+	 * @return array<int,array{province:string,districts:array<int,array{name:string,count:int}>}>
+	 */
+	public function location_groups(): array {
+		$cached = get_transient( 'estora_location_groups' );
+		if ( is_array( $cached ) ) {
+			return $cached;
+		}
+
+		$ids = get_posts(
+			array(
+				'post_type'      => self::POST_TYPE,
+				'post_status'    => 'publish',
+				'posts_per_page' => 500,
+				'fields'         => 'ids',
+				'no_found_rows'  => true,
+			)
+		);
+
+		$groups = array();
+		foreach ( $ids as $id ) {
+			$province = trim( (string) get_post_meta( (int) $id, '_estora_province', true ) );
+			$district = trim( (string) get_post_meta( (int) $id, '_estora_district', true ) );
+			if ( '' === $province ) {
+				continue;
+			}
+			if ( ! isset( $groups[ $province ] ) ) {
+				$groups[ $province ] = array(
+					'province'  => $province,
+					'districts' => array(),
+				);
+			}
+			if ( '' === $district ) {
+				continue;
+			}
+			if ( ! isset( $groups[ $province ]['districts'][ $district ] ) ) {
+				$groups[ $province ]['districts'][ $district ] = array(
+					'name'  => $district,
+					'count' => 0,
+				);
+			}
+			++$groups[ $province ]['districts'][ $district ]['count'];
+		}
+
+		$out = array();
+		foreach ( $groups as $group ) {
+			$group['districts'] = array_values( $group['districts'] );
+			usort(
+				$group['districts'],
+				static function ( $a, $b ) {
+					return strcasecmp( $a['name'], $b['name'] );
+				}
+			);
+			$out[] = $group;
+		}
+		usort(
+			$out,
+			static function ( $a, $b ) {
+				return strcasecmp( $a['province'], $b['province'] );
+			}
+		);
+
+		set_transient( 'estora_location_groups', $out, HOUR_IN_SECONDS );
+		return $out;
+	}
+
+	/**
 	 * Export property rows for CSV.
 	 *
 	 * @return array<int,array<string,mixed>>

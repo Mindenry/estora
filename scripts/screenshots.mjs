@@ -15,6 +15,17 @@ const watch = (page) => {
 };
 const shot = async (page, name, fullPage = false) => {
   await page.waitForTimeout(500);
+  if (fullPage) {
+    await page.evaluate(async () => {
+      const step = Math.max(320, Math.floor(window.innerHeight * 0.8));
+      for (let y = 0; y < document.body.scrollHeight; y += step) {
+        window.scrollTo(0, y);
+        await new Promise((resolve) => setTimeout(resolve, 70));
+      }
+      window.scrollTo(0, 0);
+    });
+    await page.waitForTimeout(650);
+  }
   await page.screenshot({ path: path.join(out, `${name}.png`), fullPage });
   console.log('  captured', name);
 };
@@ -68,12 +79,19 @@ await publicPage.waitForSelector('.estora-compare');
 await shot(publicPage, 'compare');
 await publicPage.goto(BASE + '/about/', { waitUntil: 'networkidle' });
 await shot(publicPage, 'about');
+await publicPage.goto(BASE + '/news/', { waitUntil: 'networkidle' });
+await shot(publicPage, 'news', true);
+await publicPage.locator('.estora-journal-feature h3 a').first().click();
+await publicPage.waitForLoadState('networkidle');
+await shot(publicPage, 'article', true);
 await publicPage.setViewportSize({ width: 390, height: 844 });
 await publicPage.goto(BASE + '/', { waitUntil: 'networkidle' });
 await shot(publicPage, 'home-mobile');
 await publicPage.click('[data-nav-toggle]');
 await shot(publicPage, 'home-mobile-nav');
 await publicPage.click('[data-nav-toggle]');
+await publicPage.goto(BASE + '/news/', { waitUntil: 'networkidle' });
+await shot(publicPage, 'news-mobile', true);
 
 /* Thai edition (separate context so the language cookie is isolated) */
 const thaiContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
@@ -87,6 +105,8 @@ await shot(thaiPage, 'properties-th');
 await thaiPage.locator('.estora-card__title a').first().click();
 await thaiPage.waitForLoadState('networkidle');
 await shot(thaiPage, 'property-detail-th');
+await thaiPage.goto(BASE + '/news/?lang=th', { waitUntil: 'networkidle' });
+await shot(thaiPage, 'news-th', true);
 await thaiContext.close();
 
 /* Login screen (fresh context) */

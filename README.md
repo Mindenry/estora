@@ -17,8 +17,9 @@ report.
 
 | Area | Delivered |
 | --- | --- |
-| Public site | Photo-led editorial home with 21 demo listings across 6 Thai destinations, hero search, destination discovery, market pulse, property archive with server-side filters/sort/pagination, detail gallery, inquiry and viewing forms, favorites, 3-way comparison, about, contact, news, privacy, terms, 404 |
+| Public site | Photo-led editorial home with 21 demo listings across 6 Thai destinations, hierarchical province/area search, destination discovery, market pulse, property archive with server-side filters/sort/pagination, detail gallery and payment estimator, inquiry and viewing forms, favorites, 3-way comparison, about, contact, editorial news, privacy, terms, 404 |
 | Bilingual | English / Thai switcher in header, mobile menu and footer; cookie + browser detection; runtime UI strings, localised property/page/article metadata, Thai names, titles and amenities |
+| Motion | Reveal-on-scroll, counted figures, hero drift, reading progress, back-to-top and hover micro-interactions, all disabled under `prefers-reduced-motion` |
 | Inventory | `property` CPT, 3 taxonomies, 25+ validated fields, gallery, publication and availability state machines, duplicate, publish guard, admin inventory table, REST CRUD |
 | CRM | Lead capture from inquiries, appointments, manual entry and API; dedupe; assignment history; notes; pipeline with enforced transitions; follow-ups; agent scoping; kanban; analytics from SQL |
 | Scheduling | 45-minute slot grid in business hours, lunch exclusion, past-date guard, agent and property conflict checks, reschedule, unique active-slot index, month/week/day calendar |
@@ -31,6 +32,7 @@ report.
 
 Screens: [home](docs/screenshots/home.png) · [Thai home](docs/screenshots/home-th.png) ·
 [properties](docs/screenshots/properties.png) · [detail](docs/screenshots/property-detail.png) ·
+[news](docs/screenshots/news.png) · [article](docs/screenshots/article.png) ·
 [compare](docs/screenshots/compare.png) · [login](docs/screenshots/login.png) ·
 [dashboard](docs/screenshots/app-overview.png) · [kanban](docs/screenshots/app-kanban.png) ·
 [calendar](docs/screenshots/app-appointments.png) · [reports](docs/screenshots/app-reports.png) ·
@@ -136,7 +138,7 @@ npx playwright test -c tests/e2e/playwright.config.js
 ```
 
 Current results are recorded in [docs/TEST_REPORT.md](docs/TEST_REPORT.md): 37 unit tests,
-12 WordPress integration groups, 24 HTTP tests and 17 browser journeys pass. HTTP suites run with
+12 WordPress integration groups, 24 HTTP tests and 19 browser journeys pass. HTTP suites run with
 `--test-concurrency=1` because they share the seeded accounts and nonce state.
 
 ## API

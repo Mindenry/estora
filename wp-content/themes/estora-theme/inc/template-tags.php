@@ -89,20 +89,27 @@ function estora_search_form( array $args = array() ): void {
 
 	$purpose  = estora_filter_value( 'purpose' );
 	$type     = estora_filter_value( 'type' );
-	$location = estora_filter_value( 'location' );
+	$province = estora_filter_value( 'province' );
+	$district = estora_filter_value( 'district' );
 	$minimum  = estora_filter_value( 'min_price' );
 	$maximum  = estora_filter_value( 'max_price' );
 	$beds     = estora_filter_value( 'bedrooms' );
+	$availability = estora_filter_value( 'availability' );
 	$sort     = estora_filter_value( 'sort', 'newest' );
 	$keyword  = estora_filter_value( 'q' );
 
 	$options = array( 'types' => array(), 'locations' => array() );
+	$groups  = array();
 	if ( function_exists( 'estora_public_properties' ) ) {
 		$repo    = new \Estora\Core\Repositories\Property_Repository();
 		$options = $repo->filter_options();
+		$groups  = $repo->location_groups();
 	}
+
+	$province_label = __( 'Province', 'estora-theme' );
+	$area_label     = __( 'Area', 'estora-theme' );
 	?>
-	<form class="estora-search estora-search--<?php echo esc_attr( $args['variant'] ); ?>" method="get" action="<?php echo esc_url( $args['action'] ); ?>" role="search" <?php echo $args['attributes'] ? esc_attr( $args['attributes'] ) : ''; ?>>
+	<form class="estora-search estora-search--<?php echo esc_attr( $args['variant'] ); ?>" method="get" action="<?php echo esc_url( $args['action'] ); ?>" role="search" data-search-form <?php echo $args['attributes'] ? esc_attr( $args['attributes'] ) : ''; ?>>
 		<?php if ( 'full' === $args['variant'] ) : ?>
 			<div class="estora-search__field estora-search__field--wide">
 				<label for="estora-q"><?php esc_html_e( 'Keyword', 'estora-theme' ); ?></label>
@@ -130,11 +137,25 @@ function estora_search_form( array $args = array() ): void {
 		</div>
 
 		<div class="estora-search__field">
-			<label for="estora-location"><?php esc_html_e( 'Location', 'estora-theme' ); ?></label>
-			<select id="estora-location" name="location">
-				<option value=""><?php esc_html_e( 'Anywhere', 'estora-theme' ); ?></option>
-				<?php foreach ( (array) $options['locations'] as $term ) : ?>
-					<option value="<?php echo esc_attr( $term['slug'] ); ?>" <?php selected( $location, $term['slug'] ); ?>><?php echo esc_html( ( ! empty( $term['parent'] ) ? '— ' : '' ) . estora_place_name( (string) $term['name'] ) ); ?></option>
+			<label for="estora-province"><?php echo esc_html( $province_label ); ?></label>
+			<select id="estora-province" name="province" data-province-select>
+				<option value=""><?php echo esc_html( estora_text( 'All provinces', 'ทุกจังหวัด' ) ); ?></option>
+				<?php foreach ( $groups as $group ) : ?>
+					<option value="<?php echo esc_attr( $group['province'] ); ?>" <?php selected( $province, $group['province'] ); ?>><?php echo esc_html( estora_place_name( (string) $group['province'] ) ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</div>
+
+		<div class="estora-search__field">
+			<label for="estora-district"><?php echo esc_html( $area_label ); ?></label>
+			<select id="estora-district" name="district" data-district-select data-all-label="<?php echo esc_attr( estora_text( 'All areas', 'ทุกทำเล' ) ); ?>">
+				<option value=""><?php echo esc_html( estora_text( 'All areas', 'ทุกทำเล' ) ); ?></option>
+				<?php foreach ( $groups as $group ) : ?>
+					<optgroup label="<?php echo esc_attr( estora_place_name( (string) $group['province'] ) ); ?>">
+						<?php foreach ( $group['districts'] as $area ) : ?>
+							<option value="<?php echo esc_attr( $area['name'] ); ?>" data-province="<?php echo esc_attr( $group['province'] ); ?>" <?php selected( $district, $area['name'] ); ?>><?php echo esc_html( estora_place_name( (string) $area['name'] ) ); ?></option>
+						<?php endforeach; ?>
+					</optgroup>
 				<?php endforeach; ?>
 			</select>
 		</div>
@@ -155,6 +176,15 @@ function estora_search_form( array $args = array() ): void {
 					<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
 						<option value="<?php echo esc_attr( (string) $i ); ?>" <?php selected( $beds, (string) $i ); ?>><?php echo esc_html( $i . '+' ); ?></option>
 					<?php endfor; ?>
+				</select>
+			</div>
+			<div class="estora-search__field">
+				<label for="estora-availability"><?php esc_html_e( 'Availability', 'estora-theme' ); ?></label>
+				<select id="estora-availability" name="availability">
+					<option value=""><?php echo esc_html( estora_text( 'Any status', 'ทุกสถานะ' ) ); ?></option>
+					<?php foreach ( array( 'available', 'reserved', 'sold', 'rented' ) as $estora_status ) : ?>
+						<option value="<?php echo esc_attr( $estora_status ); ?>" <?php selected( $availability, $estora_status ); ?>><?php echo esc_html( estora_availability_name( $estora_status ) ); ?></option>
+					<?php endforeach; ?>
 				</select>
 			</div>
 			<div class="estora-search__field">
@@ -365,5 +395,113 @@ function estora_agent_card( array $agent ): void {
 			<?php endif; ?>
 		</div>
 	</div>
+	<?php
+}
+
+/**
+ * Reading time in minutes for an article.
+ *
+ * Thai script has no word spaces, so Thai characters and Latin words are
+ * counted separately before converting to a reading estimate.
+ *
+ * @param int $post_id Post ID.
+ */
+function estora_reading_time( int $post_id ): int {
+	$text = wp_strip_all_tags( (string) get_post_field( 'post_content', $post_id ) );
+	$thai = (int) preg_match_all( '/[\x{0E00}-\x{0E7F}]/u', $text );
+	$latin = str_word_count( (string) preg_replace( '/[\x{0E00}-\x{0E7F}]+/u', ' ', $text ) );
+	$minutes = (int) ceil( ( $thai / 620 ) + ( $latin / 210 ) );
+	return max( 2, min( 18, $minutes ) );
+}
+
+/**
+ * Thai label for a seeded news category.
+ *
+ * @param string $slug Category slug.
+ */
+function estora_news_category_label( string $slug ): string {
+	if ( ! estora_is_thai() ) {
+		return ucwords( str_replace( '-', ' ', $slug ) );
+	}
+	$map = array(
+		'market-notes'  => 'บันทึกตลาด',
+		'buying-guide'  => 'คู่มือซื้อ',
+		'renting'       => 'การเช่า',
+		'ownership'     => 'กรรมสิทธิ์',
+		'neighbourhood' => 'ทำเลและย่าน',
+	);
+	return $map[ $slug ] ?? ucwords( str_replace( '-', ' ', $slug ) );
+}
+
+/**
+ * Categories used by at least one published article.
+ *
+ * @return array<int,WP_Term>
+ */
+function estora_news_categories(): array {
+	$terms = get_categories(
+		array(
+			'hide_empty' => true,
+			'orderby'    => 'count',
+			'order'      => 'DESC',
+		)
+	);
+	return array_values(
+		array_filter(
+			is_array( $terms ) ? $terms : array(),
+			static function ( $term ) {
+				return $term instanceof WP_Term && 'uncategorized' !== $term->slug;
+			}
+		)
+	);
+}
+
+/**
+ * Featured image URL for an article, with a themed fallback.
+ *
+ * @param int $post_id Post ID.
+ */
+function estora_article_image( int $post_id ): string {
+	$url = get_the_post_thumbnail_url( $post_id, 'estora-card' );
+	if ( $url ) {
+		return (string) $url;
+	}
+	$fallbacks = array( 'interior-living', 'bangkok-condo', 'chiangmai-house', 'pool-detail', 'interior-kitchen-2', 'hua-hin-house' );
+	$index     = abs( (int) $post_id ) % count( $fallbacks );
+	return estora_theme_asset( 'img/photos/' . $fallbacks[ $index ] . '.jpg' );
+}
+
+/**
+ * Editorial article card used by the journal and the News page.
+ *
+ * @param int    $post_id Post ID.
+ * @param string $variant default|feature|compact.
+ */
+function estora_article_card( int $post_id, string $variant = 'default' ): void {
+	$categories = get_the_category( $post_id );
+	$primary    = $categories ? $categories[0] : null;
+	$title      = get_the_title( $post_id );
+	$url        = get_permalink( $post_id );
+	$excerpt    = get_the_excerpt( $post_id );
+	$minutes    = estora_reading_time( $post_id );
+	?>
+	<article class="estora-article-card estora-article-card--<?php echo esc_attr( $variant ); ?>">
+		<a class="estora-article-card__media" href="<?php echo esc_url( $url ); ?>" tabindex="-1" aria-hidden="true">
+			<img src="<?php echo esc_url( estora_article_image( $post_id ) ); ?>" alt="" width="800" height="600" loading="lazy">
+		</a>
+		<div class="estora-article-card__body">
+			<p class="estora-article-card__meta">
+				<span><?php echo esc_html( get_the_date( '', $post_id ) ); ?></span>
+				<?php if ( $primary ) : ?>
+					<span class="estora-article-card__cat"><?php echo esc_html( estora_news_category_label( $primary->slug ) ); ?></span>
+				<?php endif; ?>
+				<?php /* translators: %d: reading time in minutes */ ?>
+				<span><?php echo esc_html( sprintf( estora_text( '%d min read', 'อ่าน %d นาที' ), $minutes ) ); ?></span>
+			</p>
+			<h3><a href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( $title ); ?></a></h3>
+			<p class="estora-article-card__excerpt"><?php echo esc_html( wp_trim_words( $excerpt, 'feature' === $variant ? 42 : 24 ) ); ?></p>
+			<a class="estora-textlink" href="<?php echo esc_url( $url ); ?>"><?php echo esc_html( estora_text( 'Read the note', 'อ่านบันทึก' ) ); ?> <?php echo estora_icon( 'arrow', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
+		</div>
+	</article>
 	<?php
 }

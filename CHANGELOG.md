@@ -3,6 +3,47 @@
 All notable changes to ESTORA. Format follows Keep a Changelog; versions follow Semantic
 Versioning.
 
+## [1.3.0] — 2026-11-24
+
+### Added
+
+- Hierarchical location filters: a **Province** select drives an **Area** select, both built from
+  the province/district values of published listings. Active-filter chips show both.
+- Motion system: reveal-on-scroll with stagger, animated proof counters, a slow hero image drift,
+  a reading-progress bar, a back-to-top control and arrow micro-interactions. All of it is disabled
+  under `prefers-reduced-motion`.
+- News & Notes rebuilt: featured lead article, topic chips with real counts, editorial two-column
+  grid, article thumbnails, reading time, a sticky sidebar and a dedicated article template with
+  share, previous/next navigation and byline.
+- Seven seeded journal articles across five categories, each with a featured image, Thai metadata
+  and its own page.
+- Working monthly-payment estimator on sale listings (price, down payment, rate and term, with live
+  output in Thai or English).
+- Owner credit: **พีรวิชญ์ หล้าคำภา / Peerawit Lakhampa** in the footer proprietor band, the About
+  page portrait and proprietor panel, article bylines and the theme/plugin metadata.
+- Large-screen composition: 1400px container above 1800px and 1560px above 2400px, larger type and
+  taller destination cards.
+- Article typography, share controls and prev/next styling.
+
+### Changed
+
+- Hero height is capped (`clamp(620px, 100svh − header, 880px)`) and its copy is vertically centred,
+  so a 34-inch or ultrawide display no longer opens with a dead band.
+- The About photograph is now a full-bleed band with a proprietor tag instead of a framed image.
+- `--muted` darkened for small-text contrast; footer, language and dark-panel hover states are
+  explicit so nothing fades into its background.
+- Posts per page is 7 so the featured article plus a 3×2 grid fill the page.
+
+### Fixed
+
+- About image sat at the left edge because the global `figure { margin: 0 }` reset overrode the
+  centred frame.
+- Dark-panel headings were invisible (base heading colour won on specificity).
+- The light hero button and search shortcuts turned white on white on hover.
+- Comparison/lightbox micro-copy and the mobile language switcher no longer disappear at narrow
+  widths.
+- Search URLs no longer carry empty query parameters.
+
 ## [1.2.0] — 2026-11-24
 
 ### Added

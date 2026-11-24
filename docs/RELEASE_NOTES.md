@@ -1,5 +1,38 @@
 # ESTORA — Release Notes
 
+## v1.3.0 — Motion, hierarchical search and an editorial journal
+
+Release date: 2026-11-24
+
+This release polishes the public site rather than changing its architecture. Data model, REST
+routes and the back office are unchanged.
+
+- **Location filter, properly hierarchical.** Province now drives Area. The lists are built from
+  the province and district values actually stored on published listings, so Hua Hin correctly
+  sits under Prachuap Khiri Khan and Pattaya under Chonburi. Picking a province narrows the area
+  list; both appear as removable chips on the results page.
+- **Motion with restraint.** Sections reveal on scroll with a short stagger, the proof figures
+  count up, the hero photograph drifts slowly, and a two-pixel progress bar plus a back-to-top
+  button follow the page. Every effect respects `prefers-reduced-motion`; with JavaScript off the
+  content is simply visible.
+- **News & Notes rebuilt.** A featured lead article, topic filters with live counts, a two-column
+  editorial grid with real thumbnails and reading times, a sticky office/topic sidebar, and a
+  dedicated article page with share controls and previous/next notes. Seven articles across five
+  categories ship with the demo seed.
+- **A working affordability estimator.** Sale listings now include a monthly-payment calculator
+  (price, down payment, interest rate, term) that recalculates live in the selected language.
+  It is clearly labelled as an estimate, not a quote.
+- **Owner credit.** พีรวิชญ์ หล้าคำภา / Peerawit Lakhampa appears in the footer proprietor band, on
+  the About page portrait and proprietor panel, in article bylines and in the theme/plugin headers.
+- **About image fixed.** The photograph is now a full-bleed band; the previous version was pinned
+  to the left edge by a global `figure { margin: 0 }` reset.
+- **Ultrawide composition.** The hero is capped at 880px with centred copy, and the container grows
+  to 1400px above 1800px and 1560px above 2400px instead of leaving a dead band on a 34-inch screen.
+- **Contrast audit.** Small muted text was darkened; footer links, the office phone, dark-panel
+  links and hero buttons were measured before and after hover — every combination tested is above
+  9:1, and none turns white on white.
+- **Screenshot set:** 43 images, adding News, a single article, Thai News and mobile News.
+
 ## v1.2.0 — Public site, real photography and Thai/English
 
 Release date: 2026-11-24

@@ -76,10 +76,10 @@ get_header();
 				<a class="estora-hero__link" href="<?php echo esc_url( home_url( '/contact/' ) ); ?>"><?php echo esc_html( estora_text( 'Talk to an advisor', 'คุยกับที่ปรึกษา' ) ); ?> <?php echo estora_icon( 'arrow', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
 			</div>
 			<dl class="estora-hero__proof">
-				<div><dt><?php echo esc_html( estora_text( 'Available', 'พร้อมอยู่' ) ); ?></dt><dd><?php echo esc_html( number_format_i18n( (int) ( $estora_stats['available'] ?? 0 ) ) ); ?></dd></div>
-				<div><dt><?php echo esc_html( estora_text( 'Live listings', 'ประกาศทั้งหมด' ) ); ?></dt><dd><?php echo esc_html( number_format_i18n( (int) ( $estora_stats['published'] ?? 0 ) ) ); ?></dd></div>
-				<div><dt><?php echo esc_html( estora_text( 'Destinations', 'ทำเล' ) ); ?></dt><dd><?php echo esc_html( number_format_i18n( count( $estora_destinations ) ) ); ?></dd></div>
-				<div><dt><?php echo esc_html( estora_text( 'Neighbourhoods', 'ย่าน' ) ); ?></dt><dd><?php echo esc_html( number_format_i18n( $estora_districts ) ); ?></dd></div>
+				<div><dt><?php echo esc_html( estora_text( 'Available', 'พร้อมอยู่' ) ); ?></dt><dd data-count="<?php echo esc_attr( (string) (int) ( $estora_stats['available'] ?? 0 ) ); ?>"><?php echo esc_html( number_format_i18n( (int) ( $estora_stats['available'] ?? 0 ) ) ); ?></dd></div>
+				<div><dt><?php echo esc_html( estora_text( 'Live listings', 'ประกาศทั้งหมด' ) ); ?></dt><dd data-count="<?php echo esc_attr( (string) (int) ( $estora_stats['published'] ?? 0 ) ); ?>"><?php echo esc_html( number_format_i18n( (int) ( $estora_stats['published'] ?? 0 ) ) ); ?></dd></div>
+				<div><dt><?php echo esc_html( estora_text( 'Destinations', 'ทำเล' ) ); ?></dt><dd data-count="<?php echo esc_attr( (string) count( $estora_destinations ) ); ?>"><?php echo esc_html( number_format_i18n( count( $estora_destinations ) ) ); ?></dd></div>
+				<div><dt><?php echo esc_html( estora_text( 'Neighbourhoods', 'ย่าน' ) ); ?></dt><dd data-count="<?php echo esc_attr( (string) $estora_districts ); ?>"><?php echo esc_html( number_format_i18n( $estora_districts ) ); ?></dd></div>
 			</dl>
 		</div>
 	</div>
@@ -89,7 +89,7 @@ get_header();
 			<div class="estora-searchcard__head">
 				<div>
 					<p class="estora-searchcard__label"><?php echo esc_html( estora_text( 'Find a property', 'ค้นหาทรัพย์' ) ); ?></p>
-					<p class="estora-searchcard__hint"><?php echo esc_html( estora_text( 'Search by purpose, type or destination.', 'ค้นตามวัตถุประสงค์ ประเภท หรือทำเล' ) ); ?></p>
+					<p class="estora-searchcard__hint"><?php echo esc_html( estora_text( 'Pick a province, then narrow it to an area.', 'เลือกจังหวัด แล้วเจาะลงไปที่ทำเลที่ต้องการ' ) ); ?></p>
 				</div>
 				<strong><?php echo esc_html( number_format_i18n( (int) ( $estora_stats['available'] ?? 0 ) ) ); ?> <?php echo esc_html( estora_text( 'available now', 'พร้อมอยู่ตอนนี้' ) ); ?></strong>
 			</div>
@@ -236,21 +236,15 @@ get_header();
 <section class="estora-section estora-journal">
 	<div class="estora-container">
 		<?php estora_section_head( estora_text( 'Notes from the office', 'บันทึกจากสำนักงาน' ), estora_text( 'Market notes and practical guides', 'บทความตลาดและคู่มือใช้งานจริง' ), home_url( '/news/' ), estora_text( 'All articles', 'บทความทั้งหมด' ), '05' ); ?>
-		<div class="estora-grid estora-grid--3">
-			<?php while ( $estora_posts->have_posts() ) : ?>
-				<?php $estora_posts->the_post(); ?>
-				<article class="estora-article-card">
-					<p class="estora-article-card__meta"><?php echo esc_html( get_the_date() ); ?> · <?php echo esc_html( get_the_category_list( ', ' ) ? wp_strip_all_tags( get_the_category_list( ', ' ) ) : __( 'Journal', 'estora-theme' ) ); ?></p>
-					<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
-					<p><?php echo esc_html( get_the_excerpt() ); ?></p>
-					<a class="estora-textlink" href="<?php the_permalink(); ?>"><?php esc_html_e( 'Read', 'estora-theme' ); ?> <?php echo estora_icon( 'arrow', 14 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>
-				</article>
-			<?php endwhile; ?>
-			<?php wp_reset_postdata(); ?>
-		</div>
-	</div>
-</section>
-<?php endif; ?>
+		<?php $estora_journal_ids = wp_list_pluck( $estora_posts->posts, 'ID' ); ?>
+		<?php if ( $estora_journal_ids ) : ?>
+			<div class="estora-grid estora-grid--3">
+				<?php foreach ( $estora_journal_ids as $estora_journal_id ) : ?>
+					<?php estora_article_card( (int) $estora_journal_id ); ?>
+				<?php endforeach; ?>
+			</div>
+		<?php endif; ?>
+	<?php endif; ?>
 
 <section class="estora-cta estora-cta--photo">
 	<div class="estora-cta__media" aria-hidden="true">

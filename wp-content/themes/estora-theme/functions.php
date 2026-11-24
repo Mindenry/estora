@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ESTORA_THEME_VERSION', '1.2.0' );
+define( 'ESTORA_THEME_VERSION', '1.3.0' );
 
 /**
  * Asset URL with a filemtime cache break.
@@ -122,6 +122,10 @@ function estora_theme_assets(): void {
 			'copyFailed'    => estora_text( 'Copy failed', 'คัดลอกไม่สำเร็จ' ),
 			'saveAria'      => estora_text( 'Save property', 'บันทึกทรัพย์' ),
 			'removeAria'    => estora_text( 'Remove from favourites', 'นำออกจากรายการโปรด' ),
+			'calcLoan'      => estora_text( 'Loan', 'ยอดกู้' ),
+			'calcTerm'      => estora_text( 'over', 'ระยะ' ),
+			'calcAt'        => estora_text( 'at', 'ดอกเบี้ย' ),
+			'calcYears'     => estora_text( 'years', 'ปี' ),
 		),
 	);
 	wp_localize_script( 'estora-main', 'estoraData', $settings );
@@ -182,6 +186,14 @@ add_action( 'wp_body_open', 'estora_skip_link', 5 );
  */
 function estora_company( string $key, string $default = '' ): string {
 	return function_exists( 'estora_setting' ) ? (string) estora_setting( $key, $default ) : $default;
+}
+
+/**
+ * Owner credit shown in the footer and on the About page.
+ */
+function estora_owner(): string {
+	$owner = estora_company( 'company_owner', 'พีรวิชญ์ หล้าคำภา / Peerawit Lakhampa' );
+	return '' !== trim( $owner ) ? $owner : 'พีรวิชญ์ หล้าคำภา / Peerawit Lakhampa';
 }
 
 require get_template_directory() . '/inc/i18n.php';

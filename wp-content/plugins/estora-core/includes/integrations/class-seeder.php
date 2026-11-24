@@ -57,6 +57,7 @@ final class Seeder {
 
 		delete_transient( 'estora_dashboard_summary' );
 		delete_transient( 'estora_filter_options' );
+		delete_transient( 'estora_location_groups' );
 
 		return array(
 			'ran'     => true,
@@ -125,7 +126,7 @@ final class Seeder {
 		update_option( 'blogname', 'ESTORA' );
 		update_option( 'blogdescription', 'Residential property, handled properly.' );
 		update_option( 'permalink_structure', '/%postname%/' );
-		update_option( 'posts_per_page', 6 );
+		update_option( 'posts_per_page', 7 );
 		Settings::ensure();
 	}
 
@@ -1043,42 +1044,101 @@ final class Seeder {
 	 * Seeded journal entries so the homepage and news page have real posts.
 	 */
 	private function seed_articles(): void {
-		$category_id = 0;
-		$category    = get_category_by_slug( 'market-notes' );
-		if ( $category ) {
-			$category_id = (int) $category->term_id;
-		} else {
-			$created = wp_insert_term( 'Market notes', 'category', array( 'slug' => 'market-notes' ) );
-			$category_id = is_wp_error( $created ) ? 0 : (int) $created['term_id'];
+		$categories = array(
+			'market-notes'  => 'Market notes',
+			'buying-guide'  => 'Buying guide',
+			'renting'       => 'Renting',
+			'ownership'     => 'Ownership',
+			'neighbourhood' => 'Neighbourhoods',
+		);
+		$category_ids = array();
+		foreach ( $categories as $slug => $name ) {
+			$term = get_category_by_slug( $slug );
+			if ( $term ) {
+				$category_ids[ $slug ] = (int) $term->term_id;
+				continue;
+			}
+			$created = wp_insert_term( $name, 'category', array( 'slug' => $slug ) );
+			$category_ids[ $slug ] = is_wp_error( $created ) ? 0 : (int) $created['term_id'];
 		}
 
 		$articles = array(
 			array(
-				'title'   => 'What a chanote actually tells you',
-				'th_title' => 'โฉนดที่ดินบอกอะไรคุณได้บ้าง',
-				'date'    => '-3 days',
-				'content' => '<p>Title type is the first thing our property team checks and the last thing a buyer should have to discover at the transfer desk. A chanote (NS.4) is a freehold title with surveyed boundaries; a Nor Sor 3 Gor is a certificate of use that still requires a boundary survey before transfer.</p><p>Neither is automatically a problem. They are different processes with different timelines, and the price should reflect that. We record the title type in the property file before publication so nobody is surprised later.</p><h2>What to ask for</h2><p>Ask for the title number, the owner name on the title, and whether any lease or mortgage is registered against it. A legitimate owner will have those documents ready.</p>',
+				'title'      => 'What a chanote actually tells you',
+				'th_title'   => 'โฉนดที่ดินบอกอะไรคุณได้บ้าง',
+				'category'   => 'ownership',
+				'photo'      => 'chiangmai-house',
+				'date'       => '-3 days',
+				'content'    => '<p>Title type is the first thing our property team checks and the last thing a buyer should have to discover at the transfer desk. A chanote (NS.4) is a freehold title with surveyed boundaries; a Nor Sor 3 Gor is a certificate of use that still requires a boundary survey before transfer.</p><p>Neither is automatically a problem. They are different processes with different timelines, and the price should reflect that. We record the title type in the property file before publication so nobody is surprised later.</p><h2>What to ask for</h2><p>Ask for the title number, the owner name on the title, and whether any lease or mortgage is registered against it. A legitimate owner will have those documents ready.</p>',
 				'th_content' => '<p>ประเภทเอกสารสิทธิ์คือสิ่งแรกที่ทีมทรัพย์สินของเราตรวจ และเป็นสิ่งสุดท้ายที่ผู้ซื้อควรค้นพบที่เคาน์เตอร์โอน โฉนดที่ดิน (น.ส.4) คือกรรมสิทธิ์ที่ดินมีขอบเขตชัดเจน ส่วน น.ส.3 ก. เป็นหนังสือรับรองการใช้ประโยชน์ที่ยังต้องรังวัดก่อนโอน</p><p>ทั้งสองแบบไม่ได้เป็นปัญหาโดยอัตโนมัติ แต่เป็นกระบวนการและระยะเวลาที่ต่างกัน ราคาควรสะท้อนความต่างนั้น เราบันทึกประเภทเอกสารไว้ในแฟ้มทรัพย์ก่อนเผยแพร่ เพื่อไม่ให้ใครเซอร์ไพรส์ภายหลัง</p><h2>ควรขออะไร</h2><p>ขอเลขที่โฉนด ชื่อเจ้าของในโฉนด และตรวจว่ามีสัญญาเช่าหรือจำนองจดทะเบียนอยู่หรือไม่ เจ้าของที่ถูกต้องจะเตรียมเอกสารเหล่านี้ได้</p>',
-				'excerpt' => 'Title type changes the transfer process and the price. Here is what to check before you make an offer.',
+				'excerpt'    => 'Title type changes the transfer process and the price. Here is what to check before you make an offer.',
 				'th_excerpt' => 'ประเภทเอกสารสิทธิ์มีผลต่อขั้นตอนโอนและราคา นี่คือสิ่งที่ควรตรวจก่อนยื่นข้อเสนอ',
 			),
 			array(
-				'title'   => 'Viewing a rental in the rainy season',
-				'th_title' => 'ชมบ้านเช่าในช่วงหน้าฝน',
-				'date'    => '-9 days',
-				'content' => '<p>Water is honest. A house that smells damp in August will be a problem in November, and new paint is easier to spot than new drainage. Look at the base of exterior walls, the ceiling under bathrooms, and the slope of the driveway.</p><p>Ask to see the water bill for the previous three months. A spike can indicate a leak or a pump that runs constantly. Ask where the water tank is and when it was last cleaned.</p><h2>The fifteen-minute check</h2><p>Open every tap, run the shower, and flush every toilet at the same time. Then look at the floor drain. If it backs up, the problem is not cosmetic.</p>',
+				'title'      => 'Viewing a rental in the rainy season',
+				'th_title'   => 'ชมบ้านเช่าในช่วงหน้าฝน',
+				'category'   => 'renting',
+				'photo'      => 'interior-kitchen-2',
+				'date'       => '-9 days',
+				'content'    => '<p>Water is honest. A house that smells damp in August will be a problem in November, and new paint is easier to spot than new drainage. Look at the base of exterior walls, the ceiling under bathrooms, and the slope of the driveway.</p><p>Ask to see the water bill for the previous three months. A spike can indicate a leak or a pump that runs constantly. Ask where the water tank is and when it was last cleaned.</p><h2>The fifteen-minute check</h2><p>Open every tap, run the shower, and flush every toilet at the same time. Then look at the floor drain. If it backs up, the problem is not cosmetic.</p>',
 				'th_content' => '<p>น้ำเป็นสิ่งที่ซื่อสัตย์ที่สุด บ้านที่อับชื้นในเดือนสิงหาคมจะเป็นปัญหาในเดือนพฤศจิกายน และสีทาใหม่สังเกตง่ายกว่าระบบระบายน้ำใหม่ มองที่โคนผนังภายนอก เพดานใต้ห้องน้ำ และความลาดของทางรถ</p><p>ขอดูบิลค่าน้ำสามเดือนล่าสุด หากสูงผิดปกติอาจมีจุดรั่วหรือปั๊มทำงานตลอดเวลา ถามหาตำแหน่งถังน้ำและครั้งสุดท้ายที่ล้างถัง</p><h2>เช็ก 15 นาที</h2><p>เปิดก๊อกทุกจุด เปิดฝักบัว และกดชักโครกพร้อมกัน แล้วดูท่อระบายพื้น หากน้ำย้อน แสดงว่าไม่ใช่เรื่อง cosmetic</p>',
-				'excerpt' => 'Damp, drainage and water pressure are easier to assess in the wet season. A short checklist for rental viewings.',
+				'excerpt'    => 'Damp, drainage and water pressure are easier to assess in the wet season. A short checklist for rental viewings.',
 				'th_excerpt' => 'ความชื้น ระบบระบายน้ำ และแรงดันน้ำตรวจได้ง่ายในหน้าฝน เช็กลิสต์สั้น ๆ สำหรับการชมบ้านเช่า',
 			),
 			array(
-				'title'   => 'Why we keep sold listings online',
-				'th_title' => 'ทำไมเรายังเก็บประกาศที่ขายแล้วไว้',
-				'date'    => '-16 days',
-				'content' => '<p>Removing a sold listing makes the market look busier than it is. Keeping it, labelled, gives buyers and owners a reference point: what asked, what sold, and how long it took. We mark availability honestly and stop accepting inquiries when a property is sold or rented.</p><p>The alternative — quietly deleting the evidence — makes every new listing look like a bargain and every agent look clairvoyant.</p><h2>What the label means</h2><p>Sold means the transfer is complete or the deposit is signed and the deal is exclusive. Reserved means an offer is accepted but not yet signed. If you are interested, ask the office; reservations do fall through.</p>',
+				'title'      => 'Why we keep sold listings online',
+				'th_title'   => 'ทำไมเรายังเก็บประกาศที่ขายแล้วไว้',
+				'category'   => 'market-notes',
+				'photo'      => 'bangkok-condo',
+				'date'       => '-16 days',
+				'content'    => '<p>Removing a sold listing makes the market look busier than it is. Keeping it, labelled, gives buyers and owners a reference point: what asked, what sold, and how long it took. We mark availability honestly and stop accepting inquiries when a property is sold or rented.</p><p>The alternative — quietly deleting the evidence — makes every new listing look like a bargain and every agent look clairvoyant.</p><h2>What the label means</h2><p>Sold means the transfer is complete or the deposit is signed and the deal is exclusive. Reserved means an offer is accepted but not yet signed. If you are interested, ask the office; reservations do fall through.</p>',
 				'th_content' => '<p>การลบประกาศที่ขายแล้วทำให้ตลาดดูคึกคักเกินจริง การเก็บไว้พร้อมป้ายสถานะทำให้ผู้ซื้อและเจ้าของมีจุดอ้างอิง ว่าราคาเสนอเท่าไร ขายได้เท่าไร และใช้เวลานานแค่ไหน เราระบุสถานะตามจริงและหยุดรับคำถามเมื่อขายหรือให้เช่าแล้ว</p><p>ทางเลือกอื่นคือการลบหลักฐานอย่างเงียบ ๆ ซึ่งทำให้ทุกประกาศใหม่ดูเป็นของถูกและทำให้ตัวแทนดูรู้ล่วงหน้าไปหมด</p><h2>ป้ายสถานะหมายถึงอะไร</h2><p>ขายแล้วหมายถึงโอนเสร็จหรือเซ็นรับมัดจำและดีล exclusive แล้ว จองแล้วหมายถึงรับข้อเสนอแต่ยังไม่เซ็น หากสนใจให้สอบถามสำนักงาน เพราะการจองสามารถหลุดได้</p>',
-				'excerpt' => 'Sold and rented homes stay visible and labelled. It makes the market more legible, not less.',
+				'excerpt'    => 'Sold and rented homes stay visible and labelled. It makes the market more legible, not less.',
 				'th_excerpt' => 'บ้านที่ขายหรือให้เช่าแล้วยังแสดงอยู่พร้อมป้ายสถานะ ทำให้ตลาดอ่านง่ายขึ้น ไม่ใช่ยากขึ้น',
+			),
+			array(
+				'title'      => 'A viewing checklist that actually works',
+				'th_title'   => 'เช็กลิสต์ชมบ้านที่ใช้ได้จริง',
+				'category'   => 'buying-guide',
+				'photo'      => 'interior-living',
+				'date'       => '-23 days',
+				'content'    => '<p>Most viewings fail in the same three places: light, water and noise. Visit at the hour you would actually live there, not the hour the agent proposes.</p><h2>Light</h2><p>Check which windows face the afternoon sun. In Thailand a west-facing bedroom is a different room at four in the afternoon than it is at nine in the morning.</p><h2>Water</h2><p>Run the shower and a tap together, then flush. Weak pressure on a second floor is a design problem, not a maintenance one.</p><h2>Noise</h2><p>Stand still for two minutes and listen. Traffic, a nearby school, a karaoke bar and a rooster all keep different hours. Ask the neighbours, not the seller.</p>',
+				'th_content' => '<p>การชมบ้านที่ล้มเหลวมักเกิดจากสามเรื่องเดิม คือแสง น้ำ และเสียง ควรไปดูในเวลาที่คุณจะอยู่จริง ไม่ใช่เวลาที่ตัวแทนนัด</p><h2>แสง</h2><p>ดูว่าหน้าต่างด้านไหนรับแดดบ่าย ในประเทศไทยห้องนอนที่หันตะวันตกจะรู้สึกต่างกันมากระหว่างบ่ายสี่โมงกับเก้าโมงเช้า</p><h2>น้ำ</h2><p>เปิดฝักบัวและก๊อกพร้อมกัน แล้วกดชักโครก หากแรงดันชั้นสองตก แสดงว่าเป็นปัญหาการออกแบบ ไม่ใช่แค่การซ่อมบำรุง</p><h2>เสียง</h2><p>ยืนนิ่ง ๆ สองนาทีแล้วฟัง เสียงรถ โรงเรียนใกล้ ๆ ร้านคาราโอเกะ และไก่ชน มีช่วงเวลาของมันเอง ถามเพื่อนบ้าน ไม่ใช่ถามผู้ขาย</p>',
+				'excerpt'    => 'Light, water and noise: the three things a fifteen-minute viewing can actually settle.',
+				'th_excerpt' => 'แสง น้ำ และเสียง คือสามเรื่องที่การชมบ้าน 15 นาทีตอบได้จริง',
+			),
+			array(
+				'title'      => 'Buying from overseas without flying blind',
+				'th_title'   => 'ซื้อจากต่างประเทศโดยไม่ต้องเดา',
+				'category'   => 'buying-guide',
+				'photo'      => 'phuket-villa',
+				'date'       => '-31 days',
+				'content'    => '<p>A remote purchase works when the evidence is boring: a surveyed title, a current photograph with a date, a video walk-through that shows the street, and a lawyer who is not recommended by the seller.</p><p>We film every room in one continuous take and send the raw file. If a ceiling has a stain, it stays in the video.</p><h2>What to insist on</h2><p>A title search at the land office, a company or lease structure explained in writing, and a payment schedule tied to documents rather than dates. Never send a deposit before the title search comes back.</p>',
+				'th_content' => '<p>การซื้อจากระยะไกลจะปลอดภัยเมื่อหลักฐานมันน่าเบื่อ คือโฉนดที่รังวัดแล้ว ภาพถ่ายที่มีวันที่ วิดีโอเดินชมที่เห็นถนนจริง และทนายที่ไม่ได้ถูกแนะนำโดยผู้ขาย</p><p>เราถ่ายวิดีโอทุกห้องในเทคเดียวและส่งไฟล์ดิบให้ หากเพดานมีคราบ คราบนั้นจะอยู่ในวิดีโอ</p><h2>สิ่งที่ควรยืนยัน</h2><p>ตรวจสอบโฉนดที่สำนักงานที่ดิน อธิบายโครงสร้างบริษัทหรือสัญญาเช่าเป็นลายลักษณ์อักษร และผูกกำหนดชำระเงินกับเอกสาร ไม่ใช่วันที่ ห้ามโอนมัดจำก่อนผลตรวจโฉนดกลับมา</p>',
+				'excerpt'    => 'Remote buying is a documentation problem before it is a photography problem.',
+				'th_excerpt' => 'การซื้อจากระยะไกลเป็นเรื่องเอกสารก่อนจะเป็นเรื่องภาพถ่าย',
+			),
+			array(
+				'title'      => 'Townhouse or condominium at the same price',
+				'th_title'   => 'ทาวน์เฮาส์หรือคอนโด ในราคาเดียวกัน',
+				'category'   => 'neighbourhood',
+				'photo'      => 'house-4',
+				'date'       => '-38 days',
+				'content'    => '<p>At roughly ten million baht the choice is rarely about the building. It is about what you are prepared to maintain, and how much outdoor space you will actually use.</p><p>A townhouse gives you a staircase, a garden and a roof to look after. A condominium gives you a lift, a pool you do not clean, and a monthly fee that rises with the building age.</p><h2>The honest test</h2><p>Count the weekends you will spend on maintenance. If the answer is most of them, buy the townhouse. If the answer is none, the condominium fee is cheaper than your time.</p>',
+				'th_content' => '<p>ในงบประมาณสิบล้านบาท ทางเลือกมักไม่ใช่เรื่องตัวอาคาร แต่เป็นเรื่องสิ่งที่คุณพร้อมดูแล และพื้นที่กลางแจ้งที่คุณจะใช้จริง</p><p>ทาวน์เฮาส์ให้บันได สวน และหลังคาที่ต้องดูแล คอนโดให้ลิฟต์ สระที่คุณไม่ต้องล้าง และค่าส่วนกลางที่เพิ่มตามอายุอาคาร</p><h2>บททดสอบที่ซื่อตรง</h2><p>นับจำนวนสุดสัปดาห์ที่คุณจะใช้ดูแลบ้าน หากคำตอบคือเกือบทุกสัปดาห์ เลือกทาวน์เฮาส์ หากคำตอบคือไม่มีเลย ค่าส่วนกลางก็ถูกกว่าเวลาของคุณ</p>',
+				'excerpt'    => 'At the same budget the decision is maintenance, not square metres.',
+				'th_excerpt' => 'ในงบเดียวกัน การตัดสินใจอยู่ที่ภาระดูแล ไม่ใช่จำนวนตารางเมตร',
+			),
+			array(
+				'title'      => 'What the transfer day actually costs',
+				'th_title'   => 'วันโอนต้องจ่ายอะไรบ้าง',
+				'category'   => 'ownership',
+				'photo'      => 'interior-bedroom',
+				'date'       => '-45 days',
+				'content'    => '<p>The purchase price is not the last number on the page. At the Land Office the transfer fee is 2% of the appraised value, and who pays it is negotiable — in most resale transactions the split is 50/50, but it belongs in the offer in writing.</p><h2>The other line items</h2><p>Withholding tax depends on the seller: a company pays 1% of the appraised value, an individual pays a progressive rate based on holding period. Stamp duty is 0.5% and is usually absorbed when withholding tax applies. A lease registration costs 1% of the total rent.</p><h2>Ask for the estimate first</h2><p>Before you sign, ask the office for a written estimate using the Land Office appraised value, not the asking price. The difference can be six figures.</p>',
+				'th_content' => '<p>ราคาซื้อขายไม่ใช่ตัวเลขสุดท้าย ที่สำนักงานที่ดิน ค่าธรรมเนียมโอนคือ 2% ของราคาประเมิน และใครเป็นคนจ่ายต่อรองได้ ในธุรกรรมมือสองส่วนใหญ่จะแบ่งกันคนละครึ่ง แต่ต้องระบุในข้อเสนอเป็นลายลักษณ์อักษร</p><h2>รายการที่เหลือ</h2><p>ภาษีหัก ณ ที่จ่ายขึ้นกับผู้ขาย นิติบุคคลจ่าย 1% ของราคาประเมิน บุคคลธรรมดาจ่ายแบบอัตราก้าวหน้าตามระยะเวลาถือครอง อากรแสตมป์ 0.5% มักถูกกลืนเมื่อมีภาษีหัก ณ ที่จ่าย และการจดทะเบียนสัญญาเช่าคือ 1% ของค่าเช่ารวม</p><h2>ขอประมาณการก่อน</h2><p>ก่อนเซ็น ขอประมาณการเป็นลายลักษณ์อักษรจากสำนักงาน โดยใช้ราคาประเมินของสำนักงานที่ดิน ไม่ใช่ราคาที่ประกาศขาย ส่วนต่างอาจถึงหลักแสน</p>',
+				'excerpt'    => 'Transfer fee, withholding tax, stamp duty and the split nobody wrote down.',
+				'th_excerpt' => 'ค่าธรรมเนียมโอน ภาษีหัก ณ ที่จ่าย อากรแสตมป์ และส่วนแบ่งที่ไม่มีใครจดไว้',
 			),
 		);
 
@@ -1095,7 +1155,9 @@ final class Seeder {
 			if ( ! empty( $existing ) ) {
 				continue;
 			}
-			$post_id = wp_insert_post(
+
+			$category_id = (int) ( $category_ids[ $article['category'] ] ?? 0 );
+			$post_id     = wp_insert_post(
 				array(
 					'post_type'     => 'post',
 					'post_title'    => $article['title'],
@@ -1106,11 +1168,18 @@ final class Seeder {
 					'post_category' => $category_id ? array( $category_id ) : array(),
 				)
 			);
-			if ( ! is_wp_error( $post_id ) ) {
-				update_post_meta( (int) $post_id, '_estora_demo', '1' );
-				update_post_meta( (int) $post_id, '_estora_title_th', $article['th_title'] );
-				update_post_meta( (int) $post_id, '_estora_content_th', $article['th_content'] );
-				update_post_meta( (int) $post_id, '_estora_excerpt_th', $article['th_excerpt'] );
+			if ( is_wp_error( $post_id ) ) {
+				continue;
+			}
+
+			update_post_meta( (int) $post_id, '_estora_demo', '1' );
+			update_post_meta( (int) $post_id, '_estora_title_th', $article['th_title'] );
+			update_post_meta( (int) $post_id, '_estora_content_th', $article['th_content'] );
+			update_post_meta( (int) $post_id, '_estora_excerpt_th', $article['th_excerpt'] );
+
+			$image_id = $this->photo_attachment( (string) $article['photo'], $article['title'] );
+			if ( $image_id ) {
+				set_post_thumbnail( (int) $post_id, $image_id );
 			}
 		}
 	}
