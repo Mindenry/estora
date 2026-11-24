@@ -37,11 +37,11 @@ jobs:
 
       - name: PHPUnit
         run: |
-          docker compose run --rm -T cli php /opt/estora/vendor/bin/phpunit \
+          docker compose run --rm -T --entrypoint php cli /opt/estora/vendor/bin/phpunit \
             -c /opt/estora/phpunit.xml --colors=never
 
       - name: WordPress integration
-        run: docker compose run --rm -T cli wp eval-file /opt/estora/tests/wp/integration.php
+        run: docker compose run --rm -T cli eval-file /opt/estora/tests/wp/integration.php
 
       - name: Set up Node
         uses: actions/setup-node@v4
