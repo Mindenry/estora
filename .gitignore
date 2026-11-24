@@ -5,7 +5,7 @@
 wp-config.php
 
 # --- dependencies ---
-vendor/
+/vendor/
 node_modules/
 
 # --- tool output ---
