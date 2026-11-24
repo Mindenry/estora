@@ -22,7 +22,7 @@ Invoke-Checked "migrations" { docker compose run --rm -T cli estora migrate --ye
 Invoke-Checked "syntax + standards" { & "$PSScriptRoot\lint.ps1" }
 Invoke-Checked "PHPUnit" { docker compose run --rm -T --entrypoint php cli /opt/estora/vendor/bin/phpunit -c /opt/estora/phpunit.xml --colors=never }
 Invoke-Checked "WordPress integration" { docker compose run --rm -T cli eval-file /opt/estora/tests/wp/integration.php }
-Invoke-Checked "HTTP integration" { node --test tests/http/ }
+Invoke-Checked "HTTP integration" { node --test --test-concurrency=1 tests/http/ }
 Invoke-Checked "QA cleanup" { docker compose run --rm -T cli eval-file /opt/estora/tests/wp/cleanup.php }
 
 if ($env:SKIP_E2E -ne "1") {

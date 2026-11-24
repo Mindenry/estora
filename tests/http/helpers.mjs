@@ -56,10 +56,15 @@ export class Session {
       body
     });
     assert.ok([302, 303].includes(response.status), `${username}: login should redirect, got ${response.status}`);
-    const admin = await this.fetch('/wp-admin/');
+    const loginLocation = response.headers.get('location') || '';
+    let admin = await this.fetch('/wp-admin/');
+    if (admin.status >= 300 && admin.status < 400) {
+      admin = await this.fetch(admin.headers.get('location') || '/estora-admin/');
+    }
     assert.equal(admin.status, 200, `${username}: admin should load`);
     const html = await admin.text();
     assert.ok(!html.includes('name="log"'), `${username}: still on the login form`);
+    this.loginRedirect = loginLocation;
     this.nonce = await this.getNonce();
     return this;
   }

@@ -17,7 +17,13 @@ bash scripts/bootstrap.sh
 
 `bootstrap.sh` waits for MySQL, installs WordPress (if absent), activates the theme and plugin, runs
 migrations, sets permalinks, seeds demo content and prints the URLs and demo accounts.
-Open <http://localhost:8080>. Admin: <http://localhost:8080/wp-admin/>.
+Open <http://localhost:8080>. Staff sign in at `/wp-login.php` and land on the ESTORA back office at
+<http://localhost:8080/estora-admin/>. Super Admin keeps technical WordPress administration at
+<http://localhost:8080/wp-admin/>.
+
+If you deploy over an existing install, load any page once (or run
+`docker compose run --rm cli wp rewrite flush`) so the `/estora-admin/` rules are written. Business
+staff are redirected away from `/wp-admin/` automatically; Super Admins are not.
 
 Idempotent re-run: `bash scripts/bootstrap.sh` (Windows: `scripts\bootstrap.ps1`) — it skips existing installs, re-runs pending
 migrations, and does not duplicate seeds.

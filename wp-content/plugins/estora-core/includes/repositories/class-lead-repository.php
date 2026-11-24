@@ -501,12 +501,34 @@ final class Lead_Repository {
 	 * @return array<int,array{date:string,count:int}>
 	 */
 	public function daily_series( int $days = 30, int $agent_id = 0 ): array {
+		$days = max( 1, min( 365, $days ) );
+		$end  = current_time( 'Y-m-d' );
+		$from = gmdate( 'Y-m-d', strtotime( $end . ' -' . ( $days - 1 ) . ' days' ) );
+		return $this->daily_between( $from, $end, $agent_id );
+	}
+
+	/**
+	 * Daily lead counts between two dates (inclusive, site-local dates).
+	 *
+	 * @param string $from     Y-m-d.
+	 * @param string $to       Y-m-d.
+	 * @param int    $agent_id Scope.
+	 * @return array<int,array{date:string,count:int}>
+	 */
+	public function daily_between( string $from, string $to, int $agent_id = 0 ): array {
 		global $wpdb;
-		$days  = max( 1, min( 365, $days ) );
-		$since = gmdate( 'Y-m-d 00:00:00', strtotime( estora_now() . ' -' . ( $days - 1 ) . ' days' ) );
+		$start_ts = strtotime( $from . ' 00:00:00' );
+		$end_ts   = strtotime( $to . ' 23:59:59' );
+		if ( ! $start_ts || ! $end_ts || $start_ts > $end_ts ) {
+			return array();
+		}
+		if ( $end_ts - $start_ts > 366 * DAY_IN_SECONDS ) {
+			$start_ts = $end_ts - 366 * DAY_IN_SECONDS;
+		}
+
 		$table = esc_sql( $this->table() );
-		$sql   = "SELECT DATE(created_at) AS day, COUNT(*) AS total FROM `{$table}` WHERE created_at >= %s";
-		$args  = array( $since );
+		$sql   = "SELECT DATE(created_at) AS day, COUNT(*) AS total FROM `{$table}` WHERE created_at BETWEEN %s AND %s";
+		$args  = array( gmdate( 'Y-m-d H:i:s', $start_ts ), gmdate( 'Y-m-d H:i:s', $end_ts ) );
 		if ( $agent_id ) {
 			$sql   .= ' AND assigned_agent_id = %d';
 			$args[] = $agent_id;
@@ -520,15 +542,45 @@ final class Lead_Repository {
 			$map[ $row['day'] ] = (int) $row['total'];
 		}
 
-		$out = array();
-		for ( $i = $days - 1; $i >= 0; $i-- ) {
-			$day   = gmdate( 'Y-m-d', strtotime( estora_now() . ' -' . $i . ' days' ) );
+		$out   = array();
+		$day   = gmdate( 'Y-m-d', $start_ts );
+		$guard = 0;
+		while ( $day <= $to && $guard < 367 ) {
 			$out[] = array(
 				'date'  => $day,
 				'count' => $map[ $day ] ?? 0,
 			);
+			$day = gmdate( 'Y-m-d', strtotime( $day . ' +1 day' ) );
+			++$guard;
 		}
 		return $out;
+	}
+
+	/**
+	 * Count leads created between two dates.
+	 *
+	 * @param string $from     Y-m-d.
+	 * @param string $to       Y-m-d.
+	 * @param string $status   Optional status.
+	 * @param int    $agent_id Optional agent scope.
+	 */
+	public function count_between( string $from, string $to, string $status = '', int $agent_id = 0 ): int {
+		global $wpdb;
+		$start = $from . ' 00:00:00';
+		$end   = $to . ' 23:59:59';
+		$table = esc_sql( $this->table() );
+		$sql   = "SELECT COUNT(*) FROM `{$table}` WHERE created_at BETWEEN %s AND %s";
+		$args  = array( $start, $end );
+		if ( $status && in_array( $status, Lead_Status::all(), true ) ) {
+			$sql   .= ' AND status = %s';
+			$args[] = $status;
+		}
+		if ( $agent_id ) {
+			$sql   .= ' AND assigned_agent_id = %d';
+			$args[] = $agent_id;
+		}
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		return (int) $wpdb->get_var( $wpdb->prepare( $sql, $args ) );
 	}
 
 	/**

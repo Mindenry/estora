@@ -599,7 +599,7 @@ final class Lead_Service {
 		if ( ! $user || '0' === (string) get_user_meta( $user_id, 'estora_active', true ) ) {
 			return false;
 		}
-		return user_can( $user_id, Capabilities::EDIT_LEADS ) || user_can( $user_id, 'manage_options' );
+		return in_array( 'estora_sales_agent', (array) $user->roles, true );
 	}
 
 	/**

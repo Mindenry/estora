@@ -29,7 +29,7 @@ echo "==> WordPress integration"
 wp eval-file /opt/estora/tests/wp/integration.php
 
 echo "==> HTTP integration"
-node --test tests/http/
+node --test --test-concurrency=1 tests/http/
 
 echo "==> removing QA fixtures before browser tests"
 wp eval-file /opt/estora/tests/wp/cleanup.php

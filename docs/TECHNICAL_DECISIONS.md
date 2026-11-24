@@ -30,8 +30,10 @@ a scoped shell. Native screens stay for what core does well (media, users).
 
 ## TD-05 Capabilities, not role name checks
 
-**Decision.** 17 `estora_*` capabilities mapped onto 5 roles. Ownership predicates (`agent_id ===
-current_user_id` unless `estora_view_all_leads`) live in `Lead_Repository` scope arguments.
+**Decision.** 17 `estora_*` capabilities mapped onto 5 ESTORA roles, plus the WordPress
+`administrator` (Super Admin) and a business-facing `estora_administrator` role. Ownership predicates
+(`agent_id === current_user_id` unless `estora_view_all_leads`) live in `Lead_Repository` scope
+arguments. Route definitions declare the capability each app screen needs.
 **Consequence.** Roles can be re-mapped by an administrator without code change.
 
 ## TD-06 Status machines are code, not free text

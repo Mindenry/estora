@@ -93,8 +93,8 @@ bootstrap script (`wp user application-password create`).
    status → kanban reflects it → appointments calendar shows confirmed viewing → reports CSV link
    present.
 5. **Responsive** → home, archive, admin dashboard at 390px: no horizontal overflow, nav opens.
-6. **Security smoke** → direct `/wp-admin/admin.php?page=estora-settings` as agent → "not allowed";
-   API 401/403 assertions live in the HTTP suite.
+6. **Security smoke** → direct `/estora-admin/settings/` as agent → 403 shell; marketing opens
+   `/estora-admin/leads/` → 403; API 401/403 assertions live in the HTTP suite.
 
 ## 7. Data management
 

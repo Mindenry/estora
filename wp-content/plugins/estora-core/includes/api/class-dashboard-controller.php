@@ -34,6 +34,16 @@ final class Dashboard_Controller extends Rest_Controller {
 
 		register_rest_route(
 			$this->namespace,
+			'/dashboard/me',
+			array(
+				'methods'             => 'GET',
+				'callback'            => array( $this, 'me' ),
+				'permission_callback' => $this->logged_in(),
+			)
+		);
+
+		register_rest_route(
+			$this->namespace,
 			'/dashboard/property-statistics',
 			array(
 				'methods'             => 'GET',
@@ -71,9 +81,30 @@ final class Dashboard_Controller extends Rest_Controller {
 	 */
 	public function summary( WP_REST_Request $request ): WP_REST_Response {
 		$service = new Report_Service();
-		$data    = $service->summary( (bool) $request->get_param( 'refresh' ) );
+		$days    = max( 1, min( 365, (int) ( $request->get_param( 'days' ) ?: 30 ) ) );
+		$from    = sanitize_text_field( (string) $request->get_param( 'from' ) );
+		$to      = sanitize_text_field( (string) $request->get_param( 'to' ) );
+		$data    = $service->summary( (bool) $request->get_param( 'refresh' ), $days, $from, $to );
 
 		return $this->ok( $data, array( 'cached' => (bool) ( $data['cached'] ?? false ), 'ttl' => 300 ) );
+	}
+
+	/**
+	 * Role-scoped dashboard for users without company-wide report access.
+	 *
+	 * @param WP_REST_Request $request Request.
+	 * @return WP_REST_Response|\WP_Error
+	 */
+	public function me( WP_REST_Request $request ) {
+		if ( ! current_user_can( Capabilities::VIEW_LEADS ) && ! current_user_can( Capabilities::MANAGE_APPOINTMENTS ) ) {
+			return $this->fail( 'You are not allowed to view this dashboard.', array(), 403 );
+		}
+
+		$days = max( 1, min( 365, (int) ( $request->get_param( 'days' ) ?: 30 ) ) );
+		$from = sanitize_text_field( (string) $request->get_param( 'from' ) );
+		$to   = sanitize_text_field( (string) $request->get_param( 'to' ) );
+
+		return $this->ok( ( new Report_Service() )->agent_dashboard( get_current_user_id(), $days, $from, $to ) );
 	}
 
 	/**

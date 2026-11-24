@@ -31,6 +31,7 @@
     clearTimeout(toastTimer);
     toastTimer = setTimeout(() => { el.hidden = true; }, 4200);
   }
+  window.estoraToast = toast;
 
   async function api(method, path, body) {
     const options = {
@@ -192,68 +193,258 @@
   async function initDashboard(root) {
     const kpis = root.querySelector('[data-kpis]');
     const trend = root.querySelector('[data-lead-trend]');
+    const trendTotal = root.querySelector('[data-trend-total]');
     const activity = root.querySelector('[data-recent-activity]');
     const upcoming = root.querySelector('[data-upcoming-appointments]');
     const sources = root.querySelector('[data-source-bars]');
-    const trendTotal = root.querySelector('[data-trend-total]');
-    kpis.innerHTML = Array.from({ length: 6 }, () => '<div class="estora-kpi"><span class="estora-kpi__label">&nbsp;</span><span class="estora-kpi__value">—</span></div>').join('');
-    trend.innerHTML = skeleton(1);
+    const viewShell = root.closest('.estora-admin') || root;
+    const rangeSelect = viewShell.querySelector('[data-dashboard-range]');
+    const fromInput = viewShell.querySelector('[data-range-from]');
+    const toInput = viewShell.querySelector('[data-range-to]');
+    const applyBtn = viewShell.querySelector('[data-range-apply]');
+    const rangeSummary = viewShell.querySelector('[data-range-summary]');
 
-    try {
-      const [summaryRes, appointmentRes] = await Promise.all([
-        api('GET', '/dashboard/summary'),
-        api('GET', `/appointments?from=${todayISO()}&order=ASC&per_page=6`).catch(() => ({ data: [] }))
-      ]);
-      const data = summaryRes.data;
-      const cards = [
-        { label: 'Published listings', value: data.properties.published, delta: `${data.properties.total} total · ${data.properties.stale} stale`, href: 'admin.php?page=estora-inventory' },
-        { label: 'Available', value: data.properties.available, delta: `${data.properties.reserved} reserved · ${data.properties.sold} sold`, href: 'admin.php?page=estora-inventory' },
-        { label: 'New leads', value: data.leads.new, delta: `${data.leads.total} in pipeline`, href: 'admin.php?page=estora-leads' },
-        { label: 'Won', value: data.leads.won, delta: `${data.leads.lost} lost · conversion ${data.leads.conversion_rate}%`, href: 'admin.php?page=estora-leads' },
-        { label: 'Upcoming viewings', value: data.appointments.upcoming, delta: `${data.appointments.this_week} in the next 7 days`, href: 'admin.php?page=estora-appointments', accent: true },
-        { label: 'Awaiting confirmation', value: data.appointments.pending, delta: `${data.appointments.today} scheduled today`, href: 'admin.php?page=estora-appointments' }
-      ];
-      kpis.innerHTML = cards.map((card) => `
-        <a class="estora-kpi${card.accent ? ' estora-kpi--accent' : ''}" href="${escape(card.href)}">
-          <span class="estora-kpi__label">${escape(card.label)}</span>
-          <span class="estora-kpi__value">${Number(card.value || 0).toLocaleString()}</span>
-          <span class="estora-kpi__delta">${escape(card.delta)}</span>
-        </a>`).join('');
-
-      renderTrend(trend, data.lead_trend || []);
-      if (trendTotal) {
-        const total = (data.lead_trend || []).reduce((sum, point) => sum + Number(point.count), 0);
-        trendTotal.textContent = `${total} leads captured`;
+    const isoToday = () => new Date().toISOString().slice(0, 10);
+    const range = () => {
+      const value = rangeSelect ? rangeSelect.value : '30';
+      let days = 30;
+      let from = '';
+      let to = '';
+      if (value === 'month') {
+        const now = new Date();
+        from = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+        to = isoToday();
+        days = Math.max(1, Math.round((new Date(`${to}T12:00:00`) - new Date(`${from}T12:00:00`)) / 86400000) + 1);
+      } else if (value === 'custom') {
+        from = fromInput?.value || '';
+        to = toInput?.value || '';
+        if (from && to) {
+          const diff = Math.round((new Date(`${to}T12:00:00`) - new Date(`${from}T12:00:00`)) / 86400000) + 1;
+          days = Math.max(1, Math.min(366, diff));
+        } else {
+          days = 30;
+        }
+      } else {
+        days = Number(value) || 30;
       }
+      return { days, from, to, value };
+    };
 
-      const appointments = appointmentRes.data || [];
-      upcoming.innerHTML = appointments.length
-        ? `<ul class="estora-simplelist">${appointments.map((item) => `
-            <li><span><strong>${escape(item.customer_name)}</strong><br><span class="estora-muted">${escape(item.property_title)} · ${escape(item.agent_name || 'Unassigned')}</span></span>
-            <span style="text-align:right">${escape(item.date)} ${escape(item.time)}<br>${badge(item.status_label, `badge-${{ pending: 'warning', confirmed: 'new', rescheduled: 'info', completed: 'neutral', cancelled: 'danger', rejected: 'danger', no_show: 'danger' }[item.status] || 'neutral'}`)}</span></li>`).join('')}</ul>`
-        : emptyBox('No upcoming viewings', 'New requests will appear here.');
-      if (upcoming.querySelectorAll('li').length) {
-        upcoming.querySelectorAll('li').forEach((li) => { li.style.cursor = 'default'; });
+    const paramsFor = () => {
+      const current = range();
+      const params = new URLSearchParams({ days: String(current.days) });
+      if (current.from && current.to) {
+        params.set('from', current.from);
+        params.set('to', current.to);
       }
+      return params;
+    };
 
-      activity.innerHTML = (data.recent_activity || []).length
-        ? data.recent_activity.map((item) => `<li><strong>${escape(item.description || item.action)}</strong><time>${escape(dateFmt(item.created_at, true))} · ${escape(item.actor)}</time></li>`).join('')
-        : '<li>No activity recorded yet.</li>';
+    const showCustom = () => {
+      const custom = rangeSelect && rangeSelect.value === 'custom';
+      if (fromInput) fromInput.hidden = !custom;
+      if (toInput) toInput.hidden = !custom;
+      if (applyBtn) applyBtn.hidden = !custom;
+      if (custom && fromInput && !fromInput.value) {
+        const d = new Date();
+        d.setDate(d.getDate() - 29);
+        fromInput.value = d.toISOString().slice(0, 10);
+        if (toInput) toInput.value = isoToday();
+      }
+    };
 
-      const entries = Object.entries(data.by_source || {}).sort((a, b) => b[1] - a[1]);
-      const max = entries.reduce((m, [, v]) => Math.max(m, Number(v)), 1);
-      sources.innerHTML = entries.length
-        ? entries.map(([name, count]) => `<div class="estora-sourcebar"><span>${escape(name)}</span><span class="estora-sourcebar__track"><span class="estora-sourcebar__fill" style="width:${Math.round((Number(count) / max) * 100)}%"></span></span><span class="estora-sourcebar__num">${Number(count)}</span></div>`).join('')
-        : '<p class="estora-muted">No leads recorded.</p>';
-      root.setAttribute('aria-busy', 'false');
-    } catch (error) {
-      trend.innerHTML = errorBox(error.message);
-      toast(error.message, 'error');
+    async function load() {
+      if (!kpis) return;
+      root.setAttribute('aria-busy', 'true');
+      kpis.innerHTML = Array.from({ length: 8 }, () => '<div class="estora-kpi"><span class="estora-kpi__label">&nbsp;</span><span class="estora-kpi__value">—</span><span class="estora-kpi__delta">&nbsp;</span></div>').join('');
+      const params = paramsFor();
+      const isAgent = !cfg.caps.viewReports;
+      try {
+        let data;
+        if (isAgent) {
+          const payload = await api('GET', `/dashboard/me?${params.toString()}`);
+          data = payload.data;
+          const trendData = data.lead_trend || [];
+          const cards = [
+            { label: 'My leads', value: data.leads.total, detail: `${data.leads.new} new · ${data.leads.qualified} qualified`, href: cfg.urls.leads },
+            { label: 'Won', value: data.leads.won, detail: `${data.leads.lost} lost · ${data.leads.conversion_rate}% conversion`, href: cfg.urls.leads },
+            { label: 'Open leads', value: data.leads.total - data.leads.won - data.leads.lost, detail: 'New, contacted, qualified or negotiating', href: cfg.urls.leads },
+            { label: 'Upcoming viewings', value: data.appointments.upcoming_count, detail: `${data.appointments.pending} awaiting confirmation`, href: cfg.urls.appointments, accent: true },
+            { label: 'Assigned properties', value: data.properties.assigned, detail: 'Published listings you own', href: cfg.urls.properties }
+          ];
+          renderKpis(kpis, cards);
+          renderTrend(trend, trendData);
+          if (trendTotal) trendTotal.textContent = `${trendData.reduce((sum, point) => sum + Number(point.count), 0)} leads in range`;
+          renderBars(root.querySelector('[data-lead-status-chart]'), statusEntries(data.leads.by_status || {}), { title: 'Your pipeline' });
+          renderAgentUpcoming(upcoming, data.appointments.next || []);
+          hidePanel(root, 'property-mix', true);
+          hidePanel(root, 'types', true);
+          hidePanel(root, 'agents', true);
+          hidePanel(root, 'appointments', true);
+          hidePanel(root, 'sources', true);
+          hidePanel(root, 'pipeline-health', true);
+          if (activity) activity.closest('.estora-panel')?.setAttribute('hidden', 'hidden');
+          if (rangeSummary) {
+            rangeSummary.hidden = false;
+            rangeSummary.innerHTML = `<span><strong>${escape(data.range.total)}</strong> leads captured</span><span><strong>${escape(data.range.won)}</strong> won</span><span><strong>${escape(data.range.conversion_rate)}%</strong> range conversion</span><span class="estora-muted">${escape(data.range.from)} → ${escape(data.range.to)}</span>`;
+          }
+        } else {
+          const [summaryRes, propertyRes] = await Promise.all([
+            api('GET', `/dashboard/summary?${params.toString()}`),
+            api('GET', '/dashboard/property-statistics')
+          ]);
+          data = summaryRes.data;
+          const cards = [
+            { label: 'Total properties', value: data.properties.total, detail: `${data.properties.published} published`, href: cfg.urls.properties },
+            { label: 'Available', value: data.properties.available, detail: `${data.properties.reserved} reserved`, href: cfg.urls.properties },
+            { label: 'Sold', value: data.properties.sold, detail: `${data.properties.rented} rented`, href: cfg.urls.properties },
+            { label: 'Rental listings', value: data.properties.rentals, detail: 'Purpose: for rent', href: cfg.urls.properties }
+          ];
+          if (data.leads) {
+            cards.push(
+              { label: 'Total leads', value: data.leads.total, detail: `${data.leads.range_total} in range`, href: cfg.urls.leads },
+              { label: 'New leads', value: data.leads.new, detail: 'Awaiting first contact', href: cfg.urls.leads },
+              { label: 'Won', value: data.leads.won, detail: `${data.leads.conversion_rate}% all-time conversion`, href: cfg.urls.leads }
+            );
+            renderTrend(trend, data.lead_trend || []);
+            if (trendTotal) trendTotal.textContent = `${(data.lead_trend || []).reduce((sum, point) => sum + Number(point.count), 0)} captured in range`;
+            renderBars(root.querySelector('[data-lead-status-chart]'), statusEntries(data.leads), { title: 'Pipeline' });
+            renderBars(root.querySelector('[data-agent-chart]'), (data.leads.by_agent || []).slice(0, 6).map((row) => ({ label: row.name, value: row.total, caption: `${row.won} won` })), { color: 'brass', title: 'Leads per agent' });
+            renderSourceBars(sources, data.by_source || {});
+            renderPipelineHealth(root.querySelector('[data-pipeline-health]'), data.leads);
+            if (rangeSummary) {
+              rangeSummary.hidden = false;
+              rangeSummary.innerHTML = `<span><strong>${escape(data.range.total)}</strong> leads captured</span><span><strong>${escape(data.range.won)}</strong> won</span><span><strong>${escape(data.range.conversion_rate)}%</strong> range conversion</span><span class="estora-muted">${escape(data.range.from)} → ${escape(data.range.to)}</span>`;
+            }
+          } else {
+            hidePanel(root, 'lead-status', true);
+            hidePanel(root, 'agents', true);
+            hidePanel(root, 'sources', true);
+            hidePanel(root, 'pipeline-health', true);
+            if (trend) trend.closest('.estora-panel')?.setAttribute('hidden', 'hidden');
+          }
+          if (data.appointments) {
+            cards.push({ label: 'Upcoming viewings', value: data.appointments.upcoming, detail: `${data.appointments.pending} awaiting confirmation`, href: cfg.urls.appointments, accent: true });
+          }
+          renderKpis(kpis, cards.slice(0, 8));
+          renderBars(root.querySelector('[data-property-mix]'), [
+            { label: 'Available', value: data.properties.available },
+            { label: 'Reserved', value: data.properties.reserved },
+            { label: 'Sold', value: data.properties.sold },
+            { label: 'Rented', value: data.properties.rented },
+            { label: 'Unavailable', value: Math.max(0, data.properties.published - data.properties.available - data.properties.reserved - data.properties.sold - data.properties.rented) }
+          ], { title: 'Current inventory' });
+          renderBars(root.querySelector('[data-type-chart]'), (propertyRes.data.by_type || []).map((row) => ({ label: row.name, value: row.total })), { color: 'brass', title: 'Published by type' });
+          renderBars(root.querySelector('[data-appointment-chart]'), (data.appointments?.by_weekday || []).map((row) => ({ label: row.name, value: row.total })), { color: 'muted', title: 'Viewings by weekday' });
+          if (!data.appointments) hidePanel(root, 'appointments', true);
+          if (!cfg.caps.manageAppointments) hidePanel(root, 'upcoming-panel', true);
+
+          let nextAppointments = [];
+          if (cfg.caps.manageAppointments) {
+            const payload = await api('GET', `/appointments?from=${isoToday()}&order=ASC&per_page=6`).catch(() => ({ data: [] }));
+            nextAppointments = payload.data || [];
+          }
+          upcoming.innerHTML = nextAppointments.length
+            ? `<ul class="estora-simplelist">${nextAppointments.map((item) => `
+                <li><span><strong>${escape(item.customer_name)}</strong><br><span class="estora-muted">${escape(item.property_title)} · ${escape(item.agent_name || 'Unassigned')}</span></span>
+                <span style="text-align:right">${escape(item.date)} ${escape(item.time)}<br>${badge(item.status_label, statusBadge(item.status))}</span></li>`).join('')}</ul>`
+            : emptyBox('No upcoming viewings', 'Confirmed and pending requests appear here.');
+
+          if (activity) {
+            const items = data.recent_activity || [];
+            activity.innerHTML = items.length
+              ? items.map((item) => `<li><strong>${escape(item.description || item.action)}</strong><time>${escape(dateFmt(item.created_at, true))} · ${escape(item.actor)}</time></li>`).join('')
+              : '<li>No activity recorded yet.</li>';
+          }
+        }
+        root.setAttribute('aria-busy', 'false');
+      } catch (error) {
+        if (trend) trend.innerHTML = errorBox(error.message);
+        toast(error.message, 'error');
+        root.setAttribute('aria-busy', 'false');
+      }
     }
 
-    document.querySelector('[data-refresh-dashboard]')?.addEventListener('click', () => {
-      api('GET', '/dashboard/summary?refresh=1').then(() => window.location.reload()).catch((error) => toast(error.message, 'error'));
-    });
+    if (rangeSelect) {
+      showCustom();
+      rangeSelect.addEventListener('change', () => {
+        showCustom();
+        if (rangeSelect.value !== 'custom') load();
+      });
+    }
+    applyBtn?.addEventListener('click', load);
+    viewShell.querySelector('[data-refresh-dashboard]')?.addEventListener('click', load);
+    load();
+  }
+
+  function renderKpis(container, cards) {
+    container.innerHTML = cards.map((card) => `
+      <a class="estora-kpi${card.accent ? ' estora-kpi--accent' : ''}" href="${escape(card.href || '#')}">
+        <span class="estora-kpi__label">${escape(card.label)}</span>
+        <span class="estora-kpi__value">${Number(card.value || 0).toLocaleString()}</span>
+        <span class="estora-kpi__delta">${escape(card.detail || '')}</span>
+      </a>`).join('');
+  }
+
+  function statusEntries(leads) {
+    const source = leads && leads.counts ? leads.counts : leads || {};
+    return [
+      ['New', 'new'], ['Contacted', 'contacted'], ['Qualified', 'qualified'], ['Negotiation', 'negotiation'], ['Won', 'won'], ['Lost', 'lost']
+    ].map(([label, key]) => ({ label, value: Number(source[key] || 0) }));
+  }
+
+  function renderBars(container, entries, options = {}) {
+    if (!container) return;
+    const rows = (entries || []).filter((entry) => entry && entry.label);
+    if (!rows.length) {
+      container.innerHTML = '<p class="estora-muted">No data for this period.</p>';
+      return;
+    }
+    const max = Math.max(1, ...rows.map((row) => Number(row.value || 0)));
+    container.innerHTML = `<div class="estora-bars" role="img" aria-label="${escape(options.title || 'Chart')}">${rows.map((row) => `
+      <div class="estora-bar">
+        <span>${escape(row.label)}${row.caption ? ` <span class="estora-muted">· ${escape(row.caption)}</span>` : ''}</span>
+        <span class="estora-bar__track"><span class="estora-bar__fill${options.color === 'brass' ? ' estora-bar__fill--brass' : options.color === 'muted' ? ' estora-bar__fill--muted' : ''}" style="width:${Math.max(2, Math.round((Number(row.value) / max) * 100))}%"></span></span>
+        <span class="estora-bar__num">${Number(row.value).toLocaleString()}</span>
+      </div>`).join('')}</div>`;
+  }
+
+  function renderSourceBars(container, source) {
+    if (!container) return;
+    const entries = Object.entries(source || {}).sort((a, b) => b[1] - a[1]);
+    const max = entries.reduce((m, [, v]) => Math.max(m, Number(v)), 1);
+    container.innerHTML = entries.length
+      ? entries.map(([name, count]) => `<div class="estora-sourcebar"><span>${escape(name)}</span><span class="estora-sourcebar__track"><span class="estora-sourcebar__fill" style="width:${Math.round((Number(count) / max) * 100)}%"></span></span><span class="estora-sourcebar__num">${Number(count)}</span></div>`).join('')
+      : '<p class="estora-muted">No leads recorded.</p>';
+  }
+
+  function renderPipelineHealth(container, leads) {
+    if (!container) return;
+    const total = Number(leads.total || 0);
+    const won = Number(leads.won || 0);
+    const lost = Number(leads.lost || 0);
+    container.innerHTML = `<ul class="estora-simplelist">
+      <li><span>Open leads</span><span class="num">${Math.max(0, total - won - lost).toLocaleString()}</span></li>
+      <li><span>Won</span><span class="num">${won.toLocaleString()}</span></li>
+      <li><span>Lost</span><span class="num">${lost.toLocaleString()}</span></li>
+      <li><span>All-time conversion</span><span class="num">${Number(leads.conversion_rate || 0)}%</span></li>
+    </ul>`;
+  }
+
+  function renderAgentUpcoming(container, items) {
+    if (!container) return;
+    container.innerHTML = items.length
+      ? `<ul class="estora-simplelist">${items.map((item) => `<li><span><strong>${escape(item.customer_name)}</strong><br><span class="estora-muted">${escape(item.property_title)}</span></span><span style="text-align:right">${escape(item.date)} ${escape(item.time)}<br>${badge(item.status_label, statusBadge(item.status))}</span></li>`).join('')}</ul>`
+      : emptyBox('No upcoming viewings', 'Requests assigned to you appear here.');
+  }
+
+  function statusBadge(status) {
+    return ({ pending: 'warning', confirmed: 'new', rescheduled: 'info', completed: 'neutral', cancelled: 'danger', rejected: 'danger', no_show: 'danger' }[status] || 'neutral');
+  }
+
+  function hidePanel(root, name, hide) {
+    const panel = root.querySelector(`[data-panel="${name}"]`);
+    if (panel) panel.hidden = hide;
   }
 
   function renderTrend(container, points) {
@@ -296,9 +487,12 @@
     const agentFilter = root.querySelector('[data-lead-agent-filter]');
     const sortFilter = root.querySelector('[data-lead-sort]');
     const viewButtons = root.querySelectorAll('[data-leads-view]');
-    const state = { page: 1, q: '', status: '', agent: '', sort: 'created_at:DESC', view: 'table' };
+    const urlParams = new URLSearchParams(window.location.search);
+    const state = { page: 1, q: urlParams.get('q') || '', status: '', agent: '', sort: 'created_at:DESC', view: cfg.initialView === 'board' ? 'board' : 'table' };
+    if (search && state.q) search.value = state.q;
 
     const agents = await loadAgents();
+    agentsCache = agents;
     fillAgentSelect(agentFilter, agents, { includeAll: true });
     fillAgentSelect(root.querySelector('[data-new-lead-agent]'), agents);
 
@@ -369,10 +563,15 @@
         board.hidden = state.view !== 'board';
       });
     });
+    if (state.view === 'board') {
+      table.hidden = true;
+      board.hidden = false;
+      viewButtons.forEach((b) => b.classList.toggle('is-active', b.dataset.leadsView === 'board'));
+    }
 
     // New lead dialog
     const dialog = root.querySelector('[data-lead-dialog]');
-    root.querySelector('[data-new-lead]')?.addEventListener('click', () => dialog.showModal());
+    (root.closest('.estora-admin') || root).querySelector('[data-new-lead]')?.addEventListener('click', () => dialog.showModal());
     root.querySelector('[data-close-dialog]')?.addEventListener('click', () => dialog.close());
     root.querySelector('[data-new-lead-form]')?.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -397,6 +596,10 @@
       }
     });
 
+    if (window.location.hash === '#new') {
+      document.body.dataset.estoraOpenLead = '1';
+    }
+    document.body.dataset.estoraLeadsReady = '1';
     load();
   }
 
@@ -533,7 +736,6 @@
   }
 
   let agentsCache = [];
-  loadAgents().then((agents) => { agentsCache = agents; });
 
   function wireLeadControls(container, lead, onChanged) {
     const statusSelect = container.querySelector('[data-drawer-status]');
@@ -815,8 +1017,113 @@
       else updateStatus(id, button.dataset.apptAction);
     });
 
+    // Staff booking dialog.
+    const dialog = root.querySelector('[data-staff-appointment-dialog]');
+    const form = dialog?.querySelector('[data-staff-appointment-form]');
+    const propertySelect = dialog?.querySelector('[data-staff-property]');
+    const agentSelect = dialog?.querySelector('[data-staff-agent]');
+    const staffSlots = dialog?.querySelector('[data-staff-slots]');
+    const timeInput = dialog?.querySelector('[data-staff-time]');
+    let propertiesLoaded = false;
+
+    fillAgentSelect(agentSelect, agents, { includeAll: false });
+    if (agentSelect) {
+      agentSelect.insertAdjacentHTML('afterbegin', '<option value="0">Auto-assign</option>');
+    }
+
+    async function openAppointmentDialog() {
+      if (!dialog || !form) return;
+      if (!propertiesLoaded && propertySelect) {
+        try {
+          const payload = await api('GET', '/properties?per_page=100&status=publish&sort=newest');
+          propertySelect.innerHTML = '<option value="">Choose a property…</option>'
+            + (payload.data || []).map((property) => `<option value="${property.id}">${escape(property.title)} · ${escape(property.reference)}</option>`).join('');
+          propertiesLoaded = true;
+        } catch (error) {
+          propertySelect.innerHTML = `<option value="">${escape(error.message)}</option>`;
+        }
+      }
+      form.reset();
+      if (timeInput) timeInput.value = '';
+      if (staffSlots) staffSlots.innerHTML = '<p class="estora-slots__empty">Choose a date and property to load slots.</p>';
+      dialog.showModal();
+    }
+
+    (root.closest('.estora-admin') || root).querySelector('[data-new-appointment]')?.addEventListener('click', openAppointmentDialog);
+    dialog?.querySelector('[data-close-appointment-dialog]')?.addEventListener('click', () => dialog.close());
+
+    const loadStaffSlots = async () => {
+      if (!form || !staffSlots) return;
+      const property = Number(propertySelect?.value || 0);
+      const date = form.querySelector('[name="date"]')?.value || '';
+      if (!property || !date) return;
+      staffSlots.innerHTML = '<p class="estora-muted">Loading available times…</p>';
+      if (timeInput) timeInput.value = '';
+      try {
+        const params = new URLSearchParams({ date, property_id: String(property) });
+        const agentId = Number(agentSelect?.value || 0);
+        if (agentId) params.set('agent_id', String(agentId));
+        const payload = await api('GET', `/appointments/availability?${params.toString()}`);
+        const data = payload.data;
+        if (data.closed || !data.slots.length) {
+          staffSlots.innerHTML = `<p class="estora-slots__empty">${escape(data.message || 'No slots available.')}</p>`;
+          return;
+        }
+        staffSlots.innerHTML = data.slots.map((slot) => `<button type="button" class="estora-slot" data-staff-slot="${slot.start}" ${slot.available ? '' : 'disabled'}>${slot.start}</button>`).join('');
+        staffSlots.querySelectorAll('[data-staff-slot]').forEach((button) => {
+          button.addEventListener('click', () => {
+            if (timeInput) timeInput.value = button.dataset.staffSlot;
+            staffSlots.querySelectorAll('[data-staff-slot]').forEach((b) => b.classList.remove('is-selected'));
+            button.classList.add('is-selected');
+          });
+        });
+      } catch (error) {
+        staffSlots.innerHTML = `<p class="estora-slots__empty">${escape(error.message)}</p>`;
+      }
+    };
+
+    form?.querySelector('[name="date"]')?.addEventListener('change', loadStaffSlots);
+    propertySelect?.addEventListener('change', loadStaffSlots);
+    agentSelect?.addEventListener('change', loadStaffSlots);
+
+    form?.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      if (!form || !timeInput?.value) {
+        const err = form?.querySelector('[data-form-error]');
+        if (err) {
+          err.hidden = false;
+          err.textContent = 'Choose an available time.';
+        }
+        return;
+      }
+      const errorEl = form.querySelector('[data-form-error]');
+      const button = form.querySelector('button[type="submit"]');
+      const data = formDataObject(form);
+      data.staff = 1;
+      data.consent = true;
+      if (!data.agent_id) delete data.agent_id;
+      errorEl.hidden = true;
+      button.disabled = true;
+      try {
+        const payload = await api('POST', '/appointments', data);
+        dialog.close();
+        toast(`${payload.message} ${payload.data.public_ref}`);
+        load();
+      } catch (error) {
+        errorEl.hidden = false;
+        errorEl.textContent = error.message;
+        if (error.status === 409) loadStaffSlots();
+      } finally {
+        button.disabled = false;
+      }
+    });
+
     apptReschedule = reschedule;
     load();
+    if (window.location.hash === '#new') {
+      setTimeout(openAppointmentDialog, 450);
+      history.replaceState(null, '', window.location.pathname);
+    }
   }
 
   function renderCalendar(container, view, cursor, items, bounds, onDay) {
@@ -943,7 +1250,8 @@
     const search = root.querySelector('[data-inventory-search]');
     const availabilityFilter = root.querySelector('[data-inventory-availability]');
     const statusFilter = root.querySelector('[data-inventory-status]');
-    const state = { page: 1, q: '', availability: '', status: 'any' };
+    const state = { page: 1, q: new URLSearchParams(window.location.search).get('q') || '', availability: '', status: 'any' };
+    if (search && state.q) search.value = state.q;
 
     const loadSummary = async () => {
       try {
@@ -1007,12 +1315,17 @@
   /* ---------------- reports ---------------- */
   async function initReports() {
     const root = document.querySelector('[data-screen="reports"]');
+    const viewShell = root.closest('.estora-admin') || root;
+    const rangeSelect = viewShell.querySelector('[data-report-range]');
+    const requestedDays = Number(new URLSearchParams(window.location.search).get('days') || 0);
+    const days = [30, 90, 365].includes(requestedDays) ? requestedDays : 30;
+    if (rangeSelect) rangeSelect.value = String(days);
     const kpis = root.querySelector('[data-report-kpis]');
     const agentsEl = root.querySelector('[data-report-agents]');
     try {
       const [propertyRes, leadRes, appointmentRes] = await Promise.all([
         api('GET', '/dashboard/property-statistics'),
-        api('GET', '/dashboard/lead-statistics'),
+        api('GET', `/dashboard/lead-statistics?days=${days}`),
         api('GET', '/dashboard/appointment-statistics')
       ]);
       const p = propertyRes.data;
@@ -1027,6 +1340,7 @@
         ? `<ul class="estora-simplelist">${entries.map((entry) => `<li><span>${escape(entry[key])}</span><span class="num">${Number(entry[value]).toLocaleString()}</span></li>`).join('')}</ul>`
         : '<p class="estora-muted">No data.</p>';
 
+      renderTrend(root.querySelector('[data-report-daily]'), l.daily || []);
       root.querySelector('[data-report-types]').innerHTML = list(p.by_type || []);
       root.querySelector('[data-report-provinces]').innerHTML = list(p.by_province || []);
       root.querySelector('[data-report-sources]').innerHTML = Object.keys(l.by_source || {}).length
@@ -1045,6 +1359,10 @@
     } catch (error) {
       kpis.innerHTML = errorBox(error.message);
     }
+
+    rangeSelect?.addEventListener('change', () => {
+      window.location.search = `?days=${rangeSelect.value}`;
+    });
   }
 
   /* ---------------- campaigns ---------------- */

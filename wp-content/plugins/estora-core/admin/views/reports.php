@@ -10,6 +10,7 @@ defined( 'ABSPATH' ) || exit;
 $estora_eyebrow     = __( 'Analysis', 'estora-core' );
 $estora_title       = __( 'Reports', 'estora-core' );
 $estora_description = __( 'Inventory, pipeline, agent and scheduling performance. Exports stream the underlying rows.', 'estora-core' );
+$estora_actions     = '<div class="estora-range"><label for="estora-report-range">' . esc_html__( 'Lead period', 'estora-core' ) . '</label><select id="estora-report-range" data-report-range><option value="30">' . esc_html__( 'Last 30 days', 'estora-core' ) . '</option><option value="90">' . esc_html__( 'Last 90 days', 'estora-core' ) . '</option><option value="365">' . esc_html__( 'Last 12 months', 'estora-core' ) . '</option></select></div>';
 require __DIR__ . '/partials/header.php';
 
 $estora_exports = array(
@@ -39,6 +40,11 @@ $estora_exports = array(
 		</section>
 
 		<div class="estora-kpis" data-report-kpis></div>
+
+		<section class="estora-panel">
+			<div class="estora-panel__head"><h2><?php esc_html_e( 'Lead acquisition for the selected period', 'estora-core' ); ?></h2></div>
+			<div class="estora-chart" data-report-daily></div>
+		</section>
 
 		<div class="estora-split">
 			<section class="estora-panel">

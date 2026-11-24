@@ -10,6 +10,11 @@
 }
 .estora-admin *, .estora-admin *::before, .estora-admin *::after { box-sizing: border-box; }
 .estora-admin a { color: var(--pine); text-decoration: none; }
+.estora-admin a.estora-btn { color: #fff; }
+.estora-admin a.estora-btn:hover { color: #fff; }
+.estora-admin a.estora-btn--ghost { color: var(--ink); }
+.estora-admin a.estora-btn--ghost:hover { color: var(--ink); }
+.estora-admin a.estora-btn--danger { color: #fff; }
 .estora-admin h1, .estora-admin h2, .estora-admin h3 { color: var(--ink); font-family: var(--font-display); font-weight: 500; letter-spacing: -0.01em; }
 .estora-admin h1 { font-size: clamp(1.7rem, 2.4vw, 2.1rem); margin: 0; }
 .estora-admin h2 { font-size: 1.25rem; margin: 0; }
@@ -227,8 +232,8 @@
 /* source bars, report lists */
 .estora-sourcebars { display: grid; gap: 10px; }
 .estora-sourcebar { display: grid; grid-template-columns: 100px 1fr 40px; gap: 10px; align-items: center; font-size: var(--fs-12); }
-.estora-sourcebar__track { height: 6px; background: var(--sand); border-radius: 3px; overflow: hidden; }
-.estora-sourcebar__fill { height: 100%; background: var(--pine); }
+.estora-sourcebar__track { display: block; height: 6px; background: var(--sand); border-radius: 3px; overflow: hidden; }
+.estora-sourcebar__fill { display: block; height: 100%; background: var(--pine); }
 .estora-sourcebar__num { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); }
 .estora-simplelist { display: grid; gap: 0; }
 .estora-simplelist li { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: var(--fs-13); }

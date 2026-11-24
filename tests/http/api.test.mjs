@@ -412,7 +412,7 @@ test('ESTORA API', async (t) => {
       await manager.api(`/leads/${lead.id}`, { method: 'DELETE' });
     }
 
-    const reportsPage = await admin.fetch('/wp-admin/admin.php?page=estora-reports');
+    const reportsPage = await admin.fetch('/estora-admin/reports/');
     assert.equal(reportsPage.status, 200);
     const html = await reportsPage.text();
     const match = html.match(/report=properties(?:&amp;|&#038;|&)_wpnonce=([a-f0-9]+)/);

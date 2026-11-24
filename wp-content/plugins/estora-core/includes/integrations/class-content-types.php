@@ -245,7 +245,12 @@ final class Content_Types {
 		$location_terms = wp_get_post_terms( $post->ID, 'property_location' );
 		$location       = ( ! is_wp_error( $location_terms ) && $location_terms ) ? $location_terms[0]->slug : '';
 
-		$agents       = get_users( array( 'capability' => Capabilities::EDIT_LEADS, 'number' => 100 ) );
+		$agents       = get_users(
+			array(
+				'role'   => 'estora_sales_agent',
+				'number' => 100,
+			)
+		);
 		$price        = estora_property_price( $post->ID );
 		$availability = (string) $repo->meta( $post->ID, 'availability', Property_Status::AVAILABLE );
 		$amenities    = (array) $repo->meta( $post->ID, 'amenities', array() );

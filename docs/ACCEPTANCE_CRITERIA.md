@@ -39,8 +39,8 @@ verification remains (stated).
 | AC-24 | Theme change keeps business data/API | switched to Twenty Twenty-Four: leads 200, properties 200, tables true; switched back | PASS |
 | AC-25 | Stack starts from clean volumes with documented commands | fresh compose volumes + bootstrap | PASS |
 | AC-26 | CI executes real checks | workflow committed; **not run on GitHub from this machine** | PARTIAL |
-| AC-27 | PHP syntax/PHPCS no errors | 90 files; PHPCS 0 errors | PASS |
-| AC-28 | Unit + integration + E2E pass | 37 / 12 / 15 / 11 | PASS |
+| AC-27 | PHP syntax/PHPCS no errors | 99 files; PHPCS 0 errors | PASS |
+| AC-28 | Unit + integration + HTTP + E2E pass | 37 / 12 / 24 / 16 | PASS |
 
 ## C. Security
 
@@ -67,8 +67,22 @@ verification remains (stated).
 | AC-42 | README install reproducible | bootstrap path executed; commands documented for bash and PowerShell | PASS |
 | AC-43 | Documentation matches routes/schema | review against implementation | PASS |
 | AC-44 | No placeholder handler presented as complete | manual review; only labeled art fallbacks | PASS |
-| AC-45 | Screenshots current | 19 files in `docs/screenshots` from final build | PASS |
-| AC-46 | Release notes + v1.0.0 tag | `docs/RELEASE_NOTES.md`, local tag | PASS |
+| AC-45 | Screenshots current | 34 files in `docs/screenshots` from the final seed | PASS |
+| AC-46 | Release notes + v1.1.0 tag | `docs/RELEASE_NOTES.md`, local tag | PASS |
+
+## E. Back-office experience (v1.1.0)
+
+| ID | Criterion | Evidence | Status |
+| --- | --- | --- | --- |
+| AC-47 | Root cause of the default wp-admin landing identified | `docs/ADMIN_EXPERIENCE.md` §1: admin-page-only implementation, no login redirect, no app shell/route layer | PASS |
+| AC-48 | Dedicated entry point with deep links, refresh, back/forward, 404 | `/estora-admin/`, lead route, HTTP app suite, E2E 404 | PASS |
+| AC-49 | Login redirects every staff role to the correct dashboard | 9 app HTTP tests + role E2E; login redirect asserted for six accounts | PASS |
+| AC-50 | Permission-aware navigation and server-side route authorization | six-role nav assertions; 403 matrix (settings, users, leads, agents, campaigns) | PASS |
+| AC-51 | Dashboard figures and charts come from real data; filters update data | dashboard endpoints match SQL counts; period/custom range wired to API | PASS |
+| AC-52 | Quick actions, staff booking, search, notifications, logout function | E2E period + add-lead, staff booking, search, drawer/logout; HTTP notifications | PASS |
+| AC-53 | WordPress CMS remains available where authorized; technical admin to Super Admin | marketing posts/pages 200, agent posts blocked; Super Admin WP link and `/wp-admin/` | PASS |
+| AC-54 | Responsive app shell and mobile navigation | mobile E2E + `app-mobile-dashboard.png`/`app-mobile-nav.png`; no horizontal overflow | PASS |
+| AC-55 | Updated screenshots inspected and defects fixed | 34 captures; chart fills, button labels, skip link and version label corrected | PASS |
 
 ## Out of scope for acceptance
 

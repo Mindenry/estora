@@ -10,13 +10,13 @@ seeded demo database. Nothing here is asserted from generated code alone.
 
 | Gate | Command | Result |
 | --- | --- | --- |
-| PHP syntax | `bash scripts/lint.sh` (inner script in cli container) | 90 files, 0 syntax errors |
+| PHP syntax | `bash scripts/lint.sh` (inner script in cli container) | **99 files, 0 syntax errors** |
 | Coding standards | PHPCS WordPress standard (`--warning-severity=0`) | **0 errors** |
 | Unit | `phpunit -c phpunit.xml` | **37 tests, 142 assertions, 0 failures** |
 | WordPress integration | `wp eval-file tests/wp/integration.php` | **12 check groups passed** |
-| HTTP / REST | `node --test tests/http/` | **15 tests passed** |
-| Browser E2E | `npx playwright test -c tests/e2e/playwright.config.js` | **11 journeys passed** |
-| Screenshots | `node scripts/screenshots.mjs` | 20 captures, 0 console errors |
+| HTTP / REST | `node --test --test-concurrency=1 tests/http/` | **24 tests passed** (15 API + 9 app) |
+| Browser E2E | `npx playwright test -c tests/e2e/playwright.config.js` | **16 journeys passed** |
+| Screenshots | `node scripts/screenshots.mjs` | **34 captures**, app routes with 0 console errors |
 | Theme independence | activate Twenty Twenty-Four → API check → reactivate | leads 200, properties 200, all tables present |
 
 ## Unit suite (PHPUnit)
@@ -40,7 +40,8 @@ Executed with a real WordPress bootstrap, admin user and MySQL. Creates and dele
 
 1. Seeded staff accounts exist.
 2. All 10 custom tables and key columns exist.
-3. Capability matrix matches the specification (admin, manager, agent, property manager, marketing).
+3. Capability matrix matches the specification (super admin, administrator, manager, agent,
+   property manager, marketing).
 4. Property create/public query/numeric sort/availability/duplicate.
 5. Lead capture, dedupe within 30 days, assignment history, notes, pipeline, agent scope.
 6. Appointment slots, agent conflict, property conflict, unique `active_key`, confirm, reschedule, cancel.
@@ -59,6 +60,8 @@ Success: WordPress integration suite passed.
 
 Against `http://localhost:8080` with cookie sessions, REST nonces and real MySQL.
 
+### API (15 tests)
+
 - health reports all tables
 - public listing, filters, numeric sort, pagination, empty state
 - property CRUD, publish gate, sold-property inquiry block, force delete
@@ -74,37 +77,86 @@ Against `http://localhost:8080` with cookie sessions, REST nonces and real MySQL
 - deactivated staff cannot sign in (user meta toggled via WP-CLI, then restored)
 - cleanup through the API
 
+### Back-office application (9 tests)
+
+- every staff role lands on `/estora-admin/` after login; `/wp-admin/` redirects business staff
+- navigation is permission aware for all six roles (modules present/absent as specified)
+- direct URLs return 200/403/404 correctly; marketing cannot open leads, agents or settings; manager
+  cannot open campaigns; property manager can open reports
+- lead detail route renders the requested lead with its id
+- dashboard endpoints respect role scope and date range; agent `/dashboard/me` returns own data;
+  marketing receives no lead/appointment aggregates
+- marketing can use WordPress posts/pages; agents cannot
+- legacy `admin.php?page=estora-dashboard` redirects into the app
+- logout clears the session and protects the app afterwards
+
 ```
 ✔ ESTORA API (15 tests) — 15 passed
+✔ ESTORA back-office application (9 tests) — 9 passed
+✔ tests 24 — pass 24, fail 0
 ```
 
-## Browser journeys (Playwright, Chromium)
+## Browser journeys (Playwright, Chromium, 1 worker)
+
+Public (4):
 
 1. Homepage → purpose filter → price sort → property detail (specs, gallery).
 2. Favorite a property, see it on the favorites page; compare two; remove one from the table.
-3. Submit an inquiry (gets `LD-` reference) and a viewing request (gets `AP-` reference).
+3. Submit an inquiry (`LD-` reference) and a viewing request (`AP-` reference).
 4. About, contact, news, privacy, terms, 404 return < 500 with a visible `h1`; no page errors.
-5. Admin dashboard renders KPIs, chart, notifications.
+
+Back office (4):
+
+5. Admin dashboard KPIs, charts, notifications.
 6. Lead table → drawer → add note → close → kanban.
 7. Appointment month/week/day calendar + list.
 8. Inventory, reports (export URL), settings, audit screens.
-9. Mobile 390px: public pages and navigation without horizontal scroll.
-10. Mobile admin dashboard without horizontal scroll.
-11. Images have `alt`; visible form controls have labels; keyboard focus reaches an element.
+
+Application (5):
+
+9. Six role accounts each land on their own dashboard with the right role label and navigation.
+10. Sidebar navigation to leads, global search with `q`, pipeline board, unknown route 404.
+11. Staff viewing dialog: load properties, pick a slot, submit, dialog closes.
+12. Dashboard period filter redraws data; "Add lead" quick action opens the lead dialog.
+13. 390px viewport: no horizontal overflow, drawer opens/closes, profile menu logout returns to login.
+
+Responsive/accessibility (3):
+
+14. Mobile public pages and navigation without horizontal scroll.
+15. Mobile admin dashboard without horizontal scroll.
+16. Images have `alt`; visible form controls have labels; keyboard focus reaches an element.
 
 ```
-11 passed (7.9s)
+16 passed (14.5s)
 ```
+
+## Screenshot pass
+
+`node scripts/screenshots.mjs` after a forced demo seed captured 34 images: public home (desktop,
+full, mobile), properties, detail (desktop/full), favorites, compare, about, login, six role
+dashboards, overview via modules (properties, leads, kanban, appointments, agents, locations,
+campaigns, content, reports, settings, users, activity, notifications), lead detail, native property
+editor, mobile dashboard and mobile navigation.
+
+Inspection findings fixed during this pass: empty chart fills, invisible button labels, visible
+public-theme skip link in the app, duplicate hidden notification markup, and a stale version label.
+App routes produced no console errors; the only browser console output is WordPress core's
+`Permissions-Policy: unload` warning inside the native post editor.
 
 ## Security checks executed
 
 | Check | Result |
 | --- | --- |
 | Anonymous `/leads` | 401 |
+| Anonymous `/estora-admin/` | 302 to login |
 | Cookie session without nonce | 401 (core cookie guard) |
 | Agent calls assignment | 403 |
 | Marketing reads settings | 403 |
-| Manager writes settings | 403 |
+| Marketing opens `/estora-admin/leads/` | 403 |
+| Marketing opens `/estora-admin/agents/` | 403 |
+| Sales manager opens `/estora-admin/campaigns/` | 403 |
+| Agent opens `/estora-admin/settings/` | 403 |
+| Agent opens `/estora-admin/users/` | 403 |
 | Agent reads another agent's lead | 404 |
 | Agent updates another agent's appointment | 404 |
 | SQL injection in property search | 200, no SQL error, empty result |
@@ -113,6 +165,7 @@ Against `http://localhost:8080` with cookie sessions, REST nonces and real MySQL
 | PNG upload | 201 |
 | Inquiry rate limit | 429 after five requests from one contact |
 | Deactivated login | refused with message; account restored afterwards |
+| Logout | session cleared; app returns 302 to login |
 | Audit | rows for property/lead/appointment/settings/user events |
 
 ## Known limitations / not verified here
@@ -122,5 +175,7 @@ Against `http://localhost:8080` with cookie sessions, REST nonces and real MySQL
 - Email delivery depends on the host mail transport; failure logging was exercised by design but no
   live SMTP server was configured.
 - 100k-listing scale-out is documented but not benchmarked.
-- Accessibility was checked with structural assertions and keyboard focus, not a full screen-reader
-  audit.
+- Accessibility was checked with structural assertions, focus checks and visual review, not a full
+  screen-reader audit.
+- WordPress core emits a `Permissions-Policy: unload` warning in the native editor; it is not an
+  ESTORA console error.

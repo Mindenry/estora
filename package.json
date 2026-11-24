@@ -1,11 +1,11 @@
 {
   "name": "estora-platform",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "ESTORA real estate management platform — test harness",
   "scripts": {
     "test": "bash scripts/test.sh",
-    "test:http": "node --test tests/http/",
+    "test:http": "node --test --test-concurrency=1 tests/http/",
     "test:e2e": "playwright test -c tests/e2e/playwright.config.js",
     "screenshots": "node scripts/screenshots.mjs"
   },

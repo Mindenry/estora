@@ -50,7 +50,7 @@ jobs:
       - name: HTTP integration
         env:
           ESTORA_BASE_URL: http://localhost:8080
-        run: node --test tests/http/
+        run: node --test --test-concurrency=1 tests/http/
 
       - name: Clean QA fixtures
         run: bash scripts/cleanup.sh

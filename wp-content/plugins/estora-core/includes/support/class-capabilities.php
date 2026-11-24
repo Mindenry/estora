@@ -12,7 +12,7 @@ defined( 'ABSPATH' ) || exit;
 final class Capabilities {
 
 	public const VERSION_OPTION = 'estora_caps_version';
-	public const VERSION        = '1.0.0';
+	public const VERSION        = '1.1.0';
 
 	public const VIEW_PROPERTIES     = 'estora_view_properties';
 	public const EDIT_PROPERTIES     = 'estora_edit_properties';
@@ -66,6 +66,13 @@ final class Capabilities {
 	 */
 	public static function roles(): array {
 		return array(
+			'estora_administrator'    => array(
+				'label' => 'Administrator',
+				'caps'  => array_merge(
+					self::all_caps(),
+					array( 'read', 'upload_files', 'edit_posts', 'edit_pages', 'publish_posts', 'publish_pages', 'edit_others_posts', 'edit_others_pages', 'delete_posts', 'delete_pages', 'manage_categories', 'list_users', 'create_users', 'edit_users', 'delete_users' )
+				),
+			),
 			'estora_property_manager' => array(
 				'label' => 'Property Manager',
 				'caps'  => array(
@@ -75,6 +82,7 @@ final class Capabilities {
 					self::PUBLISH_PROPERTIES,
 					self::MANAGE_APPOINTMENTS,
 					self::VIEW_REPORTS,
+					'upload_files',
 				),
 			),
 			'estora_sales_manager'    => array(
@@ -108,9 +116,64 @@ final class Capabilities {
 					self::VIEW_REPORTS,
 					self::MANAGE_CMS,
 					self::MANAGE_CAMPAIGNS,
+					'upload_files',
+					'edit_posts',
+					'edit_pages',
+					'publish_posts',
+					'publish_pages',
+					'edit_others_posts',
+					'edit_others_pages',
+					'manage_categories',
 				),
 			),
 		);
+	}
+
+	/**
+	 * Whether the current user has any ESTORA back-office access.
+	 *
+	 * @param int|null $user_id Optional user ID.
+	 */
+	public static function can_access_app( ?int $user_id = null ): bool {
+		$user_id = $user_id ?: get_current_user_id();
+		if ( ! $user_id ) {
+			return false;
+		}
+		$caps = array(
+			self::VIEW_PROPERTIES,
+			self::VIEW_LEADS,
+			self::MANAGE_APPOINTMENTS,
+			self::VIEW_REPORTS,
+			self::MANAGE_CMS,
+			self::MANAGE_CAMPAIGNS,
+			self::MANAGE_SETTINGS,
+			self::MANAGE_USERS,
+			self::VIEW_AUDIT,
+		);
+		foreach ( $caps as $cap ) {
+			if ( user_can( $user_id, $cap ) ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Human role label for a user.
+	 *
+	 * @param \WP_User|null $user User.
+	 */
+	public static function role_label( ?\WP_User $user = null ): string {
+		$user = $user ?: wp_get_current_user();
+		if ( ! $user instanceof \WP_User || empty( $user->roles ) ) {
+			return __( 'Staff', 'estora-core' );
+		}
+		$role = $user->roles[0];
+		if ( 'administrator' === $role ) {
+			return __( 'Super Admin', 'estora-core' );
+		}
+		$names = wp_roles()->get_names();
+		return isset( $names[ $role ] ) ? translate_user_role( $names[ $role ] ) : ucfirst( str_replace( '_', ' ', $role ) );
 	}
 
 	/**

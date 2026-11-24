@@ -28,6 +28,7 @@ final class Admin_UI {
 		add_filter( 'manage_users_columns', array( $this, 'user_columns' ) );
 		add_filter( 'manage_users_custom_column', array( $this, 'user_column_content' ), 10, 3 );
 		add_filter( 'bulk_actions-edit-property', array( $this, 'property_bulk_actions' ) );
+		add_action( 'admin_notices', array( $this, 'property_notice' ) );
 	}
 
 	/**
@@ -303,9 +304,25 @@ final class Admin_UI {
 	}
 
 	/**
-	 * Remove the native "edit" bulk action we do not support.
+	 * Back link on the native property editor.
+	 */
+	public function property_notice(): void {
+		$screen = get_current_screen();
+		if ( ! $screen || 'property' !== $screen->post_type || 'post' !== $screen->base ) {
+			return;
+		}
+		printf(
+			'<div class="notice notice-info" style="display:flex;gap:14px;align-items:center;justify-content:space-between;padding:9px 14px"><span>%s</span><a class="button" href="%s">%s</a></div>',
+			esc_html__( 'Property media and content use the WordPress editor. The business workflow lives in the ESTORA back office.', 'estora-core' ),
+			esc_url( \Estora\Core\Admin\Admin_App::url( 'properties' ) ),
+			esc_html__( 'Back to ESTORA', 'estora-core' )
+		);
+	}
+
+	/**
+	 * Preserve the native bulk actions list.
 	 *
-	 * @param array<string,string> $actions Actions.
+	 * @param array<string,string> $actions Bulk actions.
 	 * @return array<string,string>
 	 */
 	public function property_bulk_actions( $actions ): array {

@@ -36,9 +36,10 @@ two-column field grid is needed. No nested cards beyond one level.
 Public: home, property archive (`/properties/`), property detail, about, contact, news archive,
 article, favorites, compare, privacy, terms, 404, campaign landing (`/go/{slug}` template).
 
-Admin (`admin.php?page=`): `estora-dashboard`, `estora-leads`, `estora-lead` (detail), `estora-appointments`,
-`estora-inventory`, `estora-reports`, `estora-campaigns`, `estora-settings`, `estora-audit`.
-Property editing stays on the native CPT screen, skinned with ESTORA meta panels.
+Admin: `/estora-admin/` application shell with `overview`, `properties`, `leads`, `leads/{id}`,
+`pipeline`, `appointments`, `agents`, `locations`, `campaigns`, `content`, `reports`,
+`notifications`, `activity`, `users`, `settings`. Property editing stays on the native CPT screen,
+skinned with ESTORA meta panels; legacy `admin.php?page=estora-*` URLs redirect into the app.
 
 ## 4. Interaction rules
 
@@ -86,9 +87,9 @@ Property editing stays on the native CPT screen, skinned with ESTORA meta panels
 
 ## 7. Responsive checks
 
-375 (iPhone SE), 390, 768 (tablet), 1024, 1280, 1440. Admin tables collapse to stacked rows with
-labels under 900px; the rail becomes an overlay drawer under 1100px; calendar switches to day list
-under 768px. No horizontal scrolling at any width.
+375 (iPhone SE), 390, 768 (tablet), 1024, 1280, 1440. Back-office tables keep their columns and
+scroll horizontally inside the panel; the sidebar becomes an overlay drawer at 1180px; KPI grids
+collapse 4 → 2 → 2 and quick actions 4 → 2 → 1. No page-level horizontal scrolling at any width.
 
 ## 8. Copy rules
 
@@ -98,6 +99,10 @@ the next action. Numbers use thousands separators; currency `฿` with no decima
 
 ## 9. Screenshot set (docs/screenshots)
 
-`home.png`, `properties.png`, `property-detail.png`, `compare.png`, `admin-dashboard.png`,
-`admin-leads.png`, `admin-kanban.png`, `admin-appointments.png`, `admin-reports.png`.
+`login.png`, `home.png`, `properties.png`, `property-detail.png`, `compare.png`,
+`role-admin.png`, `role-operations.png`, `role-manager.png`, `role-agent.png`,
+`role-property.png`, `role-marketing.png`, `app-overview.png`, `app-properties.png`,
+`app-leads.png`, `app-kanban.png`, `app-appointments.png`, `app-agents.png`,
+`app-reports.png`, `app-settings.png`, `app-lead-detail.png`, `app-property-editor.png`,
+`app-mobile-dashboard.png`, `app-mobile-nav.png`.
 Captured by `scripts/screenshots.mjs` at 1440×1000 and 390×844 (mobile variants suffixed `-mobile`).

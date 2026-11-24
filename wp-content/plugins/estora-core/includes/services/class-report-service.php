@@ -35,25 +35,50 @@ final class Report_Service {
 	}
 
 	/**
-	 * Dashboard summary (cached for 5 minutes).
+	 * Dashboard summary (default range cached for 5 minutes).
 	 *
-	 * @param bool $refresh Bypass cache.
+	 * @param bool   $refresh Bypass cache.
+	 * @param int    $days    Range length in days.
+	 * @param string $from    Optional Y-m-d start.
+	 * @param string $to      Optional Y-m-d end.
 	 * @return array<string,mixed>
 	 */
-	public function summary( bool $refresh = false ): array {
-		$cached = get_transient( 'estora_dashboard_summary' );
-		if ( ! $refresh && is_array( $cached ) ) {
-			$cached['cached'] = true;
-			return $cached;
+	public function summary( bool $refresh = false, int $days = 30, string $from = '', string $to = '' ): array {
+		$days       = max( 1, min( 365, $days ) );
+		$end_date   = $this->valid_date( $to ) ? $to : current_time( 'Y-m-d' );
+		$start_date = $this->valid_date( $from ) ? $from : gmdate( 'Y-m-d', strtotime( $end_date . ' -' . ( $days - 1 ) . ' days' ) );
+		if ( $start_date > $end_date ) {
+			$swap       = $start_date;
+			$start_date = $end_date;
+			$end_date   = $swap;
+		}
+
+		$cacheable = ( 30 === $days && ! $from && ! $to );
+		if ( $cacheable ) {
+			$cached = get_transient( 'estora_dashboard_summary' );
+			if ( ! $refresh && is_array( $cached ) ) {
+				$cached['cached'] = true;
+				return $this->filter_summary_for_role( $cached );
+			}
 		}
 
 		$property_stats    = $this->properties->stats();
 		$lead_counts       = $this->leads->status_counts();
 		$lead_total        = array_sum( $lead_counts );
 		$appointment_stats = $this->appointment_statistics();
-		$lead_stats        = $this->lead_statistics( 14 );
+		$trend             = $this->leads->daily_between( $start_date, $end_date );
+		$range_total       = $this->leads->count_between( $start_date, $end_date );
+		$range_won         = $this->leads->count_between( $start_date, $end_date, Lead_Status::WON );
 
 		$summary = array(
+			'range'           => array(
+				'from'            => $start_date,
+				'to'              => $end_date,
+				'days'            => $days,
+				'total'           => $range_total,
+				'won'             => $range_won,
+				'conversion_rate' => $range_total > 0 ? round( ( $range_won / $range_total ) * 100, 1 ) : 0.0,
+			),
 			'properties'      => array(
 				'total'         => $property_stats['total'],
 				'published'     => $property_stats['published'],
@@ -61,8 +86,10 @@ final class Report_Service {
 				'reserved'      => $property_stats['reserved'],
 				'sold'          => $property_stats['sold'],
 				'rented'        => $property_stats['rented'],
+				'rentals'       => (int) ( $property_stats['by_purpose']['rent'] ?? 0 ),
 				'average_price' => round( $property_stats['average_price'], 2 ),
 				'stale'         => $property_stats['stale'],
+				'by_type'       => $this->property_type_counts(),
 			),
 			'leads'           => array(
 				'total'           => $lead_total,
@@ -73,21 +100,177 @@ final class Report_Service {
 				'won'             => $lead_counts[ Lead_Status::WON ] ?? 0,
 				'lost'            => $lead_counts[ Lead_Status::LOST ] ?? 0,
 				'conversion_rate' => $lead_total > 0 ? round( ( ( $lead_counts[ Lead_Status::WON ] ?? 0 ) / $lead_total ) * 100, 1 ) : 0.0,
+				'range_total'     => $range_total,
+				'range_won'       => $range_won,
+				'by_agent'        => $this->leads->agent_counts(),
 			),
 			'appointments'    => array(
 				'upcoming' => $appointment_stats['upcoming'],
 				'pending'  => $appointment_stats['counts'][ Appointment_Status::PENDING ] ?? 0,
 				'this_week' => $appointment_stats['this_week'],
 				'today'    => $appointment_stats['today'],
+				'by_weekday' => $appointment_stats['by_weekday'],
 			),
-			'recent_activity' => $this->activity->recent( 8 ),
-			'lead_trend'      => $lead_stats['daily'],
-			'by_source'       => $this->leads->source_counts( estora_now( '-30 days' ) ),
+			'recent_activity' => $this->activity->recent( 10 ),
+			'lead_trend'      => $trend,
+			'by_source'       => $this->leads->source_counts( $start_date . ' 00:00:00' ),
 		);
 
-		set_transient( 'estora_dashboard_summary', $summary, 300 );
-		$summary['cached'] = false;
+		if ( $cacheable ) {
+			set_transient( 'estora_dashboard_summary', $summary, 300 );
+		}
+		return $this->filter_summary_for_role( $summary );
+	}
+
+	/**
+	 * Remove sections the current role may not see.
+	 *
+	 * @param array<string,mixed> $summary Summary.
+	 * @return array<string,mixed>
+	 */
+	private function filter_summary_for_role( array $summary ): array {
+		$summary['cached'] = (bool) ( $summary['cached'] ?? false );
+
+		if ( ! current_user_can( Capabilities::VIEW_LEADS ) ) {
+			unset( $summary['leads'], $summary['lead_trend'], $summary['by_source'] );
+			unset( $summary['range']['total'], $summary['range']['won'], $summary['range']['conversion_rate'] );
+		}
+		if ( ! current_user_can( Capabilities::MANAGE_APPOINTMENTS ) ) {
+			unset( $summary['appointments'] );
+		}
+		if ( ! empty( $summary['recent_activity'] ) && is_array( $summary['recent_activity'] ) ) {
+			$summary['recent_activity'] = array_values(
+				array_filter(
+					$summary['recent_activity'],
+					static function ( $row ) {
+						$type = $row['object_type'] ?? '';
+						if ( 'lead' === $type && ! current_user_can( Capabilities::VIEW_LEADS ) ) {
+							return false;
+						}
+						if ( 'appointment' === $type && ! current_user_can( Capabilities::MANAGE_APPOINTMENTS ) ) {
+							return false;
+						}
+						return true;
+					}
+				)
+			);
+		}
 		return $summary;
+	}
+
+	/**
+	 * Validate a Y-m-d date.
+	 *
+	 * @param string $date Date.
+	 */
+	private function valid_date( string $date ): bool {
+		$parsed = \DateTimeImmutable::createFromFormat( 'Y-m-d', $date );
+		return $parsed && $parsed->format( 'Y-m-d' ) === $date;
+	}
+
+	/**
+	 * Published property counts by type.
+	 *
+	 * @return array<int,array{name:string,total:int}>
+	 */
+	private function property_type_counts(): array {
+		global $wpdb;
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT t.name, COUNT(*) AS total FROM {$wpdb->term_relationships} tr
+				 INNER JOIN {$wpdb->term_taxonomy} tt ON tt.term_taxonomy_id = tr.term_taxonomy_id
+				 INNER JOIN {$wpdb->terms} t ON t.term_id = tt.term_id
+				 INNER JOIN {$wpdb->posts} p ON p.ID = tr.object_id
+				 WHERE tt.taxonomy = 'property_type' AND p.post_type = %s AND p.post_status = 'publish'
+				 GROUP BY t.name ORDER BY total DESC",
+				'property'
+			),
+			ARRAY_A
+		);
+		return array_map(
+			static fn( $row ) => array( 'name' => $row['name'], 'total' => (int) $row['total'] ),
+			(array) $rows
+		);
+	}
+
+	/**
+	 * Scoped dashboard for a sales agent (or any user working their own file).
+	 *
+	 * @param int    $agent_id Agent.
+	 * @param int    $days     Range.
+	 * @param string $from     Optional start.
+	 * @param string $to       Optional end.
+	 * @return array<string,mixed>
+	 */
+	public function agent_dashboard( int $agent_id, int $days = 30, string $from = '', string $to = '' ): array {
+		$days       = max( 1, min( 365, $days ) );
+		$end_date   = $this->valid_date( $to ) ? $to : current_time( 'Y-m-d' );
+		$start_date = $this->valid_date( $from ) ? $from : gmdate( 'Y-m-d', strtotime( $end_date . ' -' . ( $days - 1 ) . ' days' ) );
+		$counts     = $this->leads->status_counts( $agent_id );
+		$total      = array_sum( $counts );
+		$won        = (int) ( $counts[ Lead_Status::WON ] ?? 0 );
+		$range      = $this->leads->count_between( $start_date, $end_date, '', $agent_id );
+		$range_won  = $this->leads->count_between( $start_date, $end_date, Lead_Status::WON, $agent_id );
+
+		$appointment_counts = $this->appointments->counts( $agent_id );
+		$upcoming_rows      = $this->appointments->query(
+			array(
+				'agent_id' => $agent_id,
+				'from'     => current_time( 'Y-m-d' ),
+				'per_page' => 100,
+				'order'    => 'ASC',
+			)
+		);
+		$upcoming = array_values(
+			array_filter(
+				$upcoming_rows['items'],
+				static fn( $row ) => in_array( $row['status'], array( Appointment_Status::PENDING, Appointment_Status::CONFIRMED, Appointment_Status::RESCHEDULED ), true )
+			)
+		);
+
+		$properties = new \WP_Query(
+			array(
+				'post_type'      => 'property',
+				'post_status'    => 'publish',
+				'posts_per_page' => 1,
+				'fields'         => 'ids',
+				'meta_key'       => '_estora_agent_id', // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'meta_value'     => $agent_id, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+			)
+		);
+
+		return array(
+			'range'        => array(
+				'from'            => $start_date,
+				'to'              => $end_date,
+				'days'            => $days,
+				'total'           => $range,
+				'won'             => $range_won,
+				'conversion_rate' => $range > 0 ? round( ( $range_won / $range ) * 100, 1 ) : 0.0,
+			),
+			'properties'   => array(
+				'assigned' => (int) $properties->found_posts,
+			),
+			'leads'        => array(
+				'total'           => $total,
+				'new'             => (int) ( $counts[ Lead_Status::NEW ] ?? 0 ),
+				'contacted'       => (int) ( $counts[ Lead_Status::CONTACTED ] ?? 0 ),
+				'qualified'       => (int) ( $counts[ Lead_Status::QUALIFIED ] ?? 0 ),
+				'negotiation'     => (int) ( $counts[ Lead_Status::NEGOTIATION ] ?? 0 ),
+				'won'             => $won,
+				'lost'            => (int) ( $counts[ Lead_Status::LOST ] ?? 0 ),
+				'conversion_rate' => $total > 0 ? round( ( $won / $total ) * 100, 1 ) : 0.0,
+				'range_total'     => $range,
+				'range_won'       => $range_won,
+				'by_status'       => $counts,
+			),
+			'appointments' => array(
+				'upcoming_count' => count( $upcoming ),
+				'pending'        => (int) ( $appointment_counts[ Appointment_Status::PENDING ] ?? 0 ),
+				'next'           => array_slice( $upcoming, 0, 6 ),
+			),
+			'lead_trend'   => $this->leads->daily_between( $start_date, $end_date, $agent_id ),
+		);
 	}
 
 	/**
@@ -216,6 +399,32 @@ final class Report_Service {
 			$by_weekday[] = array( 'name' => $names[ (int) $row['dow'] ] ?? '', 'total' => (int) $row['total'] );
 		}
 
+		$upcoming_daily = array();
+		$start_day      = current_time( 'Y-m-d' );
+		$end_day        = gmdate( 'Y-m-d', strtotime( $start_day . ' +13 days' ) );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+		$rows = $wpdb->get_results(
+			$wpdb->prepare(
+				"SELECT requested_date, COUNT(*) AS total FROM `{$table}`
+				 WHERE requested_date BETWEEN %s AND %s AND status IN ('pending','confirmed','rescheduled')
+				 GROUP BY requested_date ORDER BY requested_date ASC",
+				$start_day,
+				$end_day
+			),
+			ARRAY_A
+		);
+		$daily_map = array();
+		foreach ( $rows as $row ) {
+			$daily_map[ $row['requested_date'] ] = (int) $row['total'];
+		}
+		for ( $i = 0; $i < 14; $i++ ) {
+			$day            = gmdate( 'Y-m-d', strtotime( $start_day . ' +' . $i . ' days' ) );
+			$upcoming_daily[] = array(
+				'date'  => $day,
+				'count' => $daily_map[ $day ] ?? 0,
+			);
+		}
+
 		$total     = array_sum( $counts );
 		$completed = $counts[ Appointment_Status::COMPLETED ] ?? 0;
 
@@ -228,6 +437,7 @@ final class Report_Service {
 			'completion_rate' => $total > 0 ? round( ( $completed / $total ) * 100, 1 ) : 0.0,
 			'by_agent'        => $by_agent,
 			'by_weekday'      => $by_weekday,
+			'upcoming_daily'  => $upcoming_daily,
 			'stale_pending'   => count( $this->appointments->stale_pending( 24 ) ),
 		);
 	}
@@ -242,8 +452,8 @@ final class Report_Service {
 
 		$users = get_users(
 			array(
-				'capability' => Capabilities::EDIT_LEADS,
-				'number'     => 100,
+				'role'   => 'estora_sales_agent',
+				'number' => 100,
 			)
 		);
 

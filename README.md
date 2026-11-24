@@ -21,8 +21,8 @@ report.
 | Inventory | `property` CPT, 3 taxonomies, 25+ validated fields, gallery, publication and availability state machines, duplicate, publish guard, admin inventory table, REST CRUD |
 | CRM | Lead capture from inquiries, appointments, manual entry and API; dedupe; assignment history; notes; pipeline with enforced transitions; follow-ups; agent scoping; kanban; analytics from SQL |
 | Scheduling | 45-minute slot grid in business hours, lunch exclusion, past-date guard, agent and property conflict checks, reschedule, unique active-slot index, month/week/day calendar |
-| Back office | Custom ESTORA shell: dashboard KPIs, lead table + drawer + board, appointment calendar, inventory, reports, settings, campaigns, audit log, notifications |
-| RBAC | 5 roles, 17 capabilities, ownership checks; UI hiding is never the control |
+| Back office | Dedicated `/estora-admin/` application (not wp-admin): role-aware dashboard with real KPIs and charts, lead table + drawer + board, appointment calendar and staff booking, inventory, agents, locations, campaigns, content, reports, notifications, audit, users and settings |
+| RBAC | 6 roles, 17 capabilities, ownership checks; UI hiding is never the control |
 | API | `/wp-json/estora/v1` — properties, leads, appointments, agents, dashboard, favorites, inquiries, notifications, campaigns, settings, audit, config, health |
 | Notifications | In-app rows with read state and dedupe; `wp_mail` with honest failure logging |
 | SEO | Unique meta/OG, canonical, `RealEstateListing` JSON-LD, core sitemap integration, campaign UTM attribution |
@@ -30,9 +30,10 @@ report.
 
 Screens: [home](docs/screenshots/home.png) · [properties](docs/screenshots/properties.png) ·
 [detail](docs/screenshots/property-detail.png) · [compare](docs/screenshots/compare.png) ·
-[dashboard](docs/screenshots/admin-dashboard.png) · [kanban](docs/screenshots/admin-kanban.png) ·
-[calendar](docs/screenshots/admin-appointments.png) ·
-[mobile](docs/screenshots/home-mobile.png)
+[login](docs/screenshots/login.png) · [dashboard](docs/screenshots/app-overview.png) ·
+[kanban](docs/screenshots/app-kanban.png) · [calendar](docs/screenshots/app-appointments.png) ·
+[reports](docs/screenshots/app-reports.png) · [mobile](docs/screenshots/app-mobile-dashboard.png) ·
+[all screenshots](docs/screenshots)
 
 ## Stack
 
@@ -74,9 +75,10 @@ docker compose up -d db wordpress
 bash scripts/bootstrap.sh        # Windows: powershell -ExecutionPolicy Bypass -File scripts/bootstrap.ps1
 ```
 
-Open <http://localhost:8080>; admin at `/wp-admin/`. The bootstrap is idempotent: it installs
-WordPress when absent, enables the theme and plugin, runs migrations, flushes permalinks and seeds
-demo content.
+Open <http://localhost:8080>. Staff sign in at `/wp-login.php` and land in the ESTORA back office
+at **`/estora-admin/`**; `/wp-admin/` remains the technical WordPress administration area for Super
+Admins. The bootstrap is idempotent: it installs WordPress when absent, enables the theme and plugin,
+runs migrations, flushes permalinks and seeds demo content.
 
 Install PHP tooling once for tests:
 
@@ -88,14 +90,18 @@ docker run --rm -v "$PWD":/app -w /app composer:2 install --no-interaction --no-
 
 | Role | Email | Password |
 | --- | --- | --- |
-| Administrator | `admin@estora.test` | `WP_ADMIN_PASSWORD` in `.env` |
+| Super Admin | `admin@estora.test` | `WP_ADMIN_PASSWORD` in `.env` |
+| Administrator | `operations@estora.test` | `ESTORA_TEST_AGENT_PASSWORD` |
 | Sales manager | `manager@estora.test` | `ESTORA_TEST_AGENT_PASSWORD` |
 | Sales agent | `agent@estora.test` | `ESTORA_TEST_AGENT_PASSWORD` |
 | Sales agent | `mai@estora.test` | `ESTORA_TEST_AGENT_PASSWORD` |
 | Property manager | `property@estora.test` | `ESTORA_TEST_AGENT_PASSWORD` |
 | Marketing | `marketing@estora.test` | `ESTORA_TEST_AGENT_PASSWORD` |
 
-The seed refuses to run when `wp_get_environment_type()` is `production`.
+Super Admin is the WordPress `administrator` role and keeps `/wp-admin/`; Administrator is the
+ESTORA `estora_administrator` role with every business module and CMS/user access but no plugin,
+theme or site-option menus. The seed refuses to run when `wp_get_environment_type()` is
+`production`.
 
 ## Everyday commands
 
@@ -124,12 +130,13 @@ Individually:
 bash scripts/lint.sh
 docker compose run --rm -T --entrypoint php cli /opt/estora/vendor/bin/phpunit -c /opt/estora/phpunit.xml
 docker compose run --rm -T cli wp eval-file /opt/estora/tests/wp/integration.php
-node --test tests/http/
+node --test --test-concurrency=1 tests/http/
 npx playwright test -c tests/e2e/playwright.config.js
 ```
 
 Current results are recorded in [docs/TEST_REPORT.md](docs/TEST_REPORT.md): 37 unit tests,
-12 WordPress integration checks, 15 HTTP tests and 11 browser journeys pass.
+12 WordPress integration groups, 24 HTTP tests and 16 browser journeys pass. HTTP suites run with
+`--test-concurrency=1` because they share the seeded accounts and nonce state.
 
 ## API
 
@@ -155,6 +162,7 @@ and [docs/TEST_REPORT.md](docs/TEST_REPORT.md).
 ## Documentation
 
 - [Project overview](docs/PROJECT_OVERVIEW.md)
+- [Back-office experience (v1.1.0)](docs/ADMIN_EXPERIENCE.md)
 - [Requirements](docs/REQUIREMENTS.md)
 - [System architecture](docs/SYSTEM_ARCHITECTURE.md)
 - [Database design](docs/DATABASE_DESIGN.md) · [ER diagram](docs/ER_DIAGRAM.md)

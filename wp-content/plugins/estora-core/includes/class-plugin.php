@@ -8,6 +8,7 @@
 namespace Estora\Core;
 
 use Estora\Core\Api\Rest;
+use Estora\Core\Admin\Admin_App;
 use Estora\Core\Integrations\Admin_UI;
 use Estora\Core\Integrations\Content_Types;
 use Estora\Core\Integrations\Cron;
@@ -56,6 +57,7 @@ final class Plugin {
 		$this->booted = true;
 
 		( new Content_Types() )->hooks();
+		( new Admin_App() )->hooks();
 		( new Admin_UI() )->hooks();
 		( new Rest() )->hooks();
 		( new SEO() )->hooks();

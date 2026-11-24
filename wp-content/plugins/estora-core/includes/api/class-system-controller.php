@@ -154,7 +154,7 @@ final class System_Controller extends Rest_Controller {
 	public function get_settings( WP_REST_Request $request ): WP_REST_Response {
 		$settings = Settings::all();
 		$agents   = array();
-		foreach ( get_users( array( 'capability' => Capabilities::EDIT_LEADS, 'number' => 100 ) ) as $user ) {
+		foreach ( get_users( array( 'role' => 'estora_sales_agent', 'number' => 100 ) ) as $user ) {
 			if ( $user instanceof \WP_User ) {
 				$agents[] = array(
 					'id'   => $user->ID,

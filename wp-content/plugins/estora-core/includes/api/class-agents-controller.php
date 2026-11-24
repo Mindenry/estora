@@ -50,9 +50,9 @@ final class Agents_Controller extends Rest_Controller {
 	public function get_items( WP_REST_Request $request ): WP_REST_Response {
 		$users = get_users(
 			array(
-				'capability' => Capabilities::EDIT_LEADS,
-				'number'     => 100,
-				'orderby'    => 'display_name',
+				'role'    => 'estora_sales_agent',
+				'number'  => 100,
+				'orderby' => 'display_name',
 			)
 		);
 

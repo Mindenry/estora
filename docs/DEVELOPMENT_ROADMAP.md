@@ -80,6 +80,19 @@ Single source of truth. `DONE` means implemented and verified with executed evid
   README, release notes, local git tag `v1.0.0`.
 - CI workflow committed; it has not run on GitHub from this machine (no remote).
 
+## Phase 12 — Admin experience upgrade (v1.1.0) — DONE
+
+- Root cause fixed: dedicated `/estora-admin/` application, login redirects, legacy URL redirects,
+  role-aware shell and six role landing experiences.
+- New Administrator role; Super Admin retains technical WordPress admin.
+- Overview dashboard rebuilt on live data with period filters, charts, quick actions and
+  capability-filtered summaries; new scoped `/dashboard/me`.
+- Modules completed for properties, leads/detail, pipeline, appointments + staff booking, agents,
+  locations, campaigns, content, reports, notifications, activity, users and settings.
+- QA fixes: header action markup/binding, button contrast, marketing agents 403, duplicate
+  notification block, logout target, bar fills, app skip link, agent role scoping.
+- Evidence: 24 HTTP tests, 16 E2E journeys, 33 screenshots, `docs/ADMIN_EXPERIENCE.md`.
+
 ## Post-1.0 backlog
 
 - Denormalised search index for 100k+ listings; Redis object cache; SMS channel; saved searches
@@ -96,3 +109,5 @@ Single source of truth. `DONE` means implemented and verified with executed evid
 | 2026-11-24 | Theme/UI verified, screenshots captured | `docs/screenshots/`, E2E 11 passed |
 | 2026-11-24 | Unit + integration + standards green | 37 unit / 12 integration / 0 PHPCS errors |
 | 2026-11-24 | Theme-switch data check | leads 200, properties 200, tables true |
+| 2026-11-24 | v1.1.0 back-office app, roles, dashboard and modules | `/estora-admin/`, 24 HTTP tests, 16 E2E, 33 screenshots |
+| 2026-11-24 | v1.1.0 lint, unit, integration, app and browser gates | 99 files / 37 unit / 12 integration / 24 HTTP / 16 E2E |

@@ -138,6 +138,13 @@ final class Seeder {
 		$password = getenv( 'ESTORA_TEST_AGENT_PASSWORD' ) ?: 'Estora!Agent!2026';
 
 		$accounts = array(
+			'operations' => array(
+				'email' => 'operations@estora.test',
+				'name'  => 'Pim Operations',
+				'role'  => 'estora_administrator',
+				'title' => 'Operations administrator',
+				'phone' => '+66 53 000 100',
+			),
 			'manager'   => array(
 				'email' => 'manager@estora.test',
 				'name'  => 'Nok Chaiyaporn',

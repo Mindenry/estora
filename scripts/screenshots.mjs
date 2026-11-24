@@ -3,113 +3,133 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const BASE = process.env.ESTORA_BASE_URL || 'http://localhost:8080';
-const outDir = path.resolve('docs/screenshots');
-fs.mkdirSync(outDir, { recursive: true });
+const out = path.resolve('docs/screenshots');
+fs.mkdirSync(out, { recursive: true });
 
 const browser = await chromium.launch();
 const errors = [];
-
-function watch(page) {
-  page.on('console', (msg) => { if (msg.type() === 'error') errors.push(msg.text()); });
-  page.on('pageerror', (err) => errors.push(`pageerror: ${err.message}`));
+const watch = (page) => {
+  page.on('console', (msg) => { if (msg.type() === 'error') errors.push(`${page.url()} :: ${msg.text()}`); });
+  page.on('pageerror', (err) => errors.push(`${page.url()} :: ${err.message}`));
   return page;
-}
-
-const publicContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
-const publicPage = watch(await publicContext.newPage());
-
-const shot = async (page, name, { fullPage = false } = {}) => {
+};
+const shot = async (page, name, fullPage = false) => {
   await page.waitForTimeout(500);
-  await page.screenshot({ path: path.join(outDir, `${name}.png`), fullPage });
+  await page.screenshot({ path: path.join(out, `${name}.png`), fullPage });
   console.log('  captured', name);
 };
-
-const visit = async (page, url) => {
-  await page.goto(BASE + url, { waitUntil: 'networkidle' });
+const login = async (page, email = 'admin@estora.test', password = 'Estora!Admin!2026') => {
+  await page.goto(BASE + '/wp-login.php');
+  await page.fill('#user_login', email);
+  await page.fill('#user_pass', password);
+  await Promise.all([page.waitForURL(/estora-admin/), page.click('#wp-submit')]);
+  await page.waitForSelector('.estora-shell');
 };
 
-await visit(publicPage, '/');
+/* Public site */
+const publicContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+const publicPage = watch(await publicContext.newPage());
+await publicPage.goto(BASE + '/', { waitUntil: 'networkidle' });
 await shot(publicPage, 'home');
-await shot(publicPage, 'home-full', { fullPage: true });
-
-await visit(publicPage, '/properties/?availability=available');
+await shot(publicPage, 'home-full', true);
+await publicPage.goto(BASE + '/properties/?availability=available', { waitUntil: 'networkidle' });
 await shot(publicPage, 'properties');
 await publicPage.locator('.estora-card__title a').first().click();
 await publicPage.waitForLoadState('networkidle');
 await shot(publicPage, 'property-detail');
-await shot(publicPage, 'property-detail-full', { fullPage: true });
-
+await shot(publicPage, 'property-detail-full', true);
 const detailFav = publicPage.locator('.estora-property-head [data-favorite]');
 if ((await detailFav.getAttribute('aria-pressed')) !== 'true') {
   await detailFav.click();
-  await publicPage.waitForTimeout(500);
+  await publicPage.waitForTimeout(400);
 }
-await visit(publicPage, '/favorites/');
+await publicPage.goto(BASE + '/favorites/', { waitUntil: 'networkidle' });
 await publicPage.waitForSelector('.estora-card');
 await shot(publicPage, 'favorites');
-
-await visit(publicPage, '/properties/?availability=available');
+await publicPage.goto(BASE + '/properties/?availability=available', { waitUntil: 'networkidle' });
 await publicPage.locator('[data-compare]').nth(0).click();
 await publicPage.locator('[data-compare]').nth(1).click();
-await visit(publicPage, '/compare/');
+await publicPage.goto(BASE + '/compare/', { waitUntil: 'networkidle' });
 await publicPage.waitForSelector('.estora-compare');
 await shot(publicPage, 'compare');
-
-await visit(publicPage, '/about/');
+await publicPage.goto(BASE + '/about/', { waitUntil: 'networkidle' });
 await shot(publicPage, 'about');
-
-// Mobile public views (no admin bar).
 await publicPage.setViewportSize({ width: 390, height: 844 });
-await visit(publicPage, '/');
+await publicPage.goto(BASE + '/', { waitUntil: 'networkidle' });
 await shot(publicPage, 'home-mobile');
-await visit(publicPage, '/properties/');
-await shot(publicPage, 'properties-mobile');
-await publicPage.click('[data-nav-toggle]');
-await shot(publicPage, 'home-mobile-nav');
 
-// Back office in a separate authenticated context.
+/* Login screen (fresh context) */
+const loginContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+const loginPage = watch(await loginContext.newPage());
+await loginPage.goto(BASE + '/wp-login.php');
+await shot(loginPage, 'login');
+
+/* Role dashboards */
+const roles = {
+  'role-admin': ['admin@estora.test', 'Estora!Admin!2026'],
+  'role-operations': ['operations@estora.test', 'Estora!Agent!2026'],
+  'role-manager': ['manager@estora.test', 'Estora!Agent!2026'],
+  'role-agent': ['agent@estora.test', 'Estora!Agent!2026'],
+  'role-property': ['property@estora.test', 'Estora!Agent!2026'],
+  'role-marketing': ['marketing@estora.test', 'Estora!Agent!2026']
+};
+for (const [name, [email, password]] of Object.entries(roles)) {
+  const context = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
+  const page = watch(await context.newPage());
+  await login(page, email, password);
+  await page.waitForTimeout(900);
+  await shot(page, name, true);
+  await context.close();
+}
+
+/* Admin app modules */
 const adminContext = await browser.newContext({ viewport: { width: 1440, height: 1000 } });
 const adminPage = watch(await adminContext.newPage());
-await adminPage.goto(BASE + '/wp-login.php');
-await adminPage.fill('#user_login', 'admin');
-await adminPage.fill('#user_pass', 'Estora!Admin!2026');
-await Promise.all([adminPage.waitForURL(/wp-admin/), adminPage.click('#wp-submit')]);
+await login(adminPage);
 
-await adminPage.goto(BASE + '/wp-admin/admin.php?page=estora-dashboard');
-await adminPage.waitForSelector('.estora-kpi');
-await shot(adminPage, 'admin-dashboard');
+const modules = [
+  ['app-overview', '/estora-admin/'],
+  ['app-properties', '/estora-admin/properties/'],
+  ['app-leads', '/estora-admin/leads/'],
+  ['app-kanban', '/estora-admin/pipeline/'],
+  ['app-appointments', '/estora-admin/appointments/'],
+  ['app-agents', '/estora-admin/agents/'],
+  ['app-locations', '/estora-admin/locations/'],
+  ['app-campaigns', '/estora-admin/campaigns/'],
+  ['app-content', '/estora-admin/content/'],
+  ['app-reports', '/estora-admin/reports/'],
+  ['app-settings', '/estora-admin/settings/'],
+  ['app-users', '/estora-admin/users/'],
+  ['app-activity', '/estora-admin/activity/'],
+  ['app-notifications', '/estora-admin/notifications/']
+];
+for (const [name, route] of modules) {
+  await adminPage.goto(BASE + route, { waitUntil: 'networkidle' });
+  await adminPage.waitForTimeout(700);
+  await shot(adminPage, name, true);
+}
 
-await adminPage.goto(BASE + '/wp-admin/admin.php?page=estora-leads');
+await adminPage.goto(BASE + '/estora-admin/leads/', { waitUntil: 'networkidle' });
 await adminPage.waitForSelector('[data-leads-table] tbody tr');
-await shot(adminPage, 'admin-leads');
 await adminPage.locator('[data-leads-table] tbody tr').first().click();
 await adminPage.waitForSelector('[data-drawer-status]');
-await shot(adminPage, 'admin-lead-detail');
-await adminPage.click('[data-close-drawer]');
-await adminPage.click('[data-leads-view="board"]');
-await adminPage.waitForSelector('.estora-kanban-card');
-await shot(adminPage, 'admin-kanban');
+await shot(adminPage, 'app-lead-detail');
 
-await adminPage.goto(BASE + '/wp-admin/admin.php?page=estora-appointments');
-await adminPage.waitForSelector('[data-calendar] .estora-day');
-await shot(adminPage, 'admin-appointments');
+/* Native property editor (media and content still WordPress) */
+const propertyResponse = await adminPage.request.get(BASE + '/wp-json/estora/v1/properties?per_page=1');
+const property = (await propertyResponse.json()).data[0];
+await adminPage.goto(`${BASE}/wp-admin/post.php?post=${property.id}&action=edit`, { waitUntil: 'networkidle' });
+await adminPage.waitForSelector('#estora-property-details');
+await adminPage.locator('#estora-property-details').scrollIntoViewIfNeeded();
+await shot(adminPage, 'app-property-editor');
 
-await adminPage.goto(BASE + '/wp-admin/admin.php?page=estora-inventory');
-await adminPage.waitForSelector('[data-inventory-table] tbody tr');
-await shot(adminPage, 'admin-inventory');
-
-await adminPage.goto(BASE + '/wp-admin/admin.php?page=estora-reports');
-await adminPage.waitForSelector('[data-report-kpis] .estora-kpi');
-await shot(adminPage, 'admin-reports');
-
-await adminPage.goto(BASE + '/wp-admin/admin.php?page=estora-settings');
-await adminPage.waitForSelector('[data-settings-form]');
-await shot(adminPage, 'admin-settings');
-
+/* Mobile app */
 await adminPage.setViewportSize({ width: 390, height: 844 });
-await adminPage.goto(BASE + '/wp-admin/admin.php?page=estora-dashboard');
-await adminPage.waitForSelector('.estora-kpi');
-await shot(adminPage, 'admin-dashboard-mobile');
+await adminPage.goto(BASE + '/estora-admin/', { waitUntil: 'networkidle' });
+await adminPage.waitForSelector('[data-kpis] .estora-kpi');
+await shot(adminPage, 'app-mobile-dashboard', true);
+await adminPage.click('[data-app-nav-toggle]');
+await shot(adminPage, 'app-mobile-nav');
 
 console.log('console errors:', errors);
 await browser.close();

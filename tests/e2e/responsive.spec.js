@@ -24,8 +24,8 @@ test.describe('Responsive and accessibility checks', () => {
     await page.goto('/wp-login.php');
     await page.fill('#user_login', 'admin');
     await page.fill('#user_pass', 'Estora!Admin!2026');
-    await Promise.all([page.waitForURL(/wp-admin/), page.click('#wp-submit')]);
-    await page.goto('/wp-admin/admin.php?page=estora-dashboard');
+    await Promise.all([page.waitForURL(/estora-admin/), page.click('#wp-submit')]);
+    await page.goto('/estora-admin/');
     await expect(page.locator('.estora-kpi').first()).toBeVisible();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(1);

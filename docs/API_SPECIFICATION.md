@@ -160,8 +160,10 @@ Full staff update (notes, internal notes, agent, customer contact) with the same
 ## Agents & users
 
 ### `GET /agents`
-Capability `estora_view_all_leads` or `estora_manage_appointments`. Returns active agents:
-`id, name, email, phone, title, avatar, active, open_leads` (counts only for managers).
+Capability `estora_view_all_leads` or `estora_edit_properties` (sidebar/route permission). Returns
+users with the `estora_sales_agent` role: `id, name, email, phone, title, avatar, active, open_leads`
+(counts only for managers). Property managers and marketing staff are not treated as assignable
+agents even when they hold property capabilities.
 
 ### `GET /agents/{id}`
 Same capability; 404 for non-agents.
@@ -170,17 +172,44 @@ Same capability; 404 for non-agents.
 
 ## Dashboard
 
-All require `estora_view_reports`.
+`GET /dashboard/summary` and the three statistics routes require `estora_view_reports`.
+`GET /dashboard/me` requires a signed-in user with `estora_view_leads` or
+`estora_manage_appointments` and is always scoped to the caller.
 
 ### `GET /dashboard/summary`
+Query: `days` (1–365, default 30), `from`/`to` (`Y-m-d`, optional custom range), `refresh=1` to
+bypass the five-minute cache. The response is filtered by capability before it leaves the server:
+lead aggregates and lead activity require `estora_view_leads`; appointment aggregates require
+`estora_manage_appointments`.
+
 ```json
 { "success": true, "data": {
-  "properties": { "total": 28, "published": 24, "available": 19, "sold": 4, "rented": 3 },
-  "leads": { "total": 142, "new": 18, "qualified": 12, "won": 9, "lost": 31, "conversion_rate": 6.3 },
-  "appointments": { "upcoming": 6, "pending": 2, "this_week": 9 },
-  "recent_activity": [ { "action": "lead.assigned", "description": "…", "at": "…" } ],
-  "lead_trend": [ { "date": "2026-11-01", "count": 4 } ]
-}, "meta": { "cached": true, "ttl": 300 } }
+  "range": { "from": "2026-10-26", "to": "2026-11-24", "days": 30, "total": 8, "won": 0, "conversion_rate": 0 },
+  "properties": { "total": 11, "published": 11, "available": 8, "reserved": 1, "sold": 1, "rented": 1,
+                  "rentals": 5, "average_price": 6702364, "stale": 0,
+                  "by_type": [ { "name": "Condominium", "total": 4 } ] },
+  "leads": { "total": 10, "new": 2, "won": 1, "conversion_rate": 10, "range_total": 8,
+             "by_agent": [ { "name": "Mai Wong", "total": 5, "won": 1 } ] },
+  "appointments": { "upcoming": 5, "pending": 2, "today": 0, "this_week": 5,
+                    "by_weekday": [ { "name": "Wednesday", "total": 2 } ] },
+  "recent_activity": [ { "action": "lead_assigned", "description": ".", "created_at": "." } ],
+  "lead_trend": [ { "date": "2026-11-01", "count": 4 } ],
+  "by_source": { "website": 6 }
+}, "meta": { "cached": false, "ttl": 300 } }
+```
+
+### `GET /dashboard/me`
+The same date parameters; no company-wide aggregates. Returns the caller's own pipeline, assigned
+published properties, next viewings and daily trend.
+
+```json
+{ "success": true, "data": {
+  "range": { "from": ".", "to": ".", "total": 3, "won": 1, "conversion_rate": 33.3 },
+  "properties": { "assigned": 2 },
+  "leads": { "total": 5, "new": 1, "won": 1, "lost": 1, "by_status": { "new": 1, "won": 1 } },
+  "appointments": { "upcoming_count": 2, "pending": 1, "next": [ { "id": 1, "date": "." } ] },
+  "lead_trend": [ { "date": "2026-11-01", "count": 1 } ]
+} }
 ```
 
 ### `GET /dashboard/property-statistics`
@@ -247,9 +276,9 @@ Public. `{plugin_version, db_version, tables:{...}, environment}`. Returns 500 o
 table is missing.
 
 ### `GET /settings` / `POST /settings`
-Capability `estora_manage_settings`. GET returns the sanitised settings plus available agents; POST
-accepts any subset of the setting keys, sanitises and validates time ranges/slot length, and returns
-the merged result. Every change is written to the audit log.
+Capability `estora_manage_settings`. GET returns the sanitised settings plus available
+`estora_sales_agent` users; POST accepts any subset of the setting keys, sanitises and validates time
+ranges/slot length, and returns the merged result. Every change is written to the audit log.
 
 ### `GET /audit`
 Capability `estora_view_audit`. Filters `actor_id`, `action`, `object_type`, `object_id`, paginated.

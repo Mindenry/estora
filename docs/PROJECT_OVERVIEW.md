@@ -23,8 +23,8 @@ the notification and the report.
 | O2 | Inventory management | CPT + meta + status machine + media; admin screens and REST |
 | O3 | CRM | `wp_estora_leads` lifecycle, assignment history, notes, dedupe, scoped reads |
 | O4 | Scheduling | `wp_estora_appointments`, server-side conflict detection, calendar views |
-| O5 | Back office | Custom ESTORA admin shell, dashboard aggregates, reports, CSV export |
-| O6 | RBAC | 5 custom roles, 17 capabilities, ownership checks in services and REST |
+| O5 | Back office | Dedicated `/estora-admin/` application: role-aware dashboard, modules, reports, CSV export |
+| O6 | RBAC | 6 roles (Super Admin + 5 ESTORA roles), 17 capabilities, ownership checks in services and REST |
 | O7 | REST API | `/wp-json/estora/v1/*`, cookie+nonce and application-password auth |
 | O8 | Security | nonces, caps, prepared SQL, escaping, upload validation, rate limits, audit log |
 | O9 | Quality | PHPUnit unit suite, WP-bootstrapped integration suite, HTTP integration tests, Playwright E2E, PHPCS, CI |
@@ -35,11 +35,12 @@ the notification and the report.
 | Actor | Surface | Scope |
 | --- | --- | --- |
 | Visitor | Public theme | published properties, inquiry/appointment forms, favorites, compare |
-| Sales agent | `/wp-admin/admin.php?page=estora-*` | own leads, own appointments |
-| Sales manager | Back office | all leads, assignment, pipeline, reports |
-| Property manager | Back office + CPT editor | inventory, availability, agent assignment |
-| Marketing | Back office | articles, campaigns, attribution, marketing reports |
-| Administrator | Back office | users, roles, settings, audit log |
+| Sales agent | `/estora-admin/` application | own leads, own appointments, assigned properties |
+| Sales manager | `/estora-admin/` application | all leads, assignment, pipeline, agents, reports |
+| Property manager | `/estora-admin/` application + CPT editor | inventory, availability, viewings, reports |
+| Marketing | `/estora-admin/` application | content, campaigns, attribution, marketing reports |
+| Administrator | `/estora-admin/` application | all business modules, CMS, users |
+| Super Admin | `/estora-admin/` + `/wp-admin/` | technical WordPress administration and all ESTORA modules |
 
 ## 5. End-to-end workflow
 
