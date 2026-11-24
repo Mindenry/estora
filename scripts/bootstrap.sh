@@ -45,6 +45,12 @@ fi
 if [ "$(wp config get FS_METHOD 2>/dev/null || true)" != "direct" ]; then
   wp config set FS_METHOD direct --type=constant
 fi
+if [ "$(wp config get WP_DEBUG_DISPLAY 2>/dev/null || true)" != "false" ]; then
+  wp config set WP_DEBUG_DISPLAY false --raw
+fi
+if [ "$(wp config get WP_DEBUG_LOG 2>/dev/null || true)" != "true" ]; then
+  wp config set WP_DEBUG_LOG true --raw
+fi
 
 echo "==> installing WordPress (if needed)"
 if ! wp core is-installed >/dev/null 2>&1; then

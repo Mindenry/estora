@@ -96,7 +96,7 @@ test('ESTORA back-office application', async (t) => {
     assert.equal(typeof summary.data.properties.total, 'number');
     assert.equal(typeof summary.data.range.total, 'number');
     assert.ok(summary.data.leads);
-    assert.equal(summary.data.range.to, new Date().toISOString().slice(0, 10));
+    assert.equal(summary.data.range.to, new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bangkok' }).format(new Date()));
 
     const marketingSummary = assertOk(await marketing.api('/dashboard/summary?days=7'), 'marketing summary');
     assert.ok(!marketingSummary.data.leads, 'marketing does not receive lead aggregates');

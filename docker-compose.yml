@@ -38,6 +38,9 @@ services:
       WORDPRESS_DB_PASSWORD: ${MYSQL_PASSWORD:-estora_local_db}
       WORDPRESS_TABLE_PREFIX: ${WP_TABLE_PREFIX:-wp_}
       WORDPRESS_DEBUG: ${WP_DEBUG:-1}
+      WORDPRESS_CONFIG_EXTRA: |
+        define( 'WP_DEBUG_DISPLAY', false );
+        define( 'WP_DEBUG_LOG', true );
     volumes:
       - wp_data:/var/www/html
       - ./wp-content/themes/estora-theme:/var/www/html/wp-content/themes/estora-theme
