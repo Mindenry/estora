@@ -140,7 +140,10 @@ editor, mobile dashboard and mobile navigation.
 
 Inspection findings fixed during this pass: empty chart fills, invisible button labels, visible
 public-theme skip link in the app, duplicate hidden notification markup, and a stale version label.
-App routes produced no console errors; the only browser console output is WordPress core's
+The public homepage was then art-directed in a separate pass: blank bands under card and location
+artwork, dark-surface text contrast in the province band and closing CTA, and hero/search collisions
+at 720–900px viewport heights were fixed; the homepage was checked at 1440, 1280, 1024, 768 and
+390px. App routes produced no console errors; the only browser console output is WordPress core's
 `Permissions-Policy: unload` warning inside the native post editor.
 
 ## Security checks executed

@@ -243,13 +243,19 @@ function estora_property_card( array $property, string $context = 'grid' ): void
  * @param string $title   Title.
  * @param string $link    Optional link.
  * @param string $link_label Link label.
+ * @param string $index   Optional section index.
  */
-function estora_section_head( string $eyebrow, string $title, string $link = '', string $link_label = '' ): void {
+function estora_section_head( string $eyebrow, string $title, string $link = '', string $link_label = '', string $index = '' ): void {
 	?>
 	<div class="estora-sectionhead">
-		<div>
-			<p class="estora-eyebrow"><span aria-hidden="true"></span><?php echo esc_html( $eyebrow ); ?></p>
-			<h2><?php echo esc_html( $title ); ?></h2>
+		<div class="estora-sectionhead__lead">
+			<?php if ( '' !== $index ) : ?>
+				<span class="estora-sectionhead__index" aria-hidden="true"><?php echo esc_html( $index ); ?></span>
+			<?php endif; ?>
+			<div>
+				<p class="estora-eyebrow"><span aria-hidden="true"></span><?php echo esc_html( $eyebrow ); ?></p>
+				<h2><?php echo esc_html( $title ); ?></h2>
+			</div>
 		</div>
 		<?php if ( $link ) : ?>
 			<a class="estora-textlink" href="<?php echo esc_url( $link ); ?>"><?php echo esc_html( $link_label ?: __( 'View all', 'estora-theme' ) ); ?> <?php echo estora_icon( 'arrow', 15 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?></a>

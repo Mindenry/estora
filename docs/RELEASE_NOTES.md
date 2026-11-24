@@ -1,4 +1,24 @@
-# ESTORA v1.1.0 — Release Notes
+# ESTORA — Release Notes
+
+## v1.1.1 — Homepage art direction
+
+Release date: 2026-11-24
+
+A focused patch to the public homepage. No database, REST or back-office behaviour changed.
+
+- Split editorial hero: large serif headline with one italic accent, a framed architectural visual,
+  a live “neighbourhood focus” card and a compact proof strip.
+- Full-width property search panel overlapping the hero edge, with clear labels, visible select
+  affordances, popular-province shortcuts and a stronger primary button.
+- Numbered section system: selected listings, a dark province band with real listing counts,
+  balanced three-column latest listings, wider “how we work” rows, editorial testimonials and a
+  statement CTA.
+- Header realigned to brand / navigation / actions; the tagline hides below 1320px.
+- Fixed image frames that left blank bands under card and location artwork, dark-surface text
+  contrast, and hero/search collisions at 720–900px viewport heights.
+- Full-page screenshots now wait for lazy-loaded listing images.
+
+## v1.1.0 — Back-office release
 
 Release date: 2026-11-24
 

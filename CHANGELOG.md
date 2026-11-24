@@ -3,6 +3,32 @@
 All notable changes to ESTORA. Format follows Keep a Changelog; versions follow Semantic
 Versioning.
 
+## [1.1.1] — 2026-11-24
+
+### Changed
+
+- Homepage art direction rebuilt around an editorial split hero: oversized serif headline with a
+  single italic accent, a framed architectural visual, a live neighbourhood card and a compact
+  proof strip.
+- Property search promoted to a full-width, labelled panel overlapping the hero edge, with visible
+  field affordances, popular-province shortcuts and a stronger primary action.
+- Section system refined with numbered editorial headings, a dark province band, full-bleed
+  location cards with real listing counts, balanced three-column listing grids and wider
+  principles rows.
+- Testimonials now scale the lead quote; the closing CTA uses a large statement and a circular
+  action.
+- Header alignment moved to a three-column grid (brand / navigation / actions); the tagline is hidden
+  below 1320px to prevent crowding.
+
+### Fixed
+
+- Card and location images could render at intrinsic height instead of filling their frames,
+  leaving a blank band under the artwork.
+- Location titles and the closing CTA inherited the dark body text colour on dark surfaces.
+- Hero content could collide with the overlapping search panel at 720–900px viewport heights.
+- Screenshot capture now scrolls the page so lazy-loaded listing images are present in full-page
+  shots.
+
 ## [1.1.0] — 2026-11-24
 
 ### Added

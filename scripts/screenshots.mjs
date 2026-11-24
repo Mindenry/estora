@@ -18,6 +18,18 @@ const shot = async (page, name, fullPage = false) => {
   await page.screenshot({ path: path.join(out, `${name}.png`), fullPage });
   console.log('  captured', name);
 };
+const loadLazy = async (page) => {
+  await page.evaluate(async () => {
+    const step = Math.max(320, Math.floor(window.innerHeight * 0.8));
+    for (let y = 0; y < document.body.scrollHeight; y += step) {
+      window.scrollTo(0, y);
+      await new Promise((resolve) => setTimeout(resolve, 80));
+    }
+    window.scrollTo(0, 0);
+    await new Promise((resolve) => setTimeout(resolve, 120));
+  });
+  await page.waitForTimeout(400);
+};
 const login = async (page, email = 'admin@estora.test', password = 'Estora!Admin!2026') => {
   await page.goto(BASE + '/wp-login.php');
   await page.fill('#user_login', email);
@@ -31,12 +43,14 @@ const publicContext = await browser.newContext({ viewport: { width: 1440, height
 const publicPage = watch(await publicContext.newPage());
 await publicPage.goto(BASE + '/', { waitUntil: 'networkidle' });
 await shot(publicPage, 'home');
+await loadLazy(publicPage);
 await shot(publicPage, 'home-full', true);
 await publicPage.goto(BASE + '/properties/?availability=available', { waitUntil: 'networkidle' });
 await shot(publicPage, 'properties');
 await publicPage.locator('.estora-card__title a').first().click();
 await publicPage.waitForLoadState('networkidle');
 await shot(publicPage, 'property-detail');
+await loadLazy(publicPage);
 await shot(publicPage, 'property-detail-full', true);
 const detailFav = publicPage.locator('.estora-property-head [data-favorite]');
 if ((await detailFav.getAttribute('aria-pressed')) !== 'true') {

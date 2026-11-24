@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ESTORA_THEME_VERSION', '1.0.0' );
+define( 'ESTORA_THEME_VERSION', '1.1.1' );
 
 /**
  * Asset URL with a filemtime cache break.

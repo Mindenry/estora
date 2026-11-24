@@ -8,6 +8,8 @@ test.describe('Visitor journeys', () => {
     await page.goto('/');
     await expect(page.locator('h1')).toContainText('property file');
     await expect(page.locator('.estora-search').first()).toBeVisible();
+    await expect(page.locator('.estora-searchcard')).toBeVisible();
+    await expect(page.locator('.estora-hero__place')).toBeVisible();
     await expect(page.locator('.estora-card').first()).toBeVisible();
 
     await page.goto('/properties/?purpose=rent');
