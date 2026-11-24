@@ -1,7 +1,12 @@
 # ESTORA
 
+[![CI](https://github.com/Mindenry/estora/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Mindenry/estora/actions/workflows/ci.yml)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/7e6e3ae8-b661-4ac7-b29e-095465708c4c/deploy-status)](https://estora-demo.netlify.app)
+
 **Real estate management platform** — a public property website and a complete back office
 (inventory, CRM, viewings, reporting) built as a custom WordPress theme and business plugin.
+
+**Live portfolio demo:** https://estora-demo.netlify.app
 
 ![ESTORA home](docs/screenshots/home.png)
 

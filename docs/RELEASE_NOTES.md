@@ -1,5 +1,19 @@
 # ESTORA — Release Notes
 
+## v1.4.1 — Fresh-clone and CI fixes
+
+Release date: 2026-11-25
+
+A patch release after deploying the portfolio demo.
+
+- Bootstrap CSS/JS are committed again; the ignore rule for Composer's `vendor/` also hid the
+  theme's `assets/vendor/`, which broke the mobile header on a fresh clone.
+- PHP deprecations are written to the log instead of the response. On a fresh install they were
+  printed before `wp_safe_redirect()` and stopped wp-admin redirects from working.
+- Theme activation no longer assumes ESTORA Core is already active.
+- The dashboard date assertion and HTTP test command are midnight- and Node-22-safe.
+- CI now covers lint, unit, integration, HTTP, 19 Playwright journeys and the static demo export.
+
 ## v1.4.0 — Financing calculator and a deployable portfolio demo
 
 Release date: 2026-11-24

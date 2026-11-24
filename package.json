@@ -1,7 +1,7 @@
 {
   "name": "estora-platform",
   "private": true,
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "ESTORA real estate management platform — test harness",
   "scripts": {
     "test": "bash scripts/test.sh",

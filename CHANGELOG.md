@@ -3,6 +3,22 @@
 All notable changes to ESTORA. Format follows Keep a Changelog; versions follow Semantic
 Versioning.
 
+## [1.4.1] — 2026-11-25
+
+### Fixed
+
+- Bootstrap CSS and JS are tracked again: the root `vendor/` ignore rule also matched
+  `assets/vendor/`, so a fresh clone rendered the mobile header without its utility classes.
+- PHP notices are logged instead of printed: `display_errors` was emitting deprecations before
+  `wp_safe_redirect()` on a fresh install and breaking the wp-admin redirects.
+- The theme tolerates ESTORA Core being inactive while it is being activated.
+- The dashboard range assertion uses the site timezone, so the HTTP suite is midnight-safe.
+
+### Changed
+
+- CI installs dependencies inside the workspace, runs the HTTP files explicitly, and includes the
+  static demo smoke test. Pushes to `main` are green.
+
 ## [1.4.0] — 2026-11-24
 
 ### Added
