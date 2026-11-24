@@ -154,7 +154,7 @@ Individually:
 bash scripts/lint.sh
 docker compose run --rm -T --entrypoint php cli /opt/estora/vendor/bin/phpunit -c /opt/estora/phpunit.xml
 docker compose run --rm -T cli wp eval-file /opt/estora/tests/wp/integration.php
-node --test --test-concurrency=1 tests/http/
+node --test --test-concurrency=1 tests/http/api.test.mjs tests/http/admin-app.test.mjs
 npx playwright test -c tests/e2e/playwright.config.js
 ```
 

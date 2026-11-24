@@ -14,7 +14,7 @@ seeded demo database. Nothing here is asserted from generated code alone.
 | Coding standards | PHPCS WordPress standard (`--warning-severity=0`) | **0 errors** |
 | Unit | `phpunit -c phpunit.xml` | **37 tests, 142 assertions, 0 failures** |
 | WordPress integration | `wp eval-file tests/wp/integration.php` | **12 check groups passed** |
-| HTTP / REST | `node --test --test-concurrency=1 tests/http/` | **24 tests passed** (15 API + 9 app) |
+| HTTP / REST | `node --test --test-concurrency=1 tests/http/api.test.mjs tests/http/admin-app.test.mjs` | **24 tests passed** (15 API + 9 app) |
 | Browser E2E | `npx playwright test -c tests/e2e/playwright.config.js` | **19 journeys passed** |
 | Screenshots | `node scripts/screenshots.mjs` | **43 captures**, app routes with 0 console errors |
 | Static demo | `npm run export:static && npm run test:static` | **85 pages**, filters/favourites/compare/forms pass, 0 console errors |

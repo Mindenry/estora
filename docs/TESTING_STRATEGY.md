@@ -28,7 +28,7 @@ docker compose run --rm cli php -l <file>            # syntax
 docker compose run --rm -T --entrypoint php cli /opt/estora/vendor/bin/phpunit -c /opt/estora/phpunit.xml   # unit suite
 bash scripts/lint.sh                                  # php -l over the repo + PHPCS if installed
 docker compose run --rm cli wp eval-file tests/wp/integration.php
-node --test tests/http/             # HTTP integration
+node --test tests/http/api.test.mjs tests/http/admin-app.test.mjs   # HTTP integration
 npx playwright test -c tests/e2e/playwright.config.js   # E2E
 node scripts/screenshots.mjs                        # capture docs/screenshots
 ```
