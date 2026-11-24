@@ -11,6 +11,16 @@
 defined( 'ABSPATH' ) || exit;
 
 /**
+ * Whether the public Thai layer can run.
+ *
+ * The theme can be activated before ESTORA Core, so every runtime filter must
+ * tolerate the helper being absent.
+ */
+function estora_theme_is_thai(): bool {
+	return function_exists( 'estora_is_thai' ) && estora_is_thai();
+}
+
+/**
  * URL for the current request in a given language.
  *
  * @param string $lang en|th.
@@ -34,7 +44,7 @@ function estora_lang_url( string $lang ): string {
  * @param string $class Extra class.
  */
 function estora_language_switcher( string $class = '' ): void {
-	$current = estora_language();
+	$current = function_exists( 'estora_language' ) ? estora_language() : 'en';
 	?>
 	<div class="estora-lang <?php echo esc_attr( $class ); ?>" role="group" aria-label="<?php esc_attr_e( 'Language', 'estora-theme' ); ?>">
 		<a href="<?php echo esc_url( estora_lang_url( 'en' ) ); ?>" hreflang="en" lang="en" class="<?php echo 'en' === $current ? 'is-active' : ''; ?>" <?php echo 'en' === $current ? 'aria-current="true"' : ''; ?>>EN</a>
@@ -232,7 +242,7 @@ function estora_thai_strings(): array {
  * @return string
  */
 function estora_translate_string( $translation, $text, $domain ) {
-	if ( is_admin() || ! estora_is_thai() ) {
+	if ( is_admin() || ! estora_theme_is_thai() ) {
 		return $translation;
 	}
 	if ( ! in_array( $domain, array( 'estora-theme', 'estora-core', 'default' ), true ) ) {
@@ -254,7 +264,7 @@ add_filter( 'gettext', 'estora_translate_string', 20, 3 );
  * @return string
  */
 function estora_translate_plural( $translation, $single, $plural, $number, $domain ) {
-	if ( is_admin() || ! estora_is_thai() ) {
+	if ( is_admin() || ! estora_theme_is_thai() ) {
 		return $translation;
 	}
 	if ( ! in_array( $domain, array( 'estora-theme', 'estora-core', 'default' ), true ) ) {
@@ -274,7 +284,7 @@ add_filter( 'ngettext', 'estora_translate_plural', 20, 5 );
  * @return string
  */
 function estora_localize_title( $title, $post_id = 0 ) {
-	if ( is_admin() || ! estora_is_thai() || ! $post_id ) {
+	if ( is_admin() || ! estora_theme_is_thai() || ! $post_id ) {
 		return $title;
 	}
 	$thai = (string) get_post_meta( (int) $post_id, '_estora_title_th', true );
@@ -289,7 +299,7 @@ add_filter( 'the_title', 'estora_localize_title', 10, 2 );
  * @return string
  */
 function estora_localize_content( $content ) {
-	if ( is_admin() || ! estora_is_thai() || ! in_the_loop() || ! is_singular() ) {
+	if ( is_admin() || ! estora_theme_is_thai() || ! in_the_loop() || ! is_singular() ) {
 		return $content;
 	}
 	$thai = (string) get_post_meta( get_the_ID(), '_estora_content_th', true );
@@ -304,7 +314,7 @@ add_filter( 'the_content', 'estora_localize_content', 5 );
  * @return string
  */
 function estora_localize_excerpt( $excerpt ) {
-	if ( is_admin() || ! estora_is_thai() ) {
+	if ( is_admin() || ! estora_theme_is_thai() ) {
 		return $excerpt;
 	}
 	$thai = (string) get_post_meta( get_the_ID(), '_estora_excerpt_th', true );
@@ -319,7 +329,7 @@ add_filter( 'get_the_excerpt', 'estora_localize_excerpt' );
  * @return string
  */
 function estora_localize_menu_title( $title ) {
-	if ( is_admin() || ! estora_is_thai() ) {
+	if ( is_admin() || ! estora_theme_is_thai() ) {
 		return $title;
 	}
 	$map = estora_thai_strings();
@@ -334,7 +344,7 @@ add_filter( 'nav_menu_item_title', 'estora_localize_menu_title' );
  * @return array<string,string>
  */
 function estora_localize_document_title( $parts ) {
-	if ( ! is_admin() && estora_is_thai() && isset( $parts['tagline'] ) ) {
+	if ( ! is_admin() && estora_theme_is_thai() && isset( $parts['tagline'] ) ) {
 		$parts['tagline'] = 'อสังหาริมทรัพย์ที่ดูแลอย่างมืออาชีพ';
 	}
 	return $parts;
