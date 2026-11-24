@@ -1,4 +1,4 @@
-/* Minimal static server for the exported Netlify demo. */
+/* Minimal static server for the exported static demo. */
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';

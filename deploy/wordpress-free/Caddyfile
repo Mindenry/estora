@@ -1,0 +1,18 @@
+{$DOMAIN} {
+	encode zstd gzip
+	reverse_proxy wordpress:80
+
+	header {
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "geolocation=(), microphone=(), camera=()"
+		-Server
+	}
+
+	# WordPress uploads can be large; Caddy has no body limit by default.
+	log {
+		output stdout
+		format console
+	}
+}

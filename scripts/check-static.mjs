@@ -1,5 +1,5 @@
 /**
- * Smoke-test the exported Netlify demo against a static server.
+ * Smoke-test the exported static demo against a server.
  *
  *   npm run export:static
  *   npm run serve:dist
@@ -42,6 +42,19 @@ await check('Thai home renders', async () => {
   await page.goto(BASE + '/th/', { waitUntil: 'networkidle' });
   assert.equal(await page.locator('html').getAttribute('lang'), 'th');
   assert.match(await page.locator('h1').innerText(), /บ้านที่คุณไว้ใจได้/);
+});
+
+await check('language switcher changes the page', async () => {
+  await page.goto(BASE + '/', { waitUntil: 'networkidle' });
+  await page.locator('.estora-lang--header a[hreflang="th"]').click();
+  await page.waitForLoadState('networkidle');
+  assert.match(page.url(), /\/th\/$/);
+  assert.equal(await page.locator('html').getAttribute('lang'), 'th');
+  assert.match(await page.locator('h1').innerText(), /บ้านที่คุณไว้ใจได้/);
+  await page.locator('.estora-lang--header a[hreflang="en"]').click();
+  await page.waitForLoadState('networkidle');
+  assert.equal(await page.locator('html').getAttribute('lang'), 'en-US');
+  assert.match(await page.locator('h1').innerText(), /A home you can trust/);
 });
 
 await check('archive filters by province and area', async () => {

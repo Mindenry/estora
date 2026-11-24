@@ -173,7 +173,7 @@ monthly = loan × r / (1 − (1 + r)^−n),  r = annual rate / 12 / 100,  n = ye
 
 ## 12. Static portfolio demo (v1.4.0)
 
-`npm run export:static` produces a Netlify-ready `dist/` from the running WordPress site:
+`npm run export:static` produces a GitHub Pages-ready `dist/` from the running WordPress site:
 
 - 85 pages: home, archive, 21 property details, news, 7 articles, 5 category archives, about,
   contact, favourites, compare, privacy, terms and a 404 — each in English and Thai.
@@ -181,9 +181,9 @@ monthly = loan × r / (1 − (1 + r)^−n),  r = annual rate / 12 / 100,  n = ye
   matching page, not a query string.
 - Theme CSS, JS, fonts, plugin assets and referenced uploads are mirrored with their directory
   structure, so relative CSS font paths keep working.
-- `netlify-demo/demo-api.js` intercepts `/wp-json/estora/v1` calls and answers favourites,
+- `static-demo/demo-api.js` intercepts `/wp-json/estora/v1` calls and answers favourites,
   comparison, availability and form submissions from bundled data and `localStorage`.
-- `netlify-demo/demo-archive.js` applies the same query args as the PHP archive (purpose, type,
+- `static-demo/demo-archive.js` applies the same query args as the PHP archive (purpose, type,
   province, district, destination, keyword, price, bedrooms, availability, sort, page) in the
   browser and re-renders cards, counts, chips and pagination.
 - A small badge states that forms are simulated and links to the source repository.

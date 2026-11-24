@@ -1,12 +1,11 @@
 # ESTORA
 
 [![CI](https://github.com/Mindenry/estora/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Mindenry/estora/actions/workflows/ci.yml)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/7e6e3ae8-b661-4ac7-b29e-095465708c4c/deploy-status)](https://estora-demo.netlify.app)
 
 **Real estate management platform** — a public property website and a complete back office
 (inventory, CRM, viewings, reporting) built as a custom WordPress theme and business plugin.
 
-**Live portfolio demo:** https://estora-demo.netlify.app
+**Live portfolio demo:** https://mindenry.github.io
 
 ![ESTORA home](docs/screenshots/home.png)
 
@@ -43,11 +42,11 @@ Screens: [home](docs/screenshots/home.png) · [Thai home](docs/screenshots/home-
 [calendar](docs/screenshots/app-appointments.png) · [reports](docs/screenshots/app-reports.png) ·
 [mobile](docs/screenshots/app-mobile-dashboard.png) · [all screenshots](docs/screenshots)
 
-## Portfolio demo (Netlify)
+## Portfolio demo (GitHub Pages)
 
 A static build of the public site is deployed for portfolio review:
 
-**https://estora-demo.netlify.app**
+**https://mindenry.github.io**
 
 The demo keeps the real design, photography, typography and interactions. Search, province/area
 filters, sorting, pagination, favourites, comparison, the mortgage calculator and both languages
@@ -58,11 +57,17 @@ CRM and `/estora-admin/` are not part of the static demo.
 npm run export:static     # render 85 EN/TH pages from the running site into dist/
 npm run serve:dist        # preview at http://localhost:8090
 npm run test:static       # Playwright smoke test of the exported demo
-npx netlify-cli deploy --dir=dist --prod
+npm run deploy:pages      # force-push dist/ to Mindenry/Mindenry.github.io
 ```
 
 `dist/` is generated, not committed. The export script mirrors the theme CSS/JS/fonts and the
 media library, rewrites language links and adds a small demo layer for the REST endpoints.
+
+### Full WordPress for free
+
+GitHub Pages cannot run PHP or MySQL. To host the **real** WordPress site, CRM and back office on a
+free Oracle Cloud Always Free VM, see [deploy/wordpress-free](deploy/wordpress-free/README.md).
+It ships a production Docker Compose stack, Caddy HTTPS and a one-command setup script.
 
 ## Stack
 

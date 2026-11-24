@@ -3,6 +3,25 @@
 All notable changes to ESTORA. Format follows Keep a Changelog; versions follow Semantic
 Versioning.
 
+## [1.4.2] — 2026-11-25
+
+### Added
+
+- `deploy/wordpress-free/`: a production Docker Compose stack (WordPress, MySQL, Caddy with
+  automatic HTTPS) and a one-command `setup.sh` for Oracle Cloud Always Free or any Ubuntu VM.
+  Includes a deployment guide comparing Oracle, free shared hosting, Cloudflare Tunnel and the
+  static demo.
+
+### Changed
+
+- The portfolio demo is hosted on **GitHub Pages** (`https://mindenry.github.io`) instead of a
+  Netlify site. The export is the same; `deploy:pages` force-pushes `dist/` to the Pages repository.
+
+### Fixed
+
+- Thai/English switching on the static demo: language links now resolve to `/th/...` on English
+  pages instead of pointing back at the current page.
+
 ## [1.4.1] — 2026-11-25
 
 ### Fixed

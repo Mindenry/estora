@@ -1,7 +1,7 @@
 {
   "name": "estora-platform",
   "private": true,
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "ESTORA real estate management platform — test harness",
   "scripts": {
     "test": "bash scripts/test.sh",
@@ -10,8 +10,8 @@
     "screenshots": "node scripts/screenshots.mjs",
     "export:static": "node scripts/export-static.mjs",
     "serve:dist": "node scripts/serve-dist.mjs dist 8090",
-    "deploy:netlify": "npx --yes netlify-cli deploy --dir=dist --prod",
-    "test:static": "node scripts/check-static.mjs"
+    "test:static": "node scripts/check-static.mjs",
+    "deploy:pages": "node scripts/deploy-pages.mjs"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.0"

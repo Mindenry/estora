@@ -1,5 +1,18 @@
 # ESTORA — Release Notes
 
+## v1.4.2 — Free WordPress hosting kit and GitHub Pages
+
+Release date: 2026-11-25
+
+- **Thai switch fixed on the static demo.** Language links now resolve to `/th/...` instead of the
+  current page, and the smoke test clicks the switch in both directions.
+- **Demo moved to GitHub Pages:** https://mindenry.github.io — free, permanent and without a
+  hosting provider's injected source comment. `npm run deploy:pages` publishes the export.
+- **Full WordPress on a free VM.** `deploy/wordpress-free/` contains a production Compose stack
+  with WordPress, MySQL and Caddy (automatic HTTPS), an idempotent `setup.sh`, and a guide covering
+  Oracle Cloud Always Free, free shared hosting and a temporary Cloudflare Tunnel.
+- Netlify deployment configuration and references removed.
+
 ## v1.4.1 — Fresh-clone and CI fixes
 
 Release date: 2026-11-25
@@ -26,7 +39,7 @@ calculator, and the whole public front end can be exported and deployed as a sta
   total interest, total repayment, transfer fee, stamp duty, cash needed at transfer and a yearly
   amortisation table. Everything recalculates live in English or Thai and is labelled an estimate,
   not a bank quote.
-- **Static Netlify demo.** `npm run export:static` renders 85 pages (English and Thai), mirrors all
+- **Static portfolio demo.** `npm run export:static` renders 85 pages (English and Thai), mirrors all
   assets and rewrites language paths. A small demo layer answers the REST calls so property search,
   province/area filtering, sorting, pagination, favourites, comparison and both forms still work
   without PHP or MySQL.

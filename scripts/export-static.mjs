@@ -1,5 +1,5 @@
 /**
- * Build a static portfolio demo of the ESTORA public site for Netlify.
+ * Build a static portfolio demo of the ESTORA public site for GitHub Pages.
  *
  * The WordPress install stays the source of truth. This script fetches the
  * rendered public pages (English and Thai), mirrors every referenced asset,
@@ -14,10 +14,13 @@ import path from 'node:path';
 
 const BASE = (process.env.ESTORA_BASE_URL || 'http://localhost:8080').replace(/\/$/, '');
 const OUT = path.resolve('dist');
-const DEMO = path.resolve('netlify-demo');
+const DEMO = path.resolve('static-demo');
 const REPO_URL = process.env.ESTORA_REPO_URL || 'https://github.com/Mindenry/estora';
 
 const log = (...args) => console.log('  •', ...args);
+
+await fs.rm(OUT, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
+await fs.mkdir(OUT, { recursive: true });
 
 const getJson = async (url) => {
   const response = await fetch(BASE + url);
@@ -124,8 +127,10 @@ const mapUrl = (value, lang) => {
 
   const isAsset = /^\/(wp-content|wp-includes|wp-json|wp-admin|wp-login|demo)\//.test(url.pathname);
   let pathname = url.pathname;
+  const requested = url.searchParams.get('lang');
+  const targetLang = requested === 'th' ? 'th' : (requested === 'en' ? 'en' : lang);
   if (!isAsset) {
-    if (lang === 'th') {
+    if (targetLang === 'th') {
       if (pathname !== '/th' && !pathname.startsWith('/th/')) pathname = '/th' + (pathname === '/' ? '/' : pathname);
     } else if (pathname === '/th' || pathname.startsWith('/th/')) {
       pathname = pathname.slice(3) || '/';
@@ -255,7 +260,7 @@ await fs.writeFile(
   'window.ESTORA_DEMO = ' + JSON.stringify(demoData) + ';\n'
 );
 
-await fs.writeFile(path.join(OUT, '_redirects'), '/*  /404.html  404\n');
+await fs.writeFile(path.join(OUT, '.nojekyll'), '');
 await fs.writeFile(path.join(OUT, 'robots.txt'), 'User-agent: *\nAllow: /\n');
 await fs.writeFile(
   path.join(OUT, 'demo', 'README.txt'),

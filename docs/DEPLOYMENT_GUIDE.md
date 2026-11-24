@@ -148,18 +148,24 @@ node scripts/screenshots.mjs     # writes docs/screenshots (desktop + mobile)
 PHPUnit, the WordPress integration script, the HTTP suite and Playwright. It runs on pushes to
 `main` and on pull requests.
 
-## 13. Static demo on Netlify
+## 13. Static demo on GitHub Pages
 
-Netlify cannot run WordPress or MySQL, so the demo is a prebuilt static export:
+GitHub Pages cannot run WordPress or MySQL, so the demo is a prebuilt static export:
 
 ```bash
 npm run export:static          # requires the local WordPress stack on :8080
 npm run serve:dist             # http://localhost:8090
 npm run test:static            # Playwright smoke test of the export
-npx netlify-cli deploy --dir=dist --prod
+npm run deploy:pages           # push dist/ to Mindenry/Mindenry.github.io
 ```
 
-`netlify.toml` sets `publish = "dist"` and the cache/security headers. `dist/` is generated and
-ignored by git. Re-run the export after any theme, content or data change; the CLI deploy uploads
-the new folder and keeps the same site URL. The static demo simulates forms and stores favourites
-in `localStorage`; it does not expose the CRM or the back office.
+The Pages repository is a build artefact: every deploy re-initialises `dist/`, commits it and
+force-pushes `main`; GitHub Pages serves the repository root at
+`https://mindenry.github.io/`. `dist/` is generated and ignored by git. Re-run the export after any
+theme, content or data change.
+
+The static demo simulates forms and stores favourites in `localStorage`; it does not expose the CRM
+or the back office.
+
+For the full PHP application on a free VM, see
+[deploy/wordpress-free](../deploy/wordpress-free/README.md).
