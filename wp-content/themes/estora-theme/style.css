@@ -1,0 +1,17 @@
+/*
+Theme Name: ESTORA
+Theme URI: https://example.com/estora
+Author: ESTORA Engineering
+Author URI: https://example.com
+Description: Editorial real-estate theme for the ESTORA management platform. Requires the ESTORA Core plugin for listings, CRM and appointments.
+Version: 1.0.0
+Requires at least: 6.5
+Tested up to: 6.7
+Requires PHP: 8.2
+License: GPL-2.0-or-later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: estora-theme
+Tags: real-estate, custom-menu, custom-logo, featured-images, responsive-layout, accessibility-ready
+*/
+
+/* Styles are enqueued from assets/css/main.css; this file carries the theme header only. */

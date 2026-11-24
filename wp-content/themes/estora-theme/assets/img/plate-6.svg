@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Abstract illustration of a colonial apartment facade with a balcony">
+  <defs>
+    <linearGradient id="sky6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F0E4D1"/><stop offset="1" stop-color="#D8C3A6"/>
+    </linearGradient>
+    <linearGradient id="wall6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F3EBDC"/><stop offset="1" stop-color="#E0D2BC"/>
+    </linearGradient>
+    <linearGradient id="shutter6" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#41604F"/><stop offset="1" stop-color="#26402F"/>
+    </linearGradient>
+    <pattern id="louvre6" width="44" height="12" patternUnits="userSpaceOnUse">
+      <rect width="44" height="12" fill="#3C5A49"/><rect y="8" width="44" height="3" fill="#23402F"/>
+    </pattern>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#sky6)"/>
+  <rect x="0" y="700" width="1600" height="300" fill="#C1AC90" opacity=".5"/>
+  <g>
+    <rect x="300" y="120" width="900" height="760" fill="url(#wall6)"/>
+    <rect x="300" y="120" width="900" height="18" fill="#C6B49A"/>
+    <g>
+      <rect x="360" y="200" width="220" height="300" fill="url(#louvre6)"/>
+      <rect x="360" y="200" width="220" height="16" fill="#C9B79C"/>
+      <rect x="360" y="484" width="220" height="16" fill="#C9B79C"/>
+      <rect x="610" y="200" width="220" height="300" fill="url(#louvre6)"/>
+      <rect x="610" y="200" width="220" height="16" fill="#C9B79C"/>
+      <rect x="610" y="484" width="220" height="16" fill="#C9B79C"/>
+      <rect x="860" y="200" width="220" height="300" fill="url(#louvre6)"/>
+      <rect x="860" y="200" width="220" height="16" fill="#C9B79C"/>
+      <rect x="860" y="484" width="220" height="16" fill="#C9B79C"/>
+    </g>
+    <rect x="300" y="540" width="900" height="14" fill="#D4C3A9"/>
+    <rect x="360" y="620" width="780" height="200" fill="#4A5F52" opacity=".85"/>
+    <g stroke="#8B9C8D" stroke-width="4" opacity=".4">
+      <path d="M460 620 v200"/><path d="M560 620 v200"/><path d="M660 620 v200"/><path d="M760 620 v200"/>
+      <path d="M860 620 v200"/><path d="M960 620 v200"/><path d="M1060 620 v200"/>
+    </g>
+    <rect x="300" y="580" width="900" height="40" fill="#C3B196"/>
+    <rect x="300" y="610" width="900" height="10" fill="#8C7A60"/>
+    <rect x="240" y="850" width="1020" height="30" fill="#B3A188"/>
+    <rect x="370" y="180" width="758" height="10" fill="#CBB99E" opacity=".7"/>
+  </g>
+  <g fill="#2E3B2C">
+    <path d="M120 880 c10-140 60-240 140-300 -56 74 -84 190 -88 300Z"/>
+    <path d="M200 880 c20-110 70-190 140-230 -52 62 -84 150 -92 230Z"/>
+    <path d="M60 880 c-10-90 10-160 50-210 -26 62 -32 140 -26 210Z"/>
+    <rect x="116" y="860" width="14" height="140" rx="5"/>
+    <rect x="196" y="860" width="10" height="140" rx="4"/>
+    <rect x="56" y="865" width="8" height="135" rx="3"/>
+  </g>
+  <g stroke="#F4E9D6" stroke-width="2" opacity=".5">
+    <path d="M0 920 h340"/><path d="M1020 930 h400"/>
+  </g>
+</svg>

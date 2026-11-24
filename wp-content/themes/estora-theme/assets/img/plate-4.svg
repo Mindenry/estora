@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Abstract illustration of a hillside villa above the sea">
+  <defs>
+    <linearGradient id="sky4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#E8DCCB"/><stop offset=".6" stop-color="#D5C2A8"/><stop offset="1" stop-color="#BFA98C"/>
+    </linearGradient>
+    <linearGradient id="sea4" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8A9B96"/><stop offset="1" stop-color="#4E625D"/>
+    </linearGradient>
+    <linearGradient id="hill4" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#5B6B55"/><stop offset="1" stop-color="#3A4938"/>
+    </linearGradient>
+    <linearGradient id="pool4" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9FB6AE"/><stop offset="1" stop-color="#5B7169"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#sky4)"/>
+  <circle cx="1230" cy="260" r="96" fill="#F7EBD3" opacity=".65"/>
+  <rect x="0" y="520" width="1600" height="200" fill="url(#sea4)"/>
+  <g stroke="#E4D6BE" stroke-opacity=".4" stroke-width="2">
+    <path d="M200 580 h320"/><path d="M760 610 h420"/><path d="M1180 570 h260"/>
+  </g>
+  <path d="M0 720 C240 620 420 640 620 720 L620 1000 L0 1000Z" fill="url(#hill4)"/>
+  <path d="M640 760 C880 650 1080 680 1280 760 L1280 1000 L640 1000Z" fill="#31402F"/>
+  <g>
+    <rect x="250" y="470" width="520" height="180" fill="#EFE6D6"/>
+    <rect x="250" y="470" width="520" height="12" fill="#D6C5AB"/>
+    <rect x="280" y="500" width="220" height="150" fill="#3D4A42"/>
+    <g stroke="#8B9A8F" stroke-width="3" opacity=".55">
+      <path d="M330 500 v150"/><path d="M380 500 v150"/><path d="M430 500 v150"/><path d="M480 500 v150"/>
+      <path d="M280 550 h220"/><path d="M280 600 h220"/>
+    </g>
+    <rect x="520" y="500" width="190" height="150" fill="#EFE6D6"/>
+    <rect x="540" y="530" width="70" height="90" fill="#2F3B35"/>
+    <rect x="630" y="530" width="60" height="60" fill="#2F3B35"/>
+    <rect x="250" y="650" width="520" height="14" fill="#DACBB3"/>
+    <rect x="220" y="700" width="600" height="120" fill="url(#pool4)"/>
+    <g stroke="#DCE7DF" stroke-opacity=".45" stroke-width="2">
+      <path d="M250 730 h200"/><path d="M380 770 h260"/><path d="M270 795 h150"/>
+    </g>
+    <rect x="820" y="720" width="90" height="60" fill="#E9DFCC"/>
+    <rect x="930" y="740" width="90" height="40" fill="#D8CBB5"/>
+  </g>
+  <g fill="#2B3827">
+    <path d="M1420 820 c-20-120 0-210 40-280 -20 84 -18 190 -6 280Z"/>
+    <path d="M1480 820 c0-100 40-170 96-210 -44 60 -64 142 -70 210Z"/>
+    <rect x="1414" y="800" width="12" height="140" rx="5"/>
+    <rect x="1476" y="805" width="10" height="135" rx="4"/>
+  </g>
+  <g stroke="#EFE3CF" stroke-width="1.5" opacity=".35">
+    <path d="M0 850 C300 800 520 860 800 820 C1080 780 1320 840 1600 800"/>
+  </g>
+</svg>
