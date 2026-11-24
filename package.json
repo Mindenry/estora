@@ -11,9 +11,12 @@
     "export:static": "node scripts/export-static.mjs",
     "serve:dist": "node scripts/serve-dist.mjs dist 8090",
     "test:static": "node scripts/check-static.mjs",
-    "deploy:pages": "node scripts/deploy-pages.mjs"
+    "deploy:pages": "node scripts/deploy-pages.mjs",
+    "build:playground": "node scripts/build-playground.mjs",
+    "export:demo-sql": "node scripts/export-demo-sql.mjs"
   },
   "devDependencies": {
-    "@playwright/test": "^1.49.0"
+    "@playwright/test": "^1.49.0",
+    "jszip": "^3.10.2"
   }
 }

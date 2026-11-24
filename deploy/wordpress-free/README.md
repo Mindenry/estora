@@ -12,6 +12,7 @@ WordPress site + ESTORA Core** (back office, inquiries, viewings, database) on a
 | **WordPress.com free** | N/A | **No** | — | Cannot install this theme or plugin. Not suitable. |
 | **Render / Railway free tiers** | Partly | Yes | 1–2 h | Free web services usually have no persistent disk and no free MySQL; the site or uploads get wiped. |
 | **Cloudflare Tunnel** | Yes | Yes | 5 min | Full WordPress at a public HTTPS URL **while your PC stays on**. Good for a review call, not a CV link. |
+| **WordPress Playground** | Yes, in the browser | Yes | 2 min | No host required, but heavy to download and not a permanent site. |
 | **GitHub Pages** | No | Static only | Done | The current portfolio demo; no back office, simulated forms. |
 
 Below: the two practical choices.
@@ -129,25 +130,58 @@ Copy `~/backups` off the VM (Oracle block storage is not a backup).
 
 Free shared hosts give PHP + MySQL but no SSH. Use this only if a VM is not possible.
 
-1. Create an account and a free subdomain.
-2. Use their **WordPress installer** (Softaculous) or upload WordPress.
-3. Zip and upload:
-   - `wp-content/themes/estora-theme`
-   - `wp-content/plugins/estora-core`
-4. Export the local database and import it with phpMyAdmin:
-   ```bash
-   docker compose exec -T db mysqldump -u root -p"$MYSQL_ROOT_PASSWORD" estora > estora.sql
-   ```
-   Edit the `wp_options` `home`/`siteurl` rows to the new URL, then import.
-5. Copy `wp-content/uploads` over FTP.
-6. Activate **ESTORA** and **ESTORA Core**, then save permalinks once.
+### Prepare the files on your machine
+
+```bash
+# 1. Theme and plugin zips (also used by the Playground build)
+npm run build:playground
+# → playground/estora-theme.zip, playground/estora-core.zip
+
+# 2. Database dump of the seeded demo
+npm run export:demo-sql
+# → deploy/wordpress-free/estora-demo.sql
+
+# 3. Media library
+docker compose cp wordpress:/var/www/html/wp-content/uploads deploy/wordpress-free/uploads
+```
+
+### Deploy
+
+1. Create a free account and a free subdomain on InfinityFree.
+2. Use their **WordPress installer** (Softaculous) to create an empty WordPress.
+3. Upload and extract:
+   - `playground/estora-theme.zip` into `wp-content/themes/`
+   - `playground/estora-core.zip` into `wp-content/plugins/`
+4. Import `deploy/wordpress-free/estora-demo.sql` with phpMyAdmin.
+5. Upload `deploy/wordpress-free/uploads/` to `wp-content/uploads/` over FTP.
+6. Edit `wp-config.php` with the host's database name, user, password and host.
+7. In phpMyAdmin, update the `wp_options` rows `home` and `siteurl` to the new URL.
+8. Install the **Better Search Replace** plugin, then replace
+   `http://localhost:8080` with `https://your-subdomain.example` (serialized values are handled).
+9. Activate **ESTORA** and **ESTORA Core**, then save **Settings → Permalinks** once.
+10. Change the seeded staff passwords before sharing the URL.
 
 Limits: no WP-CLI/cron, low entry-process limits, no mail, and free hosts can suspend busy sites.
 Not recommended as the long-term portfolio link.
 
 ---
 
-## 3. Full WordPress from your own PC (temporary public URL)
+## 3. WordPress Playground (no hosting, runs in the browser)
+
+`npm run build:playground` also produces a blueprint at
+`https://mindenry.github.io/playground/blueprint.json`. Open
+
+```
+https://playground.wordpress.net/?blueprint-url=https://mindenry.github.io/playground/blueprint.json
+```
+
+This boots real WordPress (PHP compiled to WebAssembly) in the browser, installs the theme and
+plugin and seeds the demo data. It is useful for showing `/wp-admin/` and the theme without a
+server, but it downloads several megabytes, is heavy on memory and is not a permanent URL.
+
+---
+
+## 4. Full WordPress from your own PC (temporary public URL)
 
 If you only need a live URL for a call or an interview:
 
